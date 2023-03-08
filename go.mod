@@ -4,6 +4,7 @@ go 1.20
 
 require (
 	github.com/Ozoniuss/configer v0.2.0
+	github.com/Ozoniuss/stdlog v1.0.0
 	github.com/gin-gonic/gin v1.9.0
 	github.com/google/uuid v1.3.0
 	gorm.io/driver/postgres v1.4.8
@@ -11,7 +12,6 @@ require (
 )
 
 require (
-	github.com/Ozoniuss/stdlog v1.0.0 // indirect
 	github.com/bytedance/sonic v1.8.0 // indirect
 	github.com/chenzhuoyu/base64x v0.0.0-20221115062448-fe3a3abad311 // indirect
 	github.com/fsnotify/fsnotify v1.6.0 // indirect
