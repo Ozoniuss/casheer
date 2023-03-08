@@ -8,5 +8,5 @@ import (
 func RegisterEntries(router *gin.Engine, h handlers.EntryHandler) {
 	subrouter := router.Group("/api/entries")
 
-	subrouter.GET("/:id", h.HandleCreateEntry)
+	subrouter.POST("/", h.HandleCreateEntry)
 }

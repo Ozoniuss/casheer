@@ -7,7 +7,7 @@ import (
 )
 
 type BaseModel struct {
-	Id        uuid.UUID
+	Id        uuid.UUID `gorm:"default:gen_random_uuid()"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	DeletedAt time.Time

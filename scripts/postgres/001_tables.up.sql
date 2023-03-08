@@ -17,14 +17,14 @@ CREATE TABLE IF NOT EXISTS entries(
 
 CREATE TABLE IF NOT EXISTS expenses(
     id UUID NOT NULL PRIMARY KEY DEFAULT gen_random_uuid(),
-    entry_id UUID NOT NULL REFERENCES entries(uuid) ON DELETE CASCADE,
+    entry_id UUID NOT NULL REFERENCES entries(id) ON DELETE CASCADE,
     value REAL NOT NULL,
     name TEXT NOT NULL,
     description TEXT,
     payment_method TEXT,
     created_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ,
-    deleted_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
 );
 
 CREATE TABLE IF NOT EXISTS debts(
@@ -34,5 +34,5 @@ CREATE TABLE IF NOT EXISTS debts(
     details TEXT,
     created_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ,
-    deleted_at TIMESTAMPTZ,
+    deleted_at TIMESTAMPTZ
 );
