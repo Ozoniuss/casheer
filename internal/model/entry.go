@@ -6,7 +6,7 @@ type Entry struct {
 	BaseModel
 
 	Month         byte
-	Year          byte
+	Year          int16
 	Category      string
 	Subcategory   string
 	ExpectedTotal float32

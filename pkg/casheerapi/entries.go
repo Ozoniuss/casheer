@@ -4,12 +4,12 @@ const EntryType = "entry"
 
 type EntryData struct {
 	ResourceID
-	Month         int     `json:"month"`
-	Year          int     `json:"year"`
+	Month         byte    `json:"month"`
+	Year          int16   `json:"year"`
 	Category      string  `json:"category"`
 	Subcategory   string  `json:"subcategory"`
 	ExpectedTotal float32 `json:"expected_total"`
-	RunningTotal  string  `json:"running_total"`
+	RunningTotal  float32 `json:"running_total"`
 	Recurring     bool    `json:"recurring"`
 	Timestamps
 }
