@@ -42,7 +42,7 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 	if err != nil {
 		common.EmitError(ctx, NewCreateDebtFailedError(
 			http.StatusInternalServerError,
-			fmt.Sprintf("Could not create Debt: %s", err.Error())))
+			fmt.Sprintf("Could not create debt: %s", err.Error())))
 		return
 	}
 
