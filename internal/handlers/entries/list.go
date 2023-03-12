@@ -24,7 +24,7 @@ func (h *handler) HandleListEntry(ctx *gin.Context) {
 
 	// This is needed to query using zero values as well, see
 	// https://gorm.io/docs/query.html#Struct-amp-Map-Conditions
-	var filters map[string]any
+	var filters = make(map[string]any)
 
 	if params.Month != nil {
 		filters["month"] = int8(*params.Month)
@@ -56,5 +56,5 @@ func (h *handler) HandleListEntry(ctx *gin.Context) {
 	for _, e := range entries {
 		resp.Data = append(resp.Data, EntryToPublic(e))
 	}
-	ctx.JSON(http.StatusCreated, &resp)
+	ctx.JSON(http.StatusOK, &resp)
 }

@@ -35,7 +35,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 
 	// This is needed to query using zero values as well, see
 	// https://gorm.io/docs/update.html#Updates-multiple-columns
-	var updatedFields map[string]any
+	var updatedFields = make(map[string]any)
 
 	if req.Month != nil {
 		updatedFields["month"] = int8(*req.Month)
