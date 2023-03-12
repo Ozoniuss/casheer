@@ -11,10 +11,10 @@ type Entry struct {
 	BaseModel
 
 	// Postgresql doesn't support unsigned int.
-	Month         int8
-	Year          int16
-	Category      string
-	Subcategory   string
+	Month         int8   `validate:"required,gte=1,lte=12"`
+	Year          int16  `validate:"required,gte=2020"`
+	Category      string `validate:"required"`
+	Subcategory   string `validate:"required"`
 	ExpectedTotal float32
 	RunningTotal  float32
 	Recurring     bool
