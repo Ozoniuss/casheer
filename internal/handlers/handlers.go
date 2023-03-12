@@ -14,6 +14,6 @@ type DebtHandler interface {
 	HandleCreateDebt(ctx *gin.Context)
 	HandleUpdateDebt(ctx *gin.Context)
 	HandleDeleteDebt(ctx *gin.Context)
-	HandleListDebts(ctx *gin.Context)
+	HandleListDebt(ctx *gin.Context)
 	HandleGetDebt(ctx *gin.Context)
 }
