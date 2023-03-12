@@ -20,6 +20,7 @@ func (h *handler) HandleGetEntry(ctx *gin.Context) {
 			http.StatusBadRequest,
 			fmt.Sprintf("Could not update entry: invalid uuid format: %s", id),
 		))
+		return
 	}
 
 	var entry model.Entry

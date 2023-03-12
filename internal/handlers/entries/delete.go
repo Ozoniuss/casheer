@@ -21,6 +21,7 @@ func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 			http.StatusBadRequest,
 			fmt.Sprintf("Could not delete entry: invalid uuid format: %s", id),
 		))
+		return
 	}
 
 	entry := model.Entry{

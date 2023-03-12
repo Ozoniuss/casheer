@@ -21,6 +21,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 			http.StatusBadRequest,
 			fmt.Sprintf("Could not update entry: invalid uuid format: %s", id),
 		))
+		return
 	}
 
 	var req casheerapi.UpdateEntryRequest
