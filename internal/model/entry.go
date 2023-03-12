@@ -5,7 +5,8 @@ package model
 type Entry struct {
 	BaseModel
 
-	Month         byte
+	// Postgresql doesn't support unsigned int.
+	Month         int8
 	Year          int16
 	Category      string
 	Subcategory   string
