@@ -5,7 +5,7 @@ package model
 type Debt struct {
 	BaseModel
 
-	person  string
-	amount  float32
-	details string
+	Person  string
+	Amount  float32
+	Details string
 }
