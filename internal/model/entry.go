@@ -20,6 +20,19 @@ type Entry struct {
 	Recurring     bool
 }
 
+// AfterUpdate is a gorm hook that adds an error if the entry was not found
+// during an update operation. This implicitly assumes that the update query
+// executes with a "returning" clause that writes to an empty entry.
+func (e *Entry) AfterUpdate(tx *gorm.DB) (err error) {
+	if e.Id == uuid.Nil {
+		err = gorm.ErrRecordNotFound
+	}
+	return
+}
+
+// AfterDelete is a gorm hook that adds an error if the entry was not found
+// during an delete operation. This implicitly assumes that the delete query
+// executes with a "returning" clause that writes to an empty entry.
 func (e *Entry) AfterDelete(tx *gorm.DB) (err error) {
 	if e.Id == uuid.Nil {
 		err = gorm.ErrRecordNotFound

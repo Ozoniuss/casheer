@@ -68,7 +68,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			common.EmitError(ctx, NewUpdateEntryFailed(
 				http.StatusNotFound,
-				fmt.Sprintf("Could not retrieve entry: entry %s not found.", uuid)))
+				fmt.Sprintf("Could not update entry: entry %s not found.", uuid)))
 			return
 		default:
 			common.EmitError(ctx, NewUpdateEntryFailed(
