@@ -6,23 +6,12 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
-
-type handler struct {
-	db *gorm.DB
-}
-
-func NewHandler(db *gorm.DB) handler {
-	return handler{
-		db: db,
-	}
-}
 
 func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 
@@ -49,13 +38,13 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		ExpectedTotal: req.ExpectedTotal,
 		RunningTotal:  0,
 		Recurring:     req.Recurring,
-		Month:         byte(time.Now().Month()),
+		Month:         int8(time.Now().Month()),
 		Year:          int16(time.Now().Year()),
 	}
 
 	// If month or year are null, set them to the current month or year.
 	if req.Month != nil {
-		entry.Month = byte(*req.Month)
+		entry.Month = int8(*req.Month)
 	}
 	if req.Year != nil {
 		entry.Year = int16(*req.Year)
@@ -72,23 +61,7 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateEntryResponse{
-		Data: casheerapi.EntryData{
-			ResourceID: casheerapi.ResourceID{
-				Id:   entry.Id.String(),
-				Type: casheerapi.EntryType,
-			},
-			Year:          entry.Year,
-			Month:         entry.Month,
-			Category:      entry.Category,
-			Subcategory:   entry.Subcategory,
-			ExpectedTotal: entry.ExpectedTotal,
-			RunningTotal:  entry.RunningTotal,
-			Recurring:     entry.Recurring,
-			Timestamps: casheerapi.Timestamps{
-				CreatedAt: entry.CreatedAt,
-				UpdatedAt: entry.UpdatedAt,
-			},
-		},
+		Data: EntryToPublic(entry),
 	}
 
 	ctx.JSON(http.StatusCreated, &resp)
