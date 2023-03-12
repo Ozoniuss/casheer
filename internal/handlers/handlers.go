@@ -9,3 +9,11 @@ type EntryHandler interface {
 	HandleUpdateEntry(ctx *gin.Context)
 	HandleGetEntry(ctx *gin.Context)
 }
+
+type DebtHandler interface {
+	HandleCreateDebt(ctx *gin.Context)
+	HandleUpdateDebt(ctx *gin.Context)
+	HandleDeleteDebt(ctx *gin.Context)
+	HandleListDebts(ctx *gin.Context)
+	HandleGetDebt(ctx *gin.Context)
+}
