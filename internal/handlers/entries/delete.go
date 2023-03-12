@@ -1,6 +1,7 @@
 package entries
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -24,20 +26,24 @@ func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 		return
 	}
 
-	entry := model.Entry{
-		BaseModel: model.BaseModel{
-			Id: uuid,
-		},
-	}
+	entry := model.Entry{}
 
-	err = h.db.Clauses(clause.Returning{}).Delete(&entry).Error
+	query := h.db.WithContext(ctx).Clauses(clause.Returning{})
+	err = query.Clauses(clause.Returning{}).Where("id = ?", uuid).Delete(&entry).Error
 
-	// TODO: nicer error handling
 	if err != nil {
-		common.EmitError(ctx, NewDeleteEntryFailedError(
-			http.StatusInternalServerError,
-			fmt.Sprintf("Could not delete entry: %s", err.Error())))
-		return
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			common.EmitError(ctx, NewDeleteEntryFailedError(
+				http.StatusNotFound,
+				fmt.Sprintf("Could not delete entry: entry %s not found.", uuid)))
+			return
+		default:
+			common.EmitError(ctx, NewDeleteEntryFailedError(
+				http.StatusInternalServerError,
+				fmt.Sprintf("Could not delete entry: %s", err.Error())))
+			return
+		}
 	}
 
 	resp := casheerapi.CreateEntryResponse{

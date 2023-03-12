@@ -40,7 +40,7 @@ func (h *handler) HandleListEntry(ctx *gin.Context) {
 	}
 
 	var entries []model.Entry
-	err = h.db.Where(filters).Order("year desc").Order("month desc").Find(&entries).Error
+	err = h.db.WithContext(ctx).Where(filters).Order("year desc").Order("month desc").Find(&entries).Error
 
 	// TODO: nicer error handling
 	if err != nil {

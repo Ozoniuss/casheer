@@ -58,7 +58,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	}
 
 	var entry model.Entry
-	err = h.db.Clauses(clause.Returning{}).Where("id = ?", uuid).Updates(req).Error
+	err = h.db.WithContext(ctx).Model(&entry).Clauses(clause.Returning{}).Where("id = ?", uuid).Updates(updatedFields).Error
 
 	// TODO: nicer error handling
 	if err != nil {

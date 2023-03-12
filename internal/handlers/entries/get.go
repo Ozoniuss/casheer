@@ -24,7 +24,7 @@ func (h *handler) HandleGetEntry(ctx *gin.Context) {
 	}
 
 	var entry model.Entry
-	err = h.db.Where("id = ?", uuid).Take(&entry).Error
+	err = h.db.WithContext(ctx).Where("id = ?", uuid).Take(&entry).Error
 
 	if err != nil {
 		common.EmitError(ctx, NewUpdateEntryFailed(
