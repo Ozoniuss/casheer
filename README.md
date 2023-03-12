@@ -15,16 +15,16 @@ The planning is an orientative schedule of future expenses, and helps estimating
 
 Below is a detailed list of features this application implements.
 
-- Adding a new entry, assuming all data integrity constraints;
-- Removing an existing entry. This should soft delete the existing entry, while keeping the transactions that have been recorded for that entry;
-- Listing entries based on filters, including deleted entries;
-- Viewing the expenses for an existing entry, including deleted entries;
-- Updating a single expense (the entry it points to, the value etc.);
-- Adding or removing expenses;
-- Closing an entry (which means that expenses pointing to that entry have to be inserted forcefully);
-- Planning for a month (which is the same as going through the entries of last month interactively and choosing whether to keep or discard them);
-- Closing a month (which means closing all entries of that month);
-- Computing an ongoing total for a month (which is the value of all expenses);
+- [ ] Adding a new entry, assuming all data integrity constraints; 
+- [ ] Removing an existing entry. This should soft delete the existing entry, while keeping the transactions that have been recorded for that entry;
+- [ ] Listing entries based on filters, including deleted entries;
+- [ ] Viewing the expenses for an existing entry, including deleted entries;
+- [ ] Updating a single expense (the entry it points to, the value etc.);
+- [ ] Adding or removing expenses;
+- [ ] Closing an entry (which means that expenses pointing to that entry have to be inserted forcefully);
+- [ ] Planning for a month (which is the same as going through the entries of last month interactively and choosing whether to keep or discard them);
+- [ ] Closing a month (which means closing all entries of that month);
+- [ ] Computing an ongoing total for a month (which is the value of all expenses);
 
 Models
 ------
