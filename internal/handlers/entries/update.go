@@ -17,7 +17,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	id := ctx.Param("id")
 	uuid, err := uuid.Parse(id)
 	if err != nil {
-		common.EmitError(ctx, NewDeleteEntryFailedError(
+		common.EmitError(ctx, NewUpdateEntryFailed(
 			http.StatusBadRequest,
 			fmt.Sprintf("Could not update entry: invalid uuid format: %s", id),
 		))

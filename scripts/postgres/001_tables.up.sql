@@ -9,8 +9,8 @@ CREATE TABLE IF NOT EXISTS entries(
     expected_total REAL NOT NULL,
     running_total REAL NOT NULL,
     recurring BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ,
     CONSTRAINT unique_logical_entry UNIQUE (month, year, category, subcategory)
 );
@@ -22,8 +22,8 @@ CREATE TABLE IF NOT EXISTS expenses(
     name TEXT NOT NULL,
     description TEXT,
     payment_method TEXT,
-    created_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ
 );
 
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS debts(
     person TEXT NOT NULL,
     amount REAL NOT NULL,
     details TEXT,
-    created_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ,
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL,
     deleted_at TIMESTAMPTZ
 );
