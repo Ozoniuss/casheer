@@ -34,12 +34,12 @@ func (h *handler) HandleDeleteDebt(ctx *gin.Context) {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			common.EmitError(ctx, NewDeleteDebtFailedError(
 				http.StatusNotFound,
-				fmt.Sprintf("Could not delete Debt: Debt %s not found.", uuid)))
+				fmt.Sprintf("Could not delete debt: Debt %s not found.", uuid)))
 			return
 		default:
 			common.EmitError(ctx, NewDeleteDebtFailedError(
 				http.StatusInternalServerError,
-				fmt.Sprintf("Could not delete Debt: %s", err.Error())))
+				fmt.Sprintf("Could not delete debt: %s", err.Error())))
 			return
 		}
 	}

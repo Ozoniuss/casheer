@@ -27,9 +27,7 @@ func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 	}
 
 	entry := model.Entry{}
-
-	query := h.db.WithContext(ctx).Clauses(clause.Returning{})
-	err = query.Clauses(clause.Returning{}).Where("id = ?", uuid).Delete(&entry).Error
+	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Where("id = ?", uuid).Delete(&entry).Error
 
 	if err != nil {
 		switch {

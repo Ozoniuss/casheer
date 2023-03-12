@@ -1,6 +1,7 @@
 package entries
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -62,10 +64,18 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 
 	// TODO: nicer error handling
 	if err != nil {
-		common.EmitError(ctx, NewUpdateEntryFailed(
-			http.StatusInternalServerError,
-			fmt.Sprintf("Could not update entry: %s", err.Error())))
-		return
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			common.EmitError(ctx, NewUpdateEntryFailed(
+				http.StatusNotFound,
+				fmt.Sprintf("Could not retrieve entry: entry %s not found.", uuid)))
+			return
+		default:
+			common.EmitError(ctx, NewUpdateEntryFailed(
+				http.StatusInternalServerError,
+				fmt.Sprintf("Could not update entry: %s", err.Error())))
+			return
+		}
 	}
 
 	resp := casheerapi.UpdateEntryResponse{

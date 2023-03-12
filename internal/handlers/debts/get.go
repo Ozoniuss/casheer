@@ -33,7 +33,7 @@ func (h *handler) HandleGetDebt(ctx *gin.Context) {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			common.EmitError(ctx, NewGetDebtFailed(
 				http.StatusNotFound,
-				fmt.Sprintf("Could not retrieve Debt: debt %s not found.", uuid)))
+				fmt.Sprintf("Could not retrieve debt: debt %s not found.", uuid)))
 			return
 		default:
 			common.EmitError(ctx, NewGetDebtFailed(

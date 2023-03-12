@@ -1,6 +1,7 @@
 package debts
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
+	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -53,10 +55,18 @@ func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 
 	// TODO: nicer error handling
 	if err != nil {
-		common.EmitError(ctx, NewUpdateDebtFailed(
-			http.StatusInternalServerError,
-			fmt.Sprintf("Could not update debt: %s", err.Error())))
-		return
+		switch {
+		case errors.Is(err, gorm.ErrRecordNotFound):
+			common.EmitError(ctx, NewUpdateDebtFailed(
+				http.StatusNotFound,
+				fmt.Sprintf("Could not update debt: debt %s not found.", uuid)))
+			return
+		default:
+			common.EmitError(ctx, NewUpdateDebtFailed(
+				http.StatusInternalServerError,
+				fmt.Sprintf("Could not update debt: %s", err.Error())))
+			return
+		}
 	}
 
 	resp := casheerapi.UpdateDebtResponse{
