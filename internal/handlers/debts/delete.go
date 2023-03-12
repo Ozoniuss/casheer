@@ -26,9 +26,8 @@ func (h *handler) HandleDeleteDebt(ctx *gin.Context) {
 		return
 	}
 
-	Debt := model.Debt{}
-
-	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Where("id = ?", uuid).Delete(&Debt).Error
+	var debt model.Debt
+	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Where("id = ?", uuid).Delete(&debt).Error
 
 	if err != nil {
 		switch {
@@ -46,7 +45,7 @@ func (h *handler) HandleDeleteDebt(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateDebtResponse{
-		Data: DebtToPublic(Debt),
+		Data: DebtToPublic(debt),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)
