@@ -7,6 +7,7 @@ import (
 	"github.com/Ozoniuss/casheer/internal/endpoints"
 	"github.com/Ozoniuss/casheer/internal/handlers/debts"
 	"github.com/Ozoniuss/casheer/internal/handlers/entries"
+	"github.com/Ozoniuss/casheer/internal/handlers/expenses"
 	"github.com/Ozoniuss/casheer/internal/handlers/totals"
 )
 
@@ -24,6 +25,10 @@ func NewRouter(db *gorm.DB) (*gin.Engine, error) {
 	{
 		h := totals.NewHandler(db)
 		endpoints.RegisterTotals(r, &h)
+	}
+	{
+		h := expenses.NewHandler(db)
+		endpoints.RegisterExpenses(r, &h)
 	}
 	return r, nil
 }

@@ -10,9 +10,9 @@ import (
 type Expense struct {
 	BaseModel
 
-	EntryId       uuid.UUID
-	Value         float32 `validate:"required"`
-	Name          string  `validate:"required"`
+	EntryId       uuid.UUID `validate:"required"`
+	Value         float32   `validate:"required"`
+	Name          string    `validate:"required"`
 	Description   string
 	PaymentMethod string
 }
@@ -26,10 +26,10 @@ func (e *NoEntryFoundErr) Error() string {
 
 // RequiredEntry can be used as a scope to return a custom error if the
 // entry id associated with the expense doesn't exist.
-func RequiredEntry(expense *Expense) func(db *gorm.DB) *gorm.DB {
+func RequiredEntry(entryId uuid.UUID) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		var entries []Entry
-		err := db.Session(&gorm.Session{}).Where("id = ?", expense.EntryId).Find(&entries).Error
+		err := db.Session(&gorm.Session{}).Where("id = ?", entryId).Find(&entries).Error
 
 		if err != nil {
 			db.AddError(err)
@@ -40,4 +40,24 @@ func RequiredEntry(expense *Expense) func(db *gorm.DB) *gorm.DB {
 		}
 		return db
 	}
+}
+
+// AfterUpdate is a gorm hook that adds an error if the expense was not found
+// during an update operation. This implicitly assumes that the update query
+// executes with a "returning" clause that writes to an empty expense.
+func (e *Expense) AfterUpdate(tx *gorm.DB) (err error) {
+	if e.Id == uuid.Nil {
+		err = gorm.ErrRecordNotFound
+	}
+	return
+}
+
+// AfterDelete is a gorm hook that adds an error if the expense was not found
+// during an delete operation. This implicitly assumes that the delete query
+// executes with a "returning" clause that writes to an empty expense.
+func (e *Expense) AfterDelete(tx *gorm.DB) (err error) {
+	if e.Id == uuid.Nil {
+		err = gorm.ErrRecordNotFound
+	}
+	return
 }

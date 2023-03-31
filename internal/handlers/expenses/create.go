@@ -16,7 +16,7 @@ import (
 
 func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 
-	expid := ctx.GetString("entid")
+	entid := ctx.GetString("entid")
 
 	var req casheerapi.CreateExpenseRequest
 	err := ctx.BindJSON(&req)
@@ -29,7 +29,7 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 	}
 
 	expense := model.Expense{
-		EntryId:       uuid.MustParse(expid),
+		EntryId:       uuid.MustParse(entid),
 		Value:         req.Value,
 		Description:   req.Description,
 		Name:          req.Name,
@@ -44,7 +44,7 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 		return
 	}
 
-	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(&expense)).Clauses(clause.Returning{}).Create(&expense).Error
+	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(expense.EntryId)).Clauses(clause.Returning{}).Create(&expense).Error
 
 	if err != nil {
 		switch {

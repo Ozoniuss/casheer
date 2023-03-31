@@ -20,7 +20,7 @@ func (h *handler) HandleGetEntry(ctx *gin.Context) {
 	if err != nil {
 		common.EmitError(ctx, NewGetEntryFailed(
 			http.StatusBadRequest,
-			fmt.Sprintf("Could not update entry: invalid uuid format: %s", id),
+			fmt.Sprintf("Could not get entry: invalid uuid format: %s", id),
 		))
 		return
 	}
