@@ -1,6 +1,7 @@
 package expenses
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -43,14 +44,21 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 		return
 	}
 
-	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Create(&expense).Error
+	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(&expense)).Clauses(clause.Returning{}).Create(&expense).Error
 
-	// TODO: nicer error handling
 	if err != nil {
-		common.EmitError(ctx, NewCreateExpenseFailedError(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not create Expense: %s", err.Error())))
-		return
+		switch {
+		case errors.Is(err, &model.NoEntryFoundErr{}):
+			common.EmitError(ctx, NewCreateExpenseFailedError(
+				http.StatusNotFound,
+				fmt.Sprintf("Could not create Expense: no entry with uuid %v", expense.EntryId)))
+			return
+		default:
+			common.EmitError(ctx, NewCreateExpenseFailedError(
+				http.StatusInternalServerError,
+				fmt.Sprintf("Could not create Expense: %s", err.Error())))
+			return
+		}
 	}
 
 	resp := casheerapi.CreateExpenseResponse{
