@@ -15,7 +15,7 @@ func (h *handler) HandleListExpense(ctx *gin.Context) {
 
 	// At the moment only listing the expenses for a certain entry; it doesn't
 	// really make sense to list all of them.
-	expid := ctx.GetString("entid")
+	entid := ctx.GetString("entid")
 
 	var params casheerapi.ListExpenseParams
 	err := ctx.BindQuery(&params)
@@ -45,7 +45,7 @@ func (h *handler) HandleListExpense(ctx *gin.Context) {
 	}
 
 	var expenses []model.Expense
-	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(uuid.MustParse(expid))).
+	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(uuid.MustParse(entid))).
 		Where(filters).Order("value desc").Order("created_at desc").Find(&expenses).Error
 
 	if err != nil {
