@@ -18,6 +18,8 @@ type Entry struct {
 	ExpectedTotal float32
 	RunningTotal  float32
 	Recurring     bool
+
+	Expenses []Expense
 }
 
 // AfterUpdate is a gorm hook that adds an error if the entry was not found

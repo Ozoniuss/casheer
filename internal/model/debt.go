@@ -10,8 +10,8 @@ import (
 type Debt struct {
 	BaseModel
 
-	Person  string
-	Amount  float32
+	Person  string  `validate:"required"`
+	Amount  float32 `validate:"required"`
 	Details string
 }
 
