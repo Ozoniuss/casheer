@@ -17,3 +17,7 @@ type DebtHandler interface {
 	HandleListDebt(ctx *gin.Context)
 	HandleGetDebt(ctx *gin.Context)
 }
+
+type TotalsHandler interface {
+	HandleGetRunningTotal(ctx *gin.Context)
+}
