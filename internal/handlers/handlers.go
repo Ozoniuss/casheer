@@ -18,6 +18,14 @@ type DebtHandler interface {
 	HandleGetDebt(ctx *gin.Context)
 }
 
+type ExpenseHandler interface {
+	HandleCreateExpense(ctx *gin.Context)
+	HandleDeleteExpense(ctx *gin.Context)
+	HandleListExpense(ctx *gin.Context)
+	HandleUpdateExpense(ctx *gin.Context)
+	HandleGetExpense(ctx *gin.Context)
+}
+
 type TotalsHandler interface {
 	HandleGetRunningTotal(ctx *gin.Context)
 }
