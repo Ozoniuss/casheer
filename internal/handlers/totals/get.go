@@ -92,18 +92,19 @@ func (h *handler) HandleGetRunningTotal(ctx *gin.Context) {
 		}
 	}
 
-	resp := casheerapi.TotalData{
-		ResourceID: casheerapi.ResourceID{
-			Id:   fmt.Sprintf("%d%d", month, year),
-			Type: casheerapi.TotalType,
+	resp := casheerapi.GetTotalResponse{
+		Data: casheerapi.TotalData{
+			ResourceID: casheerapi.ResourceID{
+				Id:   fmt.Sprintf("%d%d", month, year),
+				Type: casheerapi.TotalType,
+			},
+			Month:          int(month),
+			Year:           int(year),
+			ExpectedIncome: expectedIncome,
+			RunningIncome:  runningIncome,
+			ExpectedTotal:  expectedTotal,
+			RunningTotal:   runningTotal,
 		},
-		Month:          int(month),
-		Year:           int(year),
-		ExpectedIncome: expectedIncome,
-		RunningIncome:  runningIncome,
-		ExpectedTotal:  expectedTotal,
-		RunningTotal:   runningTotal,
 	}
-
 	ctx.JSON(http.StatusOK, &resp)
 }
