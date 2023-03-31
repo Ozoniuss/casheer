@@ -24,3 +24,9 @@ func RegisterDebts(router *gin.Engine, h handlers.DebtHandler) {
 	subrouter.PATCH("/:id", h.HandleUpdateDebt)
 	subrouter.GET("/:id", h.HandleGetDebt)
 }
+
+func RegisterTotals(router *gin.Engine, h handlers.TotalsHandler) {
+	subrouter := router.Group("/api/totals")
+
+	subrouter.GET("/", h.HandleGetRunningTotal)
+}
