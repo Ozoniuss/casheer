@@ -16,7 +16,7 @@ import (
 
 func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 
-	id := ctx.Param("id")
+	id := ctx.Param("entid")
 	uuid, err := uuid.Parse(id)
 	if err != nil {
 		common.EmitError(ctx, NewUpdateEntryFailed(
@@ -79,7 +79,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.UpdateEntryResponse{
-		Data: EntryToPublic(entry),
+		Data: EntryToPublic(entry, h.apiPath),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)

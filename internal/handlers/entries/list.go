@@ -40,7 +40,7 @@ func (h *handler) HandleListEntry(ctx *gin.Context) {
 	}
 
 	var entries []model.Entry
-	err = h.db.WithContext(ctx).Where(filters).Order("year desc").Order("month desc").Find(&entries).Error
+	err = h.db.WithContext(ctx).Preload("Expenses").Where(filters).Order("year desc").Order("month desc").Find(&entries).Error
 
 	// TODO: nicer error handling
 	if err != nil {
@@ -54,7 +54,14 @@ func (h *handler) HandleListEntry(ctx *gin.Context) {
 		Data: make([]casheerapi.EntryData, 0, len(entries)),
 	}
 	for _, e := range entries {
-		resp.Data = append(resp.Data, EntryToPublic(e))
+		publicEntry := EntryToPublic(e, h.apiPath)
+
+		// Compute the running total by adding the value of all expenses.
+		for _, exp := range e.Expenses {
+			fmt.Println(exp.Value)
+			publicEntry.RunningTotal += exp.Value
+		}
+		resp.Data = append(resp.Data, publicEntry)
 	}
 	ctx.JSON(http.StatusOK, &resp)
 }

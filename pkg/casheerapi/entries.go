@@ -12,6 +12,23 @@ type EntryData struct {
 	RunningTotal  float32 `json:"running_total"`
 	Recurring     bool    `json:"recurring"`
 	Timestamps
+	Links EntryLinks `json:"links"`
+}
+
+type EntryAtrributes struct {
+	Month         int     `json:"month"`
+	Year          int     `json:"year"`
+	Category      string  `json:"category"`
+	Subcategory   string  `json:"subcategory"`
+	ExpectedTotal float32 `json:"expected_total"`
+	RunningTotal  float32 `json:"running_total"`
+	Recurring     bool    `json:"recurring"`
+	Timestamps
+}
+
+type EntryLinks struct {
+	Self       string `json:"self"`
+	Collection string `json:"collection"`
 }
 
 type CreateEntryRequest struct {

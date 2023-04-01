@@ -9,11 +9,13 @@ import (
 func RegisterEntries(router *gin.Engine, h handlers.EntryHandler) {
 	subrouter := router.Group("/api/entries")
 
+	// Using entid is necessary to avoid conflicting routes with expenses
+	// endpoints.
 	subrouter.POST("/", h.HandleCreateEntry)
-	subrouter.DELETE("/:id", h.HandleDeleteEntry)
+	subrouter.DELETE("/:entid", h.HandleDeleteEntry)
 	subrouter.GET("/", h.HandleListEntry)
-	subrouter.PATCH("/:id", h.HandleUpdateEntry)
-	subrouter.GET("/:id", h.HandleGetEntry)
+	subrouter.PATCH("/:entid", h.HandleUpdateEntry)
+	subrouter.GET("/:entid", h.HandleGetEntry)
 }
 
 func RegisterDebts(router *gin.Engine, h handlers.DebtHandler) {

@@ -61,7 +61,7 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateEntryResponse{
-		Data: EntryToPublic(entry),
+		Data: EntryToPublic(entry, h.apiPath),
 	}
 
 	ctx.JSON(http.StatusCreated, &resp)

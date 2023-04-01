@@ -16,7 +16,7 @@ import (
 
 func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 
-	id := ctx.Param("id")
+	id := ctx.Param("entid")
 	uuid, err := uuid.Parse(id)
 	if err != nil {
 		common.EmitError(ctx, NewDeleteEntryFailedError(
@@ -45,7 +45,7 @@ func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateEntryResponse{
-		Data: EntryToPublic(entry),
+		Data: EntryToPublic(entry, h.apiPath),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)

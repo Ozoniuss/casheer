@@ -22,7 +22,7 @@ func run() error {
 		return fmt.Errorf("could not connect to postgres database: %w", err)
 	}
 
-	engine, err := router.NewRouter(conn)
+	engine, err := router.NewRouter(conn, config)
 	engine.Run(fmt.Sprintf("%s:%d", config.Server.Address, config.Server.Port))
 
 	return nil
