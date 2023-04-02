@@ -16,11 +16,13 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("could not parse config: %w", err)
 	}
+	log.Infof("parsed config: %+v\n", config)
 
 	conn, err := store.Connect(config.Database)
 	if err != nil {
 		return fmt.Errorf("could not connect to postgres database: %w", err)
 	}
+	log.Infoln("Connected to database.")
 
 	engine, err := router.NewRouter(conn, config)
 	engine.Run(fmt.Sprintf("%s:%d", config.Server.Address, config.Server.Port))

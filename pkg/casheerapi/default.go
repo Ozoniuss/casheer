@@ -8,6 +8,7 @@ type PingResponse struct {
 type PingLinks struct {
 	Entries LinkWithDetails `json:"entries"`
 	Debts   LinkWithDetails `json:"details"`
+	Totals  LinkWithDetails `json:"totals"`
 }
 
 type LinkWithDetails struct {

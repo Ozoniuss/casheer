@@ -32,11 +32,11 @@ func serverOptions() []cfg.ConfigOption {
 
 func apiPathsOptions() []cfg.ConfigOption {
 	return []cfg.ConfigOption{
-		{FlagName: "apipath-entries", Shorthand: "", Value: "http://localhost:8033/api/entries", ConfigKey: "apipath.entries",
+		{FlagName: "apipaths-entries", Shorthand: "", Value: "http://localhost:8033/api/entries", ConfigKey: "apipaths.entries",
 			Usage: "Specifies the URL of the entry resource collection."},
-		{FlagName: "apipath-totals", Shorthand: "", Value: "http://localhost:8033/api/entries", ConfigKey: "apipath.totals",
+		{FlagName: "apipaths-totals", Shorthand: "", Value: "http://localhost:8033/api/totals", ConfigKey: "apipaths.totals",
 			Usage: "Specifies the URL of the totals resource collection."},
-		{FlagName: "apipath-debts", Shorthand: "", Value: "http://localhost:8033/api/entries", ConfigKey: "apipath.debts",
+		{FlagName: "apipaths-debts", Shorthand: "", Value: "http://localhost:8033/api/debts", ConfigKey: "apipaths.debts",
 			Usage: "Specifies the URL of the debts resource collection."},
 	}
 }

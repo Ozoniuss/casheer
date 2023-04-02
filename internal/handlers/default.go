@@ -30,6 +30,10 @@ func (d *DefaultHandler) DefaultHandler(ctx *gin.Context) {
 				Href:    d.apiPaths.Debts + "/",
 				Details: "Manage debts.",
 			},
+			Totals: casheerapi.LinkWithDetails{
+				Href:    d.apiPaths.Totals + "/",
+				Details: "Manage totals.",
+			},
 		},
 	})
 }
