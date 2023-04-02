@@ -36,7 +36,6 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		Category:      req.Category,
 		Subcategory:   req.Subcategory,
 		ExpectedTotal: req.ExpectedTotal,
-		RunningTotal:  0,
 		Recurring:     req.Recurring,
 		Month:         int8(time.Now().Month()),
 		Year:          int16(time.Now().Year()),
@@ -61,7 +60,8 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateEntryResponse{
-		Data: EntryToPublic(entry, h.apiPath),
+		// Running total is obviously 0
+		Data: EntryToPublic(entry, h.apiPath, 0),
 	}
 
 	ctx.JSON(http.StatusCreated, &resp)

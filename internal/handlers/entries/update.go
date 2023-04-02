@@ -60,7 +60,8 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	}
 
 	var entry model.Entry
-	err = h.db.WithContext(ctx).Model(&entry).Clauses(clause.Returning{}).Where("id = ?", uuid).Updates(updatedFields).Error
+	err = h.db.WithContext(ctx).Model(&entry).Clauses(clause.Returning{}).Preload("Expenses").
+		Where("id = ?", uuid).Updates(updatedFields).Error
 
 	// TODO: nicer error handling
 	if err != nil {
@@ -79,7 +80,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.UpdateEntryResponse{
-		Data: EntryToPublic(entry, h.apiPath),
+		Data: EntryToPublic(entry, h.apiPath, computeRunningTotal(entry.Expenses)),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)

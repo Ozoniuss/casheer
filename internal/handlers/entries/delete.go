@@ -27,7 +27,7 @@ func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 	}
 
 	entry := model.Entry{}
-	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Where("id = ?", uuid).Delete(&entry).Error
+	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Preload("expenses").Where("id = ?", uuid).Delete(&entry).Error
 
 	if err != nil {
 		switch {
@@ -45,8 +45,13 @@ func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateEntryResponse{
-		Data: EntryToPublic(entry, h.apiPath),
+		Data: EntryToPublic(entry, h.apiPath, computeRunningTotal(entry.Expenses)),
 	}
+
+	// The following resources were removed, thus the links should be empty as
+	// well.
+	resp.Data.Links.Self = ""
+	resp.Data.Links.Expenses = ""
 
 	ctx.JSON(http.StatusOK, &resp)
 }

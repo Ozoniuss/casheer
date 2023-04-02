@@ -26,7 +26,7 @@ func (h *handler) HandleGetEntry(ctx *gin.Context) {
 	}
 
 	var entry model.Entry
-	err = h.db.WithContext(ctx).Where("id = ?", uuid).Take(&entry).Error
+	err = h.db.WithContext(ctx).Preload("expenses").Where("id = ?", uuid).Take(&entry).Error
 
 	if err != nil {
 		switch {
@@ -44,7 +44,7 @@ func (h *handler) HandleGetEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.GetEntryResponse{
-		Data: EntryToPublic(entry, h.apiPath),
+		Data: EntryToPublic(entry, h.apiPath, computeRunningTotal(entry.Expenses)),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)
