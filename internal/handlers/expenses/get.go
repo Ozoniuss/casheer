@@ -49,7 +49,7 @@ func (h *handler) HandleGetExpense(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.GetExpenseResponse{
-		Data: ExpenseToPublic(expense),
+		Data: ExpenseToPublic(expense, h.apiPaths),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)

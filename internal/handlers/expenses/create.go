@@ -62,7 +62,7 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateExpenseResponse{
-		Data: ExpenseToPublic(expense),
+		Data: ExpenseToPublic(expense, h.apiPaths),
 	}
 
 	ctx.JSON(http.StatusCreated, &resp)

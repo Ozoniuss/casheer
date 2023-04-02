@@ -56,10 +56,15 @@ func (h *handler) HandleListExpense(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.ListExpenseResponse{
-		Data: make([]casheerapi.ExpenseData, 0, len(expenses)),
+		Data: make([]casheerapi.ExpenseListItemData, 0, len(expenses)),
+		Links: casheerapi.ListExpenseLinks{
+			Self:    fmt.Sprintf("%s/%s/expenses/", h.apiPaths.Entries, entid),
+			Entries: h.apiPaths.Entries + "/",
+			Debts:   h.apiPaths.Debts + "/",
+		},
 	}
 	for _, e := range expenses {
-		resp.Data = append(resp.Data, ExpenseToPublic(e))
+		resp.Data = append(resp.Data, ExpenseToPublicList(e, h.apiPaths))
 	}
 	ctx.JSON(http.StatusOK, &resp)
 }

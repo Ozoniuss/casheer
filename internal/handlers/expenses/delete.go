@@ -49,8 +49,10 @@ func (h *handler) HandleDeleteExpense(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateExpenseResponse{
-		Data: ExpenseToPublic(expense),
+		Data: ExpenseToPublic(expense, h.apiPaths),
 	}
+
+	resp.Data.Links.Self = ""
 
 	ctx.JSON(http.StatusOK, &resp)
 }
