@@ -80,7 +80,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.UpdateEntryResponse{
-		Data: EntryToPublic(entry, h.apiPath, computeRunningTotal(entry.Expenses)),
+		Data: EntryToPublic(entry, h.apiPaths, computeRunningTotal(entry.Expenses)),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)

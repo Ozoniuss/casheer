@@ -45,7 +45,7 @@ func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateEntryResponse{
-		Data: EntryToPublic(entry, h.apiPath, computeRunningTotal(entry.Expenses)),
+		Data: EntryToPublic(entry, h.apiPaths, computeRunningTotal(entry.Expenses)),
 	}
 
 	// The following resources were removed, thus the links should be empty as

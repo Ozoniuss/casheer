@@ -3,6 +3,7 @@ package entries
 import (
 	"fmt"
 
+	"github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/model"
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
@@ -16,7 +17,7 @@ func computeRunningTotal(expenses []model.Expense) float32 {
 	return rt
 }
 
-func EntryToPublic(entry model.Entry, apipath string, runningTotal float32) public.EntryData {
+func EntryToPublic(entry model.Entry, apipath config.ApiPaths, runningTotal float32) public.EntryData {
 	return public.EntryData{
 		ResourceID: public.ResourceID{
 			Id:   entry.Id.String(),
@@ -38,14 +39,14 @@ func EntryToPublic(entry model.Entry, apipath string, runningTotal float32) publ
 			RunningTotal: runningTotal,
 		},
 		Links: public.EntryLinks{
-			Self:       fmt.Sprintf("%s/%s", apipath, entry.Id.String()),
-			Collection: fmt.Sprintf("%s/", apipath),
-			Expenses:   fmt.Sprintf("%s/%s/expenses/", apipath, entry.Id.String()),
+			Self:       fmt.Sprintf("%s/%s", apipath.Entries, entry.Id.String()),
+			Collection: fmt.Sprintf("%s/", apipath.Entries),
+			Expenses:   fmt.Sprintf("%s/%s/expenses/", apipath.Entries, entry.Id.String()),
 		},
 	}
 }
 
-func EntryToPublicList(entry model.Entry, apipath string, runningTotal float32) public.EntryListItemData {
+func EntryToPublicList(entry model.Entry, apipath config.ApiPaths, runningTotal float32) public.EntryListItemData {
 	return public.EntryListItemData{
 		ResourceID: public.ResourceID{
 			Id:   entry.Id.String(),
@@ -67,7 +68,7 @@ func EntryToPublicList(entry model.Entry, apipath string, runningTotal float32) 
 			RunningTotal: runningTotal,
 		},
 		Links: public.EntryListItemLinks{
-			Self: fmt.Sprintf("%s/%s", apipath, entry.Id.String()),
+			Self: fmt.Sprintf("%s/%s", apipath.Entries, entry.Id.String()),
 		},
 	}
 }

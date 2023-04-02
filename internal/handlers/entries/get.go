@@ -44,7 +44,7 @@ func (h *handler) HandleGetEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.GetEntryResponse{
-		Data: EntryToPublic(entry, h.apiPath, computeRunningTotal(entry.Expenses)),
+		Data: EntryToPublic(entry, h.apiPaths, computeRunningTotal(entry.Expenses)),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)

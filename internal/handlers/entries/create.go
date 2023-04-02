@@ -61,7 +61,7 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 
 	resp := casheerapi.CreateEntryResponse{
 		// Running total is obviously 0
-		Data: EntryToPublic(entry, h.apiPath, 0),
+		Data: EntryToPublic(entry, h.apiPaths, 0),
 	}
 
 	ctx.JSON(http.StatusCreated, &resp)

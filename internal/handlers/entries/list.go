@@ -52,9 +52,14 @@ func (h *handler) HandleListEntry(ctx *gin.Context) {
 
 	resp := casheerapi.ListEntryResponse{
 		Data: make([]casheerapi.EntryListItemData, 0, len(entries)),
+		Links: casheerapi.ListEntryLinks{
+			Self:  h.apiPaths.Entries + "/",
+			Total: h.apiPaths.Totals + "/",
+			Debts: h.apiPaths.Debts + "/",
+		},
 	}
 	for _, e := range entries {
-		publicEntry := EntryToPublicList(e, h.apiPath, computeRunningTotal(e.Expenses))
+		publicEntry := EntryToPublicList(e, h.apiPaths, computeRunningTotal(e.Expenses))
 		resp.Data = append(resp.Data, publicEntry)
 	}
 	ctx.JSON(http.StatusOK, &resp)
