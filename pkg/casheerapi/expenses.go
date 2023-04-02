@@ -4,11 +4,31 @@ const ExpenseType = "expense"
 
 type ExpenseData struct {
 	ResourceID
+	Attributes ExpenseAttributes `json:"attributes"`
+	Links      ExpenseLinks      `json:"links"`
+}
+
+type ExpenseListItemData struct {
+	ResourceID
+	Attributes ExpenseAttributes    `json:"attributes"`
+	Links      ExpenseListItemLinks `json:"links"`
+}
+
+type ExpenseAttributes struct {
 	Value         float32 `json:"value"`
 	Name          string  `json:"name"`
 	Description   string  `json:"description"`
 	PaymentMethod string  `json:"payment_method"`
 	Timestamps
+}
+
+type ExpenseLinks struct {
+	Self       string `json:"self"`
+	Collection string `json:"collection"`
+}
+
+type ExpenseListItemLinks struct {
+	Self string `json:"self"`
 }
 
 type CreateExpenseRequest struct {
@@ -47,8 +67,15 @@ type ListExpenseParams struct {
 	PaymentMethod *string  `json:"payment_method,omitempty"`
 }
 
+type ListExpenseLinks struct {
+	Self    string `json:"self"`
+	Entries string `json:"entries"`
+	Debts   string `json:"debts"`
+}
+
 type ListExpenseResponse struct {
-	Data []ExpenseData `json:"data"`
+	Data  []ExpenseListItemData `json:"data"`
+	Links ListExpenseLinks      `json:"links"`
 }
 
 type GetExpenseRequest struct {

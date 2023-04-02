@@ -4,10 +4,30 @@ const DebtType = "debt"
 
 type DebtData struct {
 	ResourceID
+	Attributes DebtAtrributes `json:"attributes"`
+	Links      DebtLinks      `json:"links"`
+}
+
+type DebtListItemData struct {
+	ResourceID
+	Attributes DebtAtrributes    `json:"attributes"`
+	Links      DebtListItemLinks `json:"links"`
+}
+
+type DebtAtrributes struct {
 	Person  string  `json:"person"`
 	Amount  float32 `json:"amount"`
 	Details string  `json:"details"`
 	Timestamps
+}
+
+type DebtLinks struct {
+	Self       string `json:"self"`
+	Collection string `json:"collection"`
+}
+
+type DebtListItemLinks struct {
+	Self string `json:"self"`
 }
 
 type CreateDebtRequest struct {
@@ -41,8 +61,15 @@ type ListDebtParams struct {
 	Person *string `form:"person,omitempty"`
 }
 
+// Returns an entries link to reveal other possible state transitions.
+type ListDebtLinks struct {
+	Self    string `json:"self"`
+	Entries string `json:"entries"`
+}
+
 type ListDebtResponse struct {
-	Data []DebtData `json:"data"`
+	Data  []DebtListItemData `json:"data"`
+	Links ListDebtLinks      `json:"links"`
 }
 
 type GetDebtRequest struct {

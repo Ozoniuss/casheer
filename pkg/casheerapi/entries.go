@@ -92,9 +92,12 @@ type ListEntryParams struct {
 // makes sense if entries can be from multiple periods. However, the main use
 // case of the application is planning and viewing for a single period (at
 // least yet), so this feature doesn't make sense.
+//
+// A debts link reveals other possible state transitions.
 type ListEntryLinks struct {
 	Self  string `json:"self"`
 	Total string `json:"total"`
+	Debts string `json:"debts"`
 }
 
 type ListEntryResponse struct {
