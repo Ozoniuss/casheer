@@ -45,6 +45,7 @@ func allOptions() []cfg.ConfigOption {
 	opts := make([]cfg.ConfigOption, 0)
 	opts = append(opts, databaseOptions()...)
 	opts = append(opts, serverOptions()...)
+	opts = append(opts, apiPathsOptions()...)
 	return opts
 }
 

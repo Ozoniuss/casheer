@@ -6,6 +6,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func RegisterDefaults(router *gin.Engine, h *handlers.DefaultHandler) {
+	router.GET("", h.DefaultHandler)
+	router.GET("/api", h.DefaultHandler)
+	router.GET("/api/", h.DefaultHandler)
+}
+
 func RegisterEntries(router *gin.Engine, h handlers.EntryHandler) {
 	subrouter := router.Group("/api/entries")
 
