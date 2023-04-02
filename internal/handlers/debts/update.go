@@ -70,7 +70,7 @@ func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.UpdateDebtResponse{
-		Data: DebtToPublic(Debt),
+		Data: DebtToPublic(Debt, h.apiPaths),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)

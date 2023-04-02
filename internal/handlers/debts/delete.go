@@ -45,8 +45,10 @@ func (h *handler) HandleDeleteDebt(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateDebtResponse{
-		Data: DebtToPublic(debt),
+		Data: DebtToPublic(debt, h.apiPaths),
 	}
+
+	resp.Data.Links.Self = ""
 
 	ctx.JSON(http.StatusOK, &resp)
 }

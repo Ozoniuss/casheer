@@ -47,7 +47,7 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.CreateDebtResponse{
-		Data: DebtToPublic(Debt),
+		Data: DebtToPublic(Debt, h.apiPaths),
 	}
 
 	ctx.JSON(http.StatusCreated, &resp)
