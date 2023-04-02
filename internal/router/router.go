@@ -16,19 +16,19 @@ import (
 func NewRouter(db *gorm.DB, config config.Config) (*gin.Engine, error) {
 	r := gin.Default()
 	{
-		h := entries.NewHandler(db, config.Server)
+		h := entries.NewHandler(db, config)
 		endpoints.RegisterEntries(r, &h)
 	}
 	{
-		h := debts.NewHandler(db)
+		h := debts.NewHandler(db, config)
 		endpoints.RegisterDebts(r, &h)
 	}
 	{
-		h := totals.NewHandler(db)
+		h := totals.NewHandler(db, config)
 		endpoints.RegisterTotals(r, &h)
 	}
 	{
-		h := expenses.NewHandler(db)
+		h := expenses.NewHandler(db, config)
 		endpoints.RegisterExpenses(r, &h)
 	}
 	return r, nil

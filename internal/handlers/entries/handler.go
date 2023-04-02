@@ -1,20 +1,18 @@
 package entries
 
 import (
-	"fmt"
-
 	"github.com/Ozoniuss/casheer/internal/config"
 	"gorm.io/gorm"
 )
 
 type handler struct {
-	db      *gorm.DB
-	apiPath string
+	db       *gorm.DB
+	apiPaths config.ApiPaths
 }
 
-func NewHandler(db *gorm.DB, config config.Server) handler {
+func NewHandler(db *gorm.DB, config config.Config) handler {
 	return handler{
-		db:      db,
-		apiPath: fmt.Sprintf("http://%s:%d/api/entries", config.Address, config.Port),
+		db:       db,
+		apiPaths: config.ApiPaths,
 	}
 }
