@@ -9,24 +9,35 @@ import (
 func databaseOptions() []cfg.ConfigOption {
 	return []cfg.ConfigOption{
 		{FlagName: "db-name", Shorthand: "", Value: "defaultdb", ConfigKey: "database.name",
-			Usage: "Specifies the name of the ports database"},
+			Usage: "Specifies the name of the ports database."},
 		{FlagName: "db-host", Shorthand: "", Value: "127.0.0.1", ConfigKey: "database.host",
-			Usage: "Specifies the address on which the ports database listens for connections"},
+			Usage: "Specifies the address on which the ports database listens for connections."},
 		{FlagName: "db-port", Shorthand: "", Value: int32(5432), ConfigKey: "database.port",
-			Usage: "Specifies the port on which the ports database listens for connections"},
+			Usage: "Specifies the port on which the ports database listens for connections."},
 		{FlagName: "db-user", Shorthand: "", Value: "postgres", ConfigKey: "database.user",
-			Usage: "Specifies the user which connects to the ports database"},
+			Usage: "Specifies the user which connects to the ports database."},
 		{FlagName: "db-password", Shorthand: "", Value: "admin", ConfigKey: "database.password",
-			Usage: "Specifies the password of the user which connects to the ports database"},
+			Usage: "Specifies the password of the user which connects to the ports database."},
 	}
 }
 
 func serverOptions() []cfg.ConfigOption {
 	return []cfg.ConfigOption{
 		{FlagName: "server-address", Shorthand: "", Value: "127.0.0.1", ConfigKey: "server.address",
-			Usage: "Specifies the address on which the ports service listens for incoming calls"},
+			Usage: "Specifies the address on which the ports service listens for incoming calls."},
 		{FlagName: "server-port", Shorthand: "", Value: int32(8033), ConfigKey: "server.port",
-			Usage: "Specifies the port on which the ports service listens for incoming calls"},
+			Usage: "Specifies the port on which the ports service listens for incoming calls."},
+	}
+}
+
+func apiPathsOptions() []cfg.ConfigOption {
+	return []cfg.ConfigOption{
+		{FlagName: "apipath-entries", Shorthand: "", Value: "http://localhost:8033/api/entries", ConfigKey: "apipath.entries",
+			Usage: "Specifies the URL of the entry resource collection."},
+		{FlagName: "apipath-totals", Shorthand: "", Value: "http://localhost:8033/api/entries", ConfigKey: "apipath.totals",
+			Usage: "Specifies the URL of the totals resource collection."},
+		{FlagName: "apipath-debts", Shorthand: "", Value: "http://localhost:8033/api/entries", ConfigKey: "apipath.debts",
+			Usage: "Specifies the URL of the debts resource collection."},
 	}
 }
 

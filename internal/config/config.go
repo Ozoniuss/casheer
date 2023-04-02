@@ -3,6 +3,7 @@ package config
 type Config struct {
 	Server   Server
 	Database Database
+	ApiPaths ApiPaths
 }
 
 type Database struct {
@@ -16,6 +17,12 @@ type Database struct {
 type Server struct {
 	Address string
 	Port    int32
+}
+
+type ApiPaths struct {
+	Entries string
+	Debts   string
+	Totals  string
 }
 
 func newConfig() Config {
