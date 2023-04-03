@@ -12,6 +12,10 @@ type Timestamps struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type ErrorResponse struct {
+	Error Error `json:"error"`
+}
+
 // Error represents an error message that is sent to the client in case the
 // HTTP request returns an error.
 //
