@@ -31,7 +31,7 @@ func (h *handler) HandleListDebt(ctx *gin.Context) {
 	}
 
 	var debts []model.Debt
-	err = h.db.WithContext(ctx).Where(filters).Order("person asc").Order("amount desc").Order("uuid asc").Find(&debts).Error
+	err = h.db.WithContext(ctx).Where(filters).Order("person asc").Order("amount desc").Order("id asc").Find(&debts).Error
 
 	if err != nil {
 		common.EmitError(ctx, NewListDebtFailedError(
