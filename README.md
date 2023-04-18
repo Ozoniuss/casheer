@@ -97,6 +97,35 @@ Lastly, there's debts. This holds both debts that are owed to me, but also debts
 
 Multiple debts for the same person may be issued, and the app will allow grouping these debts by person and issue a running total. Depending on what feels best for the user, they might consider updating an ongoing debt if part of it had been settled, or creating a new debt for the same person.
 
+Database
+--------
+
+The generated database schema can be seen in the image below:
+
+![](assets/database.png)
+
+There's nothing particularly interesting to talk about here except maybe indexing. But before, let's figure out the most common operation I will use the application for, and also estimate how many records the database will hold. 
+
+Starting with the (back-off-the-envelope) estimations:
+
+- Around 5 active debts most of the time. Personally, it makes sense for me to store multiple debts of the same person individually, as it gives me a better view of what is going on. Even considering that, I don't expect to ever have more than, say, 20 active debts;
+- A quick search through my revolut history shows me that I have around 100 expenses on average recorded for a month, split accross 30 entries on average. For say 50 years, that is 100 * 12 * 50 = 60000 total records for expenses. This also requires 30 * 12 * 30 = 10,800 records for entries.
+- Everything is soft-deleted for about 30 days before being hard-deleted, so it gives me some time to fix mistakes.
+
+Keep in mind that the estimation was for *50 years*. With all these considerations, I don't expect to have more than 100k total records in the database during this lifetime.
+
+It's not even worth talking about queries-per-second. Queries-per-day, maybe. I expect to check the running total from time to time and go through all expenses maybe once or twice a month. During each month, I will be adding all the Revolut expenses one by one, and at the end of the month create the categories for the new month. Thus, the read-to-write ratio isn't really that big, definitely lower than 10. But overall, I would expect somewhere around 1000-2000 queries per month, which is really a laughable load, even if all of them are done in the same day.
+
+So, what are the indexes considerations? The most common operations would be:
+
+- Getting all the expenses for a particular period (year + month), for operations such as "list all expenses" and "get current total";
+- Getting details about a particular expense or debt;
+- Inserting a new expense.
+
+That being said, I don't think it is even worth considering any indexes at this point. At first, I thought of several strategies, such as indexing (year, month) with a hash index, since many queries will be based on a fixed year or month. Alternatively, indexing them individually with a B+Tree index would help me find expenses in a certain period. But for 100,000 records, I don't really think the additional memory required by these indexes will in the end have a benefit over simply the pages cached by the dbms. For now, the unique index I have acts much more like an additional integrity check for my data.
+
+Now, why not just store all of this in a file? Why use a fully-featured dbms? Well, I do want a relational database since I found a nice way to model my data, but this analysis actually makes me question the choice of Postgres over more lightweight databases such as SQLite, which doesn't even require running a database server. **Backups** is a really important feature I want for my database, and SQLite would make backups so much simpler. I'll be reading a few reviews of stress tests for SQLite and check out the datatypes and features it offers more in depth, but it's really likely that I will switch from Postgres once this thing is deployed.
+
 RESTful service
 ---------------
 
@@ -123,3 +152,9 @@ Perhaps one of the most important feature of a RESTful architecture that is impl
 By following these interfaces, a media type in json format had been defined for the resources. Each response will provide state transitions in the form of hyperlinks, which will allow the client to navigate between the available states of the application. This hypertext-enabled behavior is an essential constraint of REST API's, as explained by Roy Fielding himself in [this post](https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven) on his website.
 
 TODO: detail connectors, data elements, views.
+
+Following code principles is beatuiful
+--------------------------------------
+
+
+Had to define the error wrapper, because it's a rest api it doesn't affect the representation, took 5 lines of code because I factored out code, cli is thanking me.s
