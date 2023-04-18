@@ -124,7 +124,11 @@ So, what are the indexes considerations? The most common operations would be:
 
 That being said, I don't think it is even worth considering any indexes at this point. At first, I thought of several strategies, such as indexing (year, month) with a hash index, since many queries will be based on a fixed year or month. Alternatively, indexing them individually with a B+Tree index would help me find expenses in a certain period. But for 100,000 records, I don't really think the additional memory required by these indexes will in the end have a benefit over simply the pages cached by the dbms. For now, the unique index I have acts much more like an additional integrity check for my data.
 
-Now, why not just store all of this in a file? Why use a fully-featured dbms? Well, I do want a relational database since I found a nice way to model my data, but this analysis actually makes me question the choice of Postgres over more lightweight databases such as SQLite, which doesn't even require running a database server. **Backups** is a really important feature I want for my database, and SQLite would make backups so much simpler. I'll be reading a few reviews of stress tests for SQLite and check out the datatypes and features it offers more in depth, but it's really likely that I will switch from Postgres once this thing is deployed.
+Now, why not just store all of this in a file? Why use a fully-featured dbms? Well, I do want a relational database since I found a nice way to model my data, but this analysis actually makes me question the choice of Postgres over more lightweight databases such as SQLite, which doesn't even require running a database server. **Backups** and portability are really important feature I want for my database, and SQLite would make those features so much simpler. 
+
+I'll be reading a few reviews of stress tests for SQLite and check out the datatypes and features it offers more in depth, but it's really likely that I will switch from Postgres once this thing is deployed. One of the things that it doesn't seem to support is multiple concurrent writes to the database, which is a feature I will never use. 
+
+TODO: actual storage estimations, potential other features and models for the data.
 
 RESTful service
 ---------------
