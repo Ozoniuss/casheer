@@ -19,5 +19,5 @@ func getDSN(config cfg.Database) string {
 // Connect establishes a connection to the postgres database, using the
 // connectivity information provided in the config.
 func Connect(config cfg.Database) (*gorm.DB, error) {
-	return gorm.Open(postgres.Open(getDSN(config)))
+	return gorm.Open(postgres.Open(getDSN(config)), &gorm.Config{})
 }

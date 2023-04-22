@@ -36,32 +36,12 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 		return
 	}
 
-	// This is needed to query using zero values as well, see
-	// https://gorm.io/docs/update.html#Updates-multiple-columns
-	var updatedFields = make(map[string]any)
+	// Find out what needs to be updated.
+	entry, updatedFields := getUpdatedFields(req)
 
-	if req.Month != nil {
-		updatedFields["month"] = int8(*req.Month)
-	}
-	if req.Year != nil {
-		updatedFields["year"] = int16(*req.Year)
-	}
-	if req.Category != nil {
-		updatedFields["category"] = *req.Category
-	}
-	if req.Subcategory != nil {
-		updatedFields["subcategory"] = *req.Subcategory
-	}
-	if req.Recurring != nil {
-		updatedFields["recurring"] = *req.Recurring
-	}
-	if req.ExpectedTotal != nil {
-		updatedFields["expected_total"] = *req.ExpectedTotal
-	}
-
-	var entry model.Entry
-	err = h.db.WithContext(ctx).Model(&entry).Clauses(clause.Returning{}).Preload("Expenses").
-		Where("id = ?", uuid).Updates(updatedFields).Error
+	err = h.db.WithContext(ctx).Preload("Expenses").Select(updatedFields).Clauses(clause.Returning{}).
+		Scopes(model.ValidEntryFields(entry, updatedFields)).
+		Where("id = ?", uuid).Updates(&entry).Error
 
 	// TODO: nicer error handling
 	if err != nil {
@@ -70,13 +50,19 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 			common.EmitError(ctx, NewUpdateEntryFailed(
 				http.StatusNotFound,
 				fmt.Sprintf("Could not update entry: entry %s not found.", uuid)))
-			return
+		case errors.Is(err, model.InvalidEntryErr{}):
+			{
+				common.EmitError(ctx, NewCreateEntryFailedError(
+					http.StatusBadRequest,
+					fmt.Sprintf("Could not update entry: %s", err.Error()),
+				))
+			}
 		default:
 			common.EmitError(ctx, NewUpdateEntryFailed(
 				http.StatusInternalServerError,
 				fmt.Sprintf("Could not update entry: %s", err.Error())))
-			return
 		}
+		return
 	}
 
 	resp := casheerapi.UpdateEntryResponse{
@@ -84,4 +70,39 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	}
 
 	ctx.JSON(http.StatusOK, &resp)
+}
+
+func getUpdatedFields(req casheerapi.UpdateEntryRequest) (model.Entry, []string) {
+
+	// See https://gorm.io/docs/update.html#Updates-multiple-columns
+	var updatedFields = make([]string, 0, 6)
+	entry := model.Entry{}
+
+	// TODO: proper validation here.
+	if req.Month != nil {
+		updatedFields = append(updatedFields, "month")
+		entry.Month = int8(*req.Month)
+	}
+	if req.Year != nil {
+		updatedFields = append(updatedFields, "year")
+		entry.Year = int16(*req.Year)
+	}
+	if req.Category != nil {
+		updatedFields = append(updatedFields, "category")
+		entry.Category = *req.Category
+	}
+	if req.Subcategory != nil {
+		updatedFields = append(updatedFields, "subcategory")
+		entry.Subcategory = *req.Subcategory
+	}
+	if req.Recurring != nil {
+		updatedFields = append(updatedFields, "recurring")
+		entry.Recurring = *req.Recurring
+	}
+	if req.ExpectedTotal != nil {
+		updatedFields = append(updatedFields, "expected_total")
+		entry.ExpectedTotal = *req.ExpectedTotal
+	}
+
+	return entry, updatedFields
 }
