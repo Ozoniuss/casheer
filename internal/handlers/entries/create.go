@@ -49,7 +49,7 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		entry.Year = int16(*req.Year)
 	}
 
-	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Create(&entry).Error
+	err = h.db.WithContext(ctx).Scopes(model.ValidEntry(entry)).Clauses(clause.Returning{}).Create(&entry).Error
 
 	// TODO: nicer error handling
 	if err != nil {
