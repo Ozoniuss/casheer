@@ -41,13 +41,13 @@ func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 	var updatedFields = make(map[string]any)
 
 	if req.Person != nil {
-		updatedFields["person"] = req.Person
+		updatedFields["person"] = *req.Person
 	}
 	if req.Amount != nil {
 		updatedFields["amount"] = *req.Amount
 	}
 	if req.Details != nil {
-		updatedFields["details"] = req.Details
+		updatedFields["details"] = *req.Details
 	}
 
 	var Debt model.Debt
