@@ -1,12 +1,15 @@
 package model
 
 import (
+	"github.com/go-playground/validator/v10"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 // Entry models an entry of a planning. Fields are automatically mapped by gorm
 // to their database equivalents.
+//
+// TODO: custom validation message.
 type Entry struct {
 	BaseModel
 
@@ -20,6 +23,25 @@ type Entry struct {
 	Recurring     bool
 
 	Expenses []Expense
+}
+
+type InvalidEntryErr struct {
+}
+
+func (e InvalidEntryErr) Error() string {
+	return "invalid entry"
+}
+
+// ValidEntry can be used as a scope to validate an entry before inserting it
+// into the database.
+func ValidEntry(e Entry) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		v := validator.New()
+		if err := v.Struct(e); err != nil {
+			db.AddError(InvalidEntryErr{})
+		}
+		return db
+	}
 }
 
 // AfterUpdate is a gorm hook that adds an error if the entry was not found

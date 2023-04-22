@@ -1,6 +1,7 @@
 package entries
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"time"
@@ -25,13 +26,6 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		return
 	}
 
-	if req.Category == "" || req.Subcategory == "" {
-		common.EmitError(ctx, NewCreateEntryFailedError(
-			http.StatusBadRequest,
-			"Category and subcategory cannot be empty."))
-		return
-	}
-
 	entry := model.Entry{
 		Category:      req.Category,
 		Subcategory:   req.Subcategory,
@@ -53,9 +47,19 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 
 	// TODO: nicer error handling
 	if err != nil {
-		common.EmitError(ctx, NewCreateEntryFailedError(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not create entry: %s", err.Error())))
+		switch {
+		case errors.Is(err, model.InvalidEntryErr{}):
+			{
+				common.EmitError(ctx, NewCreateEntryFailedError(
+					http.StatusBadRequest,
+					fmt.Sprintf("Could not create entry: %s", err.Error()),
+				))
+			}
+		default:
+			common.EmitError(ctx, NewCreateEntryFailedError(
+				http.StatusBadRequest,
+				fmt.Sprintf("Could not create entry: %s", err.Error())))
+		}
 		return
 	}
 
