@@ -16,7 +16,7 @@ import (
 func (h *handler) HandleGetRunningTotal(ctx *gin.Context) {
 
 	var params casheerapi.GetTotalParams
-	err := ctx.BindQuery(&params)
+	err := ctx.ShouldBindQuery(&params)
 
 	if err != nil {
 		common.EmitError(ctx, NewGetRunningTotalFailedError(

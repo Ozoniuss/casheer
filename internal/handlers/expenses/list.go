@@ -18,7 +18,7 @@ func (h *handler) HandleListExpense(ctx *gin.Context) {
 	entid := ctx.GetString("entid")
 
 	var params casheerapi.ListExpenseParams
-	err := ctx.BindQuery(&params)
+	err := ctx.ShouldBindQuery(&params)
 
 	if err != nil {
 		common.EmitError(ctx, NewListExpenseFailedError(

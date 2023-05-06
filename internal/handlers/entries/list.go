@@ -13,7 +13,7 @@ import (
 func (h *handler) HandleListEntry(ctx *gin.Context) {
 
 	var params casheerapi.ListEntryParams
-	err := ctx.BindQuery(&params)
+	err := ctx.ShouldBindQuery(&params)
 
 	if err != nil {
 		common.EmitError(ctx, NewListEntryFailedError(

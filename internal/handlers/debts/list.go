@@ -13,7 +13,7 @@ import (
 func (h *handler) HandleListDebt(ctx *gin.Context) {
 
 	var params casheerapi.ListDebtParams
-	err := ctx.BindQuery(&params)
+	err := ctx.ShouldBindQuery(&params)
 
 	if err != nil {
 		common.EmitError(ctx, NewListDebtFailedError(
