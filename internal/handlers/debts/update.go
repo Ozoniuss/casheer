@@ -27,7 +27,7 @@ func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 	}
 
 	var req casheerapi.UpdateDebtRequest
-	err = ctx.BindJSON(&req)
+	err = ctx.ShouldBindJSON(&req)
 
 	if err != nil {
 		common.EmitError(ctx, NewUpdateDebtFailed(

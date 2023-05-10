@@ -27,7 +27,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	}
 
 	var req casheerapi.UpdateEntryRequest
-	err = ctx.BindJSON(&req)
+	err = ctx.ShouldBindJSON(&req)
 
 	if err != nil {
 		common.EmitError(ctx, NewUpdateEntryFailed(

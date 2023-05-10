@@ -14,7 +14,7 @@ import (
 func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 
 	var req casheerapi.CreateDebtRequest
-	err := ctx.BindJSON(&req)
+	err := ctx.ShouldBindJSON(&req)
 
 	if err != nil {
 		common.EmitError(ctx, NewCreateDebtFailedError(

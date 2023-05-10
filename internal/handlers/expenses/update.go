@@ -29,7 +29,7 @@ func (h *handler) HandleUpdateExpense(ctx *gin.Context) {
 	}
 
 	var req casheerapi.UpdateExpenseRequest
-	err = ctx.BindJSON(&req)
+	err = ctx.ShouldBindJSON(&req)
 
 	if err != nil {
 		common.EmitError(ctx, NewUpdateExpenseFailed(

@@ -19,7 +19,7 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 	entid := ctx.GetString("entid")
 
 	var req casheerapi.CreateExpenseRequest
-	err := ctx.BindJSON(&req)
+	err := ctx.ShouldBindJSON(&req)
 
 	if err != nil {
 		common.EmitError(ctx, NewCreateExpenseFailedError(

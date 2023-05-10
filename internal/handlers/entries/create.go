@@ -17,7 +17,7 @@ import (
 func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 
 	var req casheerapi.CreateEntryRequest
-	err := ctx.BindJSON(&req)
+	err := ctx.ShouldBindJSON(&req)
 
 	if err != nil {
 		common.EmitError(ctx, NewCreateEntryFailedError(
