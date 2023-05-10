@@ -157,8 +157,31 @@ By following these interfaces, a media type in json format had been defined for 
 
 TODO: detail connectors, data elements, views.
 
-Following code principles is beatuiful
+Following code principles saves time
 --------------------------------------
 
+I was writing the CLI and realized that I wasn't returning errors in the agreed format. This means I had to define an error wrapper in the public package to prefix the error details with the "error" keyword:
 
-Had to define the error wrapper, because it's a rest api it doesn't affect the representation, took 5 lines of code because I factored out code, cli is thanking me.s
+```go
+type ErrorResponse struct {
+	Error Error `json:"error"`
+}
+```
+
+I realized though I'd dodged a bullet by defining a separate function to render errors to the client:
+
+```go
+// EmitError sends an error response back to the client.
+func EmitError(ctx *gin.Context, err public.Error) {
+	// ctx.JSON(err.Status, gin.H{
+	// 	"error": err,
+	// })
+	ctx.JSON(err.Status, casheerapi.ErrorResponse{
+		Error: err,
+	})
+}
+```
+
+I would've had to change every error response had I not factored this out separately.
+
+Obviously a pretty lame example but shows that coding principles are there for a good reason.
