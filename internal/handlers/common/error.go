@@ -12,6 +12,6 @@ func EmitError(ctx *gin.Context, err public.Error) {
 	// 	"error": err,
 	// })
 	ctx.JSON(err.Status, casheerapi.ErrorResponse{
-		Error: err,
+		Err: err,
 	})
 }
