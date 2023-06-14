@@ -6,6 +6,13 @@ import (
 	cfg "github.com/Ozoniuss/configer"
 )
 
+func databaseOptions() []cfg.ConfigOption {
+	return []cfg.ConfigOption{
+		{FlagName: "db-type", Shorthand: "", Value: SQLITE_DB, ConfigKey: "database.type",
+			Usage: "Specifies the name of the ports database."},
+	}
+}
+
 func pgDatabaseOptions() []cfg.ConfigOption {
 	return []cfg.ConfigOption{
 		{FlagName: "pg-db-name", Shorthand: "", Value: "defaultdb", ConfigKey: "postgres_database.name",
@@ -50,6 +57,7 @@ func apiPathsOptions() []cfg.ConfigOption {
 
 func allOptions() []cfg.ConfigOption {
 	opts := make([]cfg.ConfigOption, 0)
+	opts = append(opts, databaseOptions()...)
 	opts = append(opts, pgDatabaseOptions()...)
 	opts = append(opts, sqliteDatabaseOptions()...)
 	opts = append(opts, serverOptions()...)

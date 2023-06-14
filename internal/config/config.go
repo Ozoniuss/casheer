@@ -4,7 +4,17 @@ type Config struct {
 	Server           Server
 	PostgresDatabase PostgresDatabase `mapstructure:"postgres_database"`
 	SQLiteDatabase   SQLiteDatabase   `mapstructure:"sqlite_database"`
+	Database         Database
 	ApiPaths         ApiPaths
+}
+
+const (
+	SQLITE_DB   string = "sqlite"
+	POSTGRES_DB string = "postgres"
+)
+
+type Database struct {
+	Type string
 }
 
 type PostgresDatabase struct {
