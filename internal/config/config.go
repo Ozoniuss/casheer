@@ -1,17 +1,22 @@
 package config
 
 type Config struct {
-	Server   Server
-	Database Database
-	ApiPaths ApiPaths
+	Server           Server
+	PostgresDatabase PostgresDatabase `mapstructure:"postgres_database"`
+	SQLiteDatabase   SQLiteDatabase   `mapstructure:"sqlite_database"`
+	ApiPaths         ApiPaths
 }
 
-type Database struct {
+type PostgresDatabase struct {
 	Host     string
 	Port     int32
 	User     string
 	Name     string
 	Password string
+}
+
+type SQLiteDatabase struct {
+	File string
 }
 
 type Server struct {

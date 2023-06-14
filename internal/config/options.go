@@ -6,18 +6,25 @@ import (
 	cfg "github.com/Ozoniuss/configer"
 )
 
-func databaseOptions() []cfg.ConfigOption {
+func pgDatabaseOptions() []cfg.ConfigOption {
 	return []cfg.ConfigOption{
-		{FlagName: "db-name", Shorthand: "", Value: "defaultdb", ConfigKey: "database.name",
+		{FlagName: "pg-db-name", Shorthand: "", Value: "defaultdb", ConfigKey: "postgres_database.name",
 			Usage: "Specifies the name of the ports database."},
-		{FlagName: "db-host", Shorthand: "", Value: "127.0.0.1", ConfigKey: "database.host",
+		{FlagName: "pg-db-host", Shorthand: "", Value: "127.0.0.1", ConfigKey: "postgres_database.host",
 			Usage: "Specifies the address on which the ports database listens for connections."},
-		{FlagName: "db-port", Shorthand: "", Value: int32(5432), ConfigKey: "database.port",
+		{FlagName: "pg-db-port", Shorthand: "", Value: int32(5432), ConfigKey: "postgres_database.port",
 			Usage: "Specifies the port on which the ports database listens for connections."},
-		{FlagName: "db-user", Shorthand: "", Value: "postgres", ConfigKey: "database.user",
+		{FlagName: "pg-db-user", Shorthand: "", Value: "postgres", ConfigKey: "postgres_database.user",
 			Usage: "Specifies the user which connects to the ports database."},
-		{FlagName: "db-password", Shorthand: "", Value: "admin", ConfigKey: "database.password",
+		{FlagName: "pg-db-password", Shorthand: "", Value: "admin", ConfigKey: "postgres_database.password",
 			Usage: "Specifies the password of the user which connects to the ports database."},
+	}
+}
+
+func sqliteDatabaseOptions() []cfg.ConfigOption {
+	return []cfg.ConfigOption{
+		{FlagName: "sqlite-db", Shorthand: "", Value: "casheer.db", ConfigKey: "sqlite_database.file",
+			Usage: "Specifies the name of the ports database."},
 	}
 }
 
@@ -43,7 +50,8 @@ func apiPathsOptions() []cfg.ConfigOption {
 
 func allOptions() []cfg.ConfigOption {
 	opts := make([]cfg.ConfigOption, 0)
-	opts = append(opts, databaseOptions()...)
+	opts = append(opts, pgDatabaseOptions()...)
+	opts = append(opts, sqliteDatabaseOptions()...)
 	opts = append(opts, serverOptions()...)
 	opts = append(opts, apiPathsOptions()...)
 	return opts
