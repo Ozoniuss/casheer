@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/go-playground/validator/v10"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -16,12 +15,12 @@ type Entry struct {
 	BaseModel
 
 	// Postgresql doesn't support unsigned int.
-	Month         int8   `validate:"required,gte=1,lte=12"`
-	Year          int16  `validate:"required,gte=2020"`
+	Month         int    `validate:"required,gte=1,lte=12"`
+	Year          int    `validate:"required,gte=2020"`
 	Category      string `validate:"required" json:"category"`
 	Subcategory   string `validate:"required"`
-	ExpectedTotal float32
-	RunningTotal  float32
+	ExpectedTotal int64
+	RunningTotal  int64
 	Recurring     bool
 
 	Expenses []Expense
@@ -72,7 +71,7 @@ func ValidEntryFields(e Entry, fields []string) func(db *gorm.DB) *gorm.DB {
 // during an update operation. This implicitly assumes that the update query
 // executes with a "returning" clause that writes to an empty entry.
 func (e *Entry) AfterUpdate(tx *gorm.DB) (err error) {
-	if e.Id == uuid.Nil {
+	if e.Id == 0 {
 		err = gorm.ErrRecordNotFound
 	}
 	return
@@ -82,7 +81,7 @@ func (e *Entry) AfterUpdate(tx *gorm.DB) (err error) {
 // during an delete operation. This implicitly assumes that the delete query
 // executes with a "returning" clause that writes to an empty entry.
 func (e *Entry) AfterDelete(tx *gorm.DB) (err error) {
-	if e.Id == uuid.Nil {
+	if e.Id == 0 {
 		err = gorm.ErrRecordNotFound
 	}
 	return

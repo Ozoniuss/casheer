@@ -2,6 +2,7 @@ package entries
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/model"
@@ -9,18 +10,18 @@ import (
 )
 
 // computeRunningTotal returns the running total of a list of expenses.
-func computeRunningTotal(expenses []model.Expense) float32 {
-	var rt float32 = 0
+func computeRunningTotal(expenses []model.Expense) int64 {
+	var rt int64 = 0
 	for _, exp := range expenses {
 		rt += exp.Value
 	}
 	return rt
 }
 
-func EntryToPublic(entry model.Entry, apipath config.ApiPaths, runningTotal float32) public.EntryData {
+func EntryToPublic(entry model.Entry, apipath config.ApiPaths, runningTotal int64) public.EntryData {
 	return public.EntryData{
 		ResourceID: public.ResourceID{
-			Id:   entry.Id.String(),
+			Id:   strconv.Itoa(entry.Id),
 			Type: public.EntryType,
 		},
 		Attributes: public.EntryAtrributes{
@@ -39,17 +40,17 @@ func EntryToPublic(entry model.Entry, apipath config.ApiPaths, runningTotal floa
 			RunningTotal: runningTotal,
 		},
 		Links: public.EntryLinks{
-			Self:       fmt.Sprintf("%s/%s", apipath.Entries, entry.Id.String()),
+			Self:       fmt.Sprintf("%s/%s", apipath.Entries, strconv.Itoa(entry.Id)),
 			Collection: fmt.Sprintf("%s/", apipath.Entries),
-			Expenses:   fmt.Sprintf("%s/%s/expenses/", apipath.Entries, entry.Id.String()),
+			Expenses:   fmt.Sprintf("%s/%s/expenses/", apipath.Entries, strconv.Itoa(entry.Id)),
 		},
 	}
 }
 
-func EntryToPublicList(entry model.Entry, apipath config.ApiPaths, runningTotal float32) public.EntryListItemData {
+func EntryToPublicList(entry model.Entry, apipath config.ApiPaths, runningTotal int64) public.EntryListItemData {
 	return public.EntryListItemData{
 		ResourceID: public.ResourceID{
-			Id:   entry.Id.String(),
+			Id:   strconv.Itoa(entry.Id),
 			Type: public.EntryType,
 		},
 		Attributes: public.EntryAtrributes{
@@ -68,7 +69,7 @@ func EntryToPublicList(entry model.Entry, apipath config.ApiPaths, runningTotal 
 			RunningTotal: runningTotal,
 		},
 		Links: public.EntryListItemLinks{
-			Self: fmt.Sprintf("%s/%s", apipath.Entries, entry.Id.String()),
+			Self: fmt.Sprintf("%s/%s", apipath.Entries, strconv.Itoa(entry.Id)),
 		},
 	}
 }

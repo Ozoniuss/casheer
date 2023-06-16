@@ -32,7 +32,7 @@ func TestValidEntry(t *testing.T) {
 			id: 1,
 			entry: Entry{
 				BaseModel: BaseModel{
-					Id: genUuidPattern("1"),
+					Id: 1,
 				},
 				Month:         10,
 				Year:          2022,
@@ -47,7 +47,7 @@ func TestValidEntry(t *testing.T) {
 			id: 2,
 			entry: Entry{
 				BaseModel: BaseModel{
-					Id: genUuidPattern("1"),
+					Id: 1,
 				},
 				Month:         13,
 				Year:          2022,
@@ -62,7 +62,7 @@ func TestValidEntry(t *testing.T) {
 			id: 3,
 			entry: Entry{
 				BaseModel: BaseModel{
-					Id: genUuidPattern("1"),
+					Id: 1,
 				},
 				Month:         11,
 				Year:          2022,
@@ -77,7 +77,7 @@ func TestValidEntry(t *testing.T) {
 			id: 4,
 			entry: Entry{
 				BaseModel: BaseModel{
-					Id: genUuidPattern("1"),
+					Id: 1,
 				},
 				Month:         11,
 				Year:          -15,

@@ -31,16 +31,16 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		Subcategory:   req.Subcategory,
 		ExpectedTotal: req.ExpectedTotal,
 		Recurring:     req.Recurring,
-		Month:         int8(time.Now().Month()),
-		Year:          int16(time.Now().Year()),
+		Month:         int(time.Now().Month()),
+		Year:          time.Now().Year(),
 	}
 
 	// If month or year are null, set them to the current month or year.
 	if req.Month != nil {
-		entry.Month = int8(*req.Month)
+		entry.Month = *req.Month
 	}
 	if req.Year != nil {
-		entry.Year = int16(*req.Year)
+		entry.Year = *req.Year
 	}
 
 	err = h.db.WithContext(ctx).Scopes(model.ValidEntry(entry)).Clauses(clause.Returning{}).Create(&entry).Error

@@ -1,7 +1,6 @@
 package model
 
 import (
-	uuid "github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -10,8 +9,8 @@ import (
 type Debt struct {
 	BaseModel
 
-	Person  string  `validate:"required"`
-	Amount  float32 `validate:"required"`
+	Person  string `validate:"required"`
+	Amount  int64  `validate:"required"`
 	Details string
 }
 
@@ -19,7 +18,7 @@ type Debt struct {
 // during an update operation. This implicitly assumes that the update query
 // executes with a "returning" clause that writes to an empty debt.
 func (d *Debt) AfterUpdate(tx *gorm.DB) (err error) {
-	if d.Id == uuid.Nil {
+	if d.Id == 0 {
 		err = gorm.ErrRecordNotFound
 	}
 	return
@@ -29,7 +28,7 @@ func (d *Debt) AfterUpdate(tx *gorm.DB) (err error) {
 // during an delete operation. This implicitly assumes that the delete query
 // executes with a "returning" clause that writes to an empty debt.
 func (d *Debt) AfterDelete(tx *gorm.DB) (err error) {
-	if d.Id == uuid.Nil {
+	if d.Id == 0 {
 		err = gorm.ErrRecordNotFound
 	}
 	return

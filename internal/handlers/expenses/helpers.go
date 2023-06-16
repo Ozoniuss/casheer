@@ -2,6 +2,7 @@ package expenses
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/model"
@@ -12,7 +13,7 @@ import (
 func ExpenseToPublic(expense model.Expense, apiPaths config.ApiPaths) public.ExpenseData {
 	return public.ExpenseData{
 		ResourceID: public.ResourceID{
-			Id:   expense.Id.String(),
+			Id:   strconv.Itoa(expense.Id),
 			Type: public.EntryType,
 		},
 		Attributes: public.ExpenseAttributes{
@@ -26,7 +27,7 @@ func ExpenseToPublic(expense model.Expense, apiPaths config.ApiPaths) public.Exp
 			},
 		},
 		Links: public.ExpenseLinks{
-			Self:       fmt.Sprintf("%s/%s/expenses/%s", apiPaths.Entries, expense.EntryId.String(), expense.Id.String()),
+			Self:       fmt.Sprintf("%s/%s/expenses/%s", apiPaths.Entries, expense.EntryId.String(), strconv.Itoa(expense.Id)),
 			Collection: fmt.Sprintf("%s/%s/expenses/", apiPaths.Entries, expense.EntryId.String()),
 		},
 	}
@@ -37,7 +38,7 @@ func ExpenseToPublic(expense model.Expense, apiPaths config.ApiPaths) public.Exp
 func ExpenseToPublicList(expense model.Expense, apiPaths config.ApiPaths) public.ExpenseListItemData {
 	return public.ExpenseListItemData{
 		ResourceID: public.ResourceID{
-			Id:   expense.Id.String(),
+			Id:   strconv.Itoa(expense.Id),
 			Type: public.EntryType,
 		},
 		Attributes: public.ExpenseAttributes{
@@ -51,7 +52,7 @@ func ExpenseToPublicList(expense model.Expense, apiPaths config.ApiPaths) public
 			},
 		},
 		Links: public.ExpenseListItemLinks{
-			Self: fmt.Sprintf("%s/%s/expenses/%s", apiPaths.Entries, expense.EntryId.String(), expense.Id.String()),
+			Self: fmt.Sprintf("%s/%s/expenses/%s", apiPaths.Entries, expense.EntryId.String(), strconv.Itoa(expense.Id)),
 		},
 	}
 }

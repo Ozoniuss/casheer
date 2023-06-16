@@ -15,10 +15,10 @@ type ExpenseListItemData struct {
 }
 
 type ExpenseAttributes struct {
-	Value         float32 `json:"value"`
-	Name          string  `json:"name"`
-	Description   string  `json:"description"`
-	PaymentMethod string  `json:"payment_method"`
+	Value         int64  `json:"value"`
+	Name          string `json:"name"`
+	Description   string `json:"description"`
+	PaymentMethod string `json:"payment_method"`
 	Timestamps
 }
 
@@ -32,10 +32,10 @@ type ExpenseListItemLinks struct {
 }
 
 type CreateExpenseRequest struct {
-	Value         float32 `json:"value"`
-	Name          string  `json:"name"`
-	Description   string  `json:"description"`
-	PaymentMethod string  `json:"payment_method"`
+	Value         int64  `json:"value"`
+	Name          string `json:"name"`
+	Description   string `json:"description"`
+	PaymentMethod string `json:"payment_method"`
 }
 
 type CreateExpenseResponse struct {
@@ -43,10 +43,10 @@ type CreateExpenseResponse struct {
 }
 
 type UpdateExpenseRequest struct {
-	Value         *float32 `json:"value,omitempty"`
-	Name          *string  `json:"name,omitempty"`
-	Description   *string  `json:"description,omitempty"`
-	PaymentMethod *string  `json:"payment_method,omitempty"`
+	Value         *int64  `json:"value,omitempty"`
+	Name          *string `json:"name,omitempty"`
+	Description   *string `json:"description,omitempty"`
+	PaymentMethod *string `json:"payment_method,omitempty"`
 }
 
 type UpdateExpenseResponse struct {
@@ -61,10 +61,10 @@ type DeleteExpenseResponse struct {
 }
 
 type ListExpenseParams struct {
-	Value         *float32 `json:"value,omitempty"`
-	Name          *string  `json:"name,omitempty"`
-	Description   *string  `json:"description,omitempty"`
-	PaymentMethod *string  `json:"payment_method,omitempty"`
+	Value         *int64  `json:"value,omitempty"`
+	Name          *string `json:"name,omitempty"`
+	Description   *string `json:"description,omitempty"`
+	PaymentMethod *string `json:"payment_method,omitempty"`
 }
 
 type ListExpenseLinks struct {

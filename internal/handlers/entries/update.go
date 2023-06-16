@@ -81,11 +81,11 @@ func getUpdatedFields(req casheerapi.UpdateEntryRequest) (model.Entry, []string)
 	// TODO: proper validation here.
 	if req.Month != nil {
 		updatedFields = append(updatedFields, "month")
-		entry.Month = int8(*req.Month)
+		entry.Month = *req.Month
 	}
 	if req.Year != nil {
 		updatedFields = append(updatedFields, "year")
-		entry.Year = int16(*req.Year)
+		entry.Year = *req.Year
 	}
 	if req.Category != nil {
 		updatedFields = append(updatedFields, "category")

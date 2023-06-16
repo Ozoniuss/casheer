@@ -15,9 +15,9 @@ type DebtListItemData struct {
 }
 
 type DebtAtrributes struct {
-	Person  string  `json:"person"`
-	Amount  float32 `json:"amount"`
-	Details string  `json:"details"`
+	Person  string `json:"person"`
+	Amount  int64  `json:"amount"`
+	Details string `json:"details"`
 	Timestamps
 }
 
@@ -31,9 +31,9 @@ type DebtListItemLinks struct {
 }
 
 type CreateDebtRequest struct {
-	Person  string  `json:"person"`
-	Amount  float32 `json:"amount"`
-	Details string  `json:"details"`
+	Person  string `json:"person"`
+	Amount  int64  `json:"amount"`
+	Details string `json:"details"`
 }
 
 type CreateDebtResponse struct {
@@ -41,9 +41,9 @@ type CreateDebtResponse struct {
 }
 
 type UpdateDebtRequest struct {
-	Person  *string  `json:"person,omitempty"`
-	Amount  *float32 `json:"amount,omitempty"`
-	Details *string  `json:"details,omitempty"`
+	Person  *string `json:"person,omitempty"`
+	Amount  *int64  `json:"amount,omitempty"`
+	Details *string `json:"details,omitempty"`
 }
 
 type UpdateDebtResponse struct {

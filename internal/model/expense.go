@@ -11,7 +11,7 @@ type Expense struct {
 	BaseModel
 
 	EntryId       uuid.UUID `validate:"required"`
-	Value         float32   `validate:"required"`
+	Value         int64     `validate:"required"`
 	Name          string    `validate:"required"`
 	Description   string
 	PaymentMethod string
@@ -46,7 +46,7 @@ func RequiredEntry(entryId uuid.UUID) func(db *gorm.DB) *gorm.DB {
 // during an update operation. This implicitly assumes that the update query
 // executes with a "returning" clause that writes to an empty expense.
 func (e *Expense) AfterUpdate(tx *gorm.DB) (err error) {
-	if e.Id == uuid.Nil {
+	if e.Id == 0 {
 		err = gorm.ErrRecordNotFound
 	}
 	return
@@ -56,7 +56,7 @@ func (e *Expense) AfterUpdate(tx *gorm.DB) (err error) {
 // during an delete operation. This implicitly assumes that the delete query
 // executes with a "returning" clause that writes to an empty expense.
 func (e *Expense) AfterDelete(tx *gorm.DB) (err error) {
-	if e.Id == uuid.Nil {
+	if e.Id == 0 {
 		err = gorm.ErrRecordNotFound
 	}
 	return

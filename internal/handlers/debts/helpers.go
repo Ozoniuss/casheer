@@ -2,6 +2,7 @@ package debts
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/model"
@@ -11,7 +12,7 @@ import (
 func DebtToPublic(debt model.Debt, paths config.ApiPaths) public.DebtData {
 	return public.DebtData{
 		ResourceID: public.ResourceID{
-			Id:   debt.Id.String(),
+			Id:   strconv.Itoa(debt.Id),
 			Type: public.DebtType,
 		},
 		Attributes: public.DebtAtrributes{
@@ -24,7 +25,7 @@ func DebtToPublic(debt model.Debt, paths config.ApiPaths) public.DebtData {
 			},
 		},
 		Links: public.DebtLinks{
-			Self:       fmt.Sprintf("%s/%s", paths.Debts, debt.Id),
+			Self:       fmt.Sprintf("%s/%d", paths.Debts, debt.Id),
 			Collection: paths.Debts + "/",
 		},
 	}
@@ -33,7 +34,7 @@ func DebtToPublic(debt model.Debt, paths config.ApiPaths) public.DebtData {
 func DebtToPublicList(debt model.Debt, paths config.ApiPaths) public.DebtListItemData {
 	return public.DebtListItemData{
 		ResourceID: public.ResourceID{
-			Id:   debt.Id.String(),
+			Id:   strconv.Itoa(debt.Id),
 			Type: public.DebtType,
 		},
 		Attributes: public.DebtAtrributes{
@@ -46,7 +47,7 @@ func DebtToPublicList(debt model.Debt, paths config.ApiPaths) public.DebtListIte
 			},
 		},
 		Links: public.DebtListItemLinks{
-			Self: fmt.Sprintf("%s/%s", paths.Debts, debt.Id),
+			Self: fmt.Sprintf("%s/%d", paths.Debts, debt.Id),
 		},
 	}
 }

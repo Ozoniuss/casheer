@@ -25,14 +25,14 @@ func (h *handler) HandleGetRunningTotal(ctx *gin.Context) {
 		return
 	}
 
-	var month = int8(time.Now().Month())
-	var year = int16(time.Now().Year())
+	var month = int(time.Now().Month())
+	var year = time.Now().Year()
 
 	if params.Month != nil {
-		month = int8(*params.Month)
+		month = *params.Month
 	}
 	if params.Year != nil {
-		year = int16(*params.Year)
+		year = *params.Year
 	}
 
 	var entries []model.Entry
@@ -74,7 +74,7 @@ func (h *handler) HandleGetRunningTotal(ctx *gin.Context) {
 	// Could be done with a SUM clause, but would have to ignore salary and
 	// I'd have to take a look at the syntax so fuck that.
 
-	var expectedIncome, runningIncome, expectedTotal, runningTotal float32
+	var expectedIncome, runningIncome, expectedTotal, runningTotal int64
 
 	for _, e := range entries {
 
