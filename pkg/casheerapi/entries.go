@@ -18,14 +18,14 @@ type EntryListItemData struct {
 }
 
 type EntryMeta struct {
-	RunningTotal int64 `json:"running_total"`
+	RunningTotal int `json:"running_total"`
 }
 type EntryAtrributes struct {
 	Month         int    `json:"month"`
 	Year          int    `json:"year"`
 	Category      string `json:"category"`
 	Subcategory   string `json:"subcategory"`
-	ExpectedTotal int64  `json:"expected_total"`
+	ExpectedTotal int    `json:"expected_total"`
 	Recurring     bool   `json:"recurring"`
 	Timestamps
 }
@@ -48,7 +48,7 @@ type CreateEntryRequest struct {
 	Year          *int   `json:"year,omitempty"`
 	Category      string `json:"category"`
 	Subcategory   string `json:"subcategory"`
-	ExpectedTotal int64  `json:"expected_total"`
+	ExpectedTotal int    `json:"expected_total"`
 	Recurring     bool   `json:"recurring"`
 }
 
@@ -62,7 +62,7 @@ type UpdateEntryRequest struct {
 	Category      *string `json:"category,omitempty"`
 	Subcategory   *string `json:"subcategory,omitempty"`
 	Recurring     *bool   `json:"recurring,omitempty"`
-	ExpectedTotal *int64  `json:"expected_total,omitempty"`
+	ExpectedTotal *int    `json:"expected_total,omitempty"`
 }
 
 type UpdateEntryResponse struct {

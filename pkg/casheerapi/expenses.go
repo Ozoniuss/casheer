@@ -15,7 +15,7 @@ type ExpenseListItemData struct {
 }
 
 type ExpenseAttributes struct {
-	Value         int64  `json:"value"`
+	Value         int    `json:"value"`
 	Name          string `json:"name"`
 	Description   string `json:"description"`
 	PaymentMethod string `json:"payment_method"`
@@ -32,7 +32,7 @@ type ExpenseListItemLinks struct {
 }
 
 type CreateExpenseRequest struct {
-	Value         int64  `json:"value"`
+	Value         int    `json:"value"`
 	Name          string `json:"name"`
 	Description   string `json:"description"`
 	PaymentMethod string `json:"payment_method"`
@@ -43,7 +43,7 @@ type CreateExpenseResponse struct {
 }
 
 type UpdateExpenseRequest struct {
-	Value         *int64  `json:"value,omitempty"`
+	Value         *int    `json:"value,omitempty"`
 	Name          *string `json:"name,omitempty"`
 	Description   *string `json:"description,omitempty"`
 	PaymentMethod *string `json:"payment_method,omitempty"`
@@ -61,7 +61,7 @@ type DeleteExpenseResponse struct {
 }
 
 type ListExpenseParams struct {
-	Value         *int64  `json:"value,omitempty"`
+	Value         *int    `json:"value,omitempty"`
 	Name          *string `json:"name,omitempty"`
 	Description   *string `json:"description,omitempty"`
 	PaymentMethod *string `json:"payment_method,omitempty"`
