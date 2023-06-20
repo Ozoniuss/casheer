@@ -100,9 +100,7 @@ Multiple debts for the same person may be issued, and the app will allow groupin
 Database
 --------
 
-The generated database schema can be seen in the image below:
-
-![](assets/database.png)
+The scripts for setting up the tables can be found [here.](./scripts/sqlite/)
 
 There's nothing particularly interesting to talk about here except maybe indexing. But before, let's figure out the most common operation I will use the application for, and also estimate how many records the database will hold. 
 
@@ -126,7 +124,9 @@ That being said, I don't think it is even worth considering any indexes at this 
 
 Now, why not just store all of this in a file? Why use a fully-featured dbms? Well, I do want a relational database since I found a nice way to model my data, but this analysis actually makes me question the choice of Postgres over more lightweight databases such as SQLite, which doesn't even require running a database server. **Backups** and portability are really important feature I want for my database, and SQLite would make those features so much simpler. 
 
-I'll be reading a few reviews of stress tests for SQLite and check out the datatypes and features it offers more in depth, but it's really likely that I will switch from Postgres once this thing is deployed. One of the things that it doesn't seem to support is multiple concurrent writes to the database, which is a feature I will never use. 
+I'll be reading a few reviews of stress tests for SQLite and check out the datatypes and features it offers more in depth, but it's really likely that I will switch from Postgres once this thing is deployed. One of the things that it doesn't seem to support is multiple concurrent writes to the database, which is a feature I will never use.
+
+UPDATE: I've decided to go with sqlite. For a small app, it's just so much simpler to setup, test, debug, move across different operating system and use in general. Not requiring a dedicated database server to run it (sqlite is more or less an application library) is a huge bonus, and frankly I much prefer the sqlite CLI than the postgres CLI.
 
 TODO: actual storage estimations, potential other features and models for the data.
 
