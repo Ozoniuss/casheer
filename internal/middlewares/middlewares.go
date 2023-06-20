@@ -34,6 +34,35 @@ func BindJSONRequest[
 	}
 }
 
+func BindQueryParams[
+	T casheerapi.ListDebtParams |
+		casheerapi.ListEntryParams |
+		casheerapi.ListExpenseParams]() gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var params T
+		err := ctx.ShouldBindQuery(&params)
+		if err != nil {
+			common.EmitError(ctx, ierrors.NewQueryParamsBindingError(
+				fmt.Sprintf("Could not bind query params: %s", err.Error()),
+			))
+			ctx.Abort()
+			return
+		}
+		ctx.Set("queryparams", params)
+		ctx.Next()
+	}
+}
+
+// var params casheerapi.ListExpenseParams
+// err := ctx.ShouldBindQuery(&params)
+
+// if err != nil {
+// 	common.EmitError(ctx, NewListExpenseFailedError(
+// 		http.StatusBadRequest,
+// 		fmt.Sprintf("Could not bind query params: %s", err.Error())))
+// 	return
+// }
+
 // GetURLParam does the same job as ctx.Param, while also writing a custom
 // error message if the param is not found or is not a valid integer.
 //
