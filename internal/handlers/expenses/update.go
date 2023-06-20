@@ -9,32 +9,17 @@ import (
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 func (h *handler) HandleUpdateExpense(ctx *gin.Context) {
 
-	entid := ctx.GetString("entid")
+	entid := ctx.GetInt("entid")
+	id := ctx.GetInt("id")
 
-	id := ctx.Param("id")
-	expuuid, err := uuid.Parse(id)
-	if err != nil {
-		common.EmitError(ctx, NewUpdateExpenseFailed(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not update Expense: invalid uuid format: %s", id),
-		))
-		return
-	}
-
-	var req casheerapi.UpdateExpenseRequest
-	err = ctx.ShouldBindJSON(&req)
-
-	if err != nil {
-		common.EmitError(ctx, NewUpdateExpenseFailed(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not bind request body: %s", err.Error())))
+	req, ok := common.CtxGetTyped[casheerapi.UpdateExpenseRequest](ctx, "req")
+	if !ok {
 		return
 	}
 
@@ -56,15 +41,15 @@ func (h *handler) HandleUpdateExpense(ctx *gin.Context) {
 	}
 
 	var expense model.Expense
-	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(uuid.MustParse(entid))).
-		Model(&expense).Clauses(clause.Returning{}).Where("id = ?", expuuid).Updates(updatedFields).Error
+	err := h.db.WithContext(ctx).Scopes(model.RequiredEntry(entid)).
+		Model(&expense).Clauses(clause.Returning{}).Where("id = ?", id).Updates(updatedFields).Error
 
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			common.EmitError(ctx, NewUpdateExpenseFailed(
 				http.StatusNotFound,
-				fmt.Sprintf("Could not update expense: expense %s not found.", expuuid)))
+				fmt.Sprintf("Could not update expense: expense %d not found.", id)))
 			return
 		default:
 			common.EmitError(ctx, NewUpdateExpenseFailed(

@@ -27,8 +27,8 @@ func ExpenseToPublic(expense model.Expense, apiPaths config.ApiPaths) public.Exp
 			},
 		},
 		Links: public.ExpenseLinks{
-			Self:       fmt.Sprintf("%s/%s/expenses/%s", apiPaths.Entries, expense.EntryId.String(), strconv.Itoa(expense.Id)),
-			Collection: fmt.Sprintf("%s/%s/expenses/", apiPaths.Entries, expense.EntryId.String()),
+			Self:       fmt.Sprintf("%s/%d/expenses/%s", apiPaths.Entries, expense.EntryId, strconv.Itoa(expense.Id)),
+			Collection: fmt.Sprintf("%s/%d/expenses/", apiPaths.Entries, expense.EntryId),
 		},
 	}
 }
@@ -52,7 +52,7 @@ func ExpenseToPublicList(expense model.Expense, apiPaths config.ApiPaths) public
 			},
 		},
 		Links: public.ExpenseListItemLinks{
-			Self: fmt.Sprintf("%s/%s/expenses/%s", apiPaths.Entries, expense.EntryId.String(), strconv.Itoa(expense.Id)),
+			Self: fmt.Sprintf("%s/%d/expenses/%s", apiPaths.Entries, expense.EntryId, strconv.Itoa(expense.Id)),
 		},
 	}
 }

@@ -8,22 +8,15 @@ import (
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 func (h *handler) HandleListExpense(ctx *gin.Context) {
 
 	// At the moment only listing the expenses for a certain entry; it doesn't
 	// really make sense to list all of them.
-	entid := ctx.GetString("entid")
-
-	var params casheerapi.ListExpenseParams
-	err := ctx.ShouldBindQuery(&params)
-
-	if err != nil {
-		common.EmitError(ctx, NewListExpenseFailedError(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not bind query params: %s", err.Error())))
+	entid := ctx.GetInt("entid")
+	params, ok := common.CtxGetTyped[casheerapi.ListExpenseParams](ctx, "queryparams")
+	if !ok {
 		return
 	}
 
@@ -45,7 +38,7 @@ func (h *handler) HandleListExpense(ctx *gin.Context) {
 	}
 
 	var expenses []model.Expense
-	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(uuid.MustParse(entid))).
+	err := h.db.WithContext(ctx).Scopes(model.RequiredEntry(entid)).
 		Where(filters).Order("value desc").Order("created_at desc").Find(&expenses).Error
 
 	if err != nil {
@@ -58,7 +51,7 @@ func (h *handler) HandleListExpense(ctx *gin.Context) {
 	resp := casheerapi.ListExpenseResponse{
 		Data: make([]casheerapi.ExpenseListItemData, 0, len(expenses)),
 		Links: casheerapi.ListExpenseLinks{
-			Self:    fmt.Sprintf("%s/%s/expenses/", h.apiPaths.Entries, entid),
+			Self:    fmt.Sprintf("%s/%d/expenses/", h.apiPaths.Entries, entid),
 			Entries: h.apiPaths.Entries + "/",
 			Debts:   h.apiPaths.Debts + "/",
 		},
