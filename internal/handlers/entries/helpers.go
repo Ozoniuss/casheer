@@ -10,15 +10,15 @@ import (
 )
 
 // computeRunningTotal returns the running total of a list of expenses.
-func computeRunningTotal(expenses []model.Expense) int64 {
-	var rt int64 = 0
+func computeRunningTotal(expenses []model.Expense) int {
+	var rt int = 0
 	for _, exp := range expenses {
 		rt += exp.Value
 	}
 	return rt
 }
 
-func EntryToPublic(entry model.Entry, apipath config.ApiPaths, runningTotal int64) public.EntryData {
+func EntryToPublic(entry model.Entry, apipath config.ApiPaths, runningTotal int) public.EntryData {
 	return public.EntryData{
 		ResourceID: public.ResourceID{
 			Id:   strconv.Itoa(entry.Id),
@@ -47,7 +47,7 @@ func EntryToPublic(entry model.Entry, apipath config.ApiPaths, runningTotal int6
 	}
 }
 
-func EntryToPublicList(entry model.Entry, apipath config.ApiPaths, runningTotal int64) public.EntryListItemData {
+func EntryToPublicList(entry model.Entry, apipath config.ApiPaths, runningTotal int) public.EntryListItemData {
 	return public.EntryListItemData{
 		ResourceID: public.ResourceID{
 			Id:   strconv.Itoa(entry.Id),

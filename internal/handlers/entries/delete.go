@@ -9,32 +9,23 @@ import (
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 
-	id := ctx.Param("entid")
-	uuid, err := uuid.Parse(id)
-	if err != nil {
-		common.EmitError(ctx, NewDeleteEntryFailedError(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not delete entry: invalid uuid format: %s", id),
-		))
-		return
-	}
+	id := ctx.GetInt("id")
 
 	entry := model.Entry{}
-	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Preload("expenses").Where("id = ?", uuid).Delete(&entry).Error
+	err := h.db.WithContext(ctx).Clauses(clause.Returning{}).Preload("expenses").Where("id = ?", id).Delete(&entry).Error
 
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			common.EmitError(ctx, NewDeleteEntryFailedError(
 				http.StatusNotFound,
-				fmt.Sprintf("Could not delete entry: entry %s not found.", uuid)))
+				fmt.Sprintf("Could not delete entry: entry %d not found.", id)))
 			return
 		default:
 			common.EmitError(ctx, NewDeleteEntryFailedError(

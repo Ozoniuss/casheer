@@ -9,25 +9,16 @@ import (
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 
-	id := ctx.Param("entid")
-	uuid, err := uuid.Parse(id)
-	if err != nil {
-		common.EmitError(ctx, NewUpdateEntryFailed(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not update entry: invalid uuid format: %s", id),
-		))
-		return
-	}
+	id := ctx.GetInt("id")
 
 	var req casheerapi.UpdateEntryRequest
-	err = ctx.ShouldBindJSON(&req)
+	err := ctx.ShouldBindJSON(&req)
 
 	if err != nil {
 		common.EmitError(ctx, NewUpdateEntryFailed(
@@ -41,7 +32,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 
 	err = h.db.WithContext(ctx).Preload("Expenses").Select(updatedFields).Clauses(clause.Returning{}).
 		Scopes(model.ValidEntryFields(entry, updatedFields)).
-		Where("id = ?", uuid).Updates(&entry).Error
+		Where("id = ?", id).Updates(&entry).Error
 
 	// TODO: nicer error handling
 	if err != nil {
@@ -49,7 +40,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			common.EmitError(ctx, NewUpdateEntryFailed(
 				http.StatusNotFound,
-				fmt.Sprintf("Could not update entry: entry %s not found.", uuid)))
+				fmt.Sprintf("Could not update entry: entry %d not found.", id)))
 		case errors.Is(err, model.InvalidEntryErr{}):
 			{
 				common.EmitError(ctx, NewCreateEntryFailedError(

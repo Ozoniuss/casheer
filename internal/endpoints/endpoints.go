@@ -3,6 +3,8 @@ package endpoints
 import (
 	"github.com/Ozoniuss/casheer/internal/handlers"
 	"github.com/Ozoniuss/casheer/internal/handlers/expenses"
+	"github.com/Ozoniuss/casheer/internal/middlewares"
+	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
 )
 
@@ -17,17 +19,17 @@ func RegisterEntries(router *gin.Engine, h handlers.EntryHandler) {
 
 	// Using entid is necessary to avoid conflicting routes with expenses
 	// endpoints.
-	subrouter.POST("/", h.HandleCreateEntry)
-	subrouter.DELETE("/:entid", h.HandleDeleteEntry)
+	subrouter.POST("/", middlewares.BindJSONRequest[casheerapi.CreateEntryRequest](), h.HandleCreateEntry)
+	subrouter.DELETE("/:id", middlewares.GetURLParam("id"), h.HandleDeleteEntry)
 	subrouter.GET("/", h.HandleListEntry)
-	subrouter.PATCH("/:entid", h.HandleUpdateEntry)
-	subrouter.GET("/:entid", h.HandleGetEntry)
+	subrouter.PATCH("/:id", middlewares.GetURLParam("id"), h.HandleUpdateEntry)
+	subrouter.GET("/:id", middlewares.GetURLParam("id"), h.HandleGetEntry)
 }
 
 func RegisterDebts(router *gin.Engine, h handlers.DebtHandler) {
 	subrouter := router.Group("/api/debts")
 
-	subrouter.POST("/", h.HandleCreateDebt)
+	subrouter.POST("/", middlewares.BindJSONRequest[casheerapi.CreateDebtRequest](), h.HandleCreateDebt)
 	subrouter.DELETE("/:id", h.HandleDeleteDebt)
 	subrouter.GET("/", h.HandleListDebt)
 	subrouter.PATCH("/:id", h.HandleUpdateDebt)
@@ -38,9 +40,9 @@ func RegisterExpenses(router *gin.Engine, h handlers.ExpenseHandler) {
 
 	// An expense exists only in the context of an entry. Standalone expenses
 	// are not allowed, which the middleware ensures.
-	subrouter := router.Group("/api/entries/:entid/expenses/").Use(expenses.RequiredEntryUUID())
+	subrouter := router.Group("/api/entries/:entid/expenses/").Use(expenses.RequiredEntryId())
 
-	subrouter.POST("/", h.HandleCreateExpense)
+	subrouter.POST("/", middlewares.BindJSONRequest[casheerapi.CreateExpenseRequest](), h.HandleCreateExpense)
 	subrouter.DELETE("/:id", h.HandleDeleteExpense)
 	subrouter.GET("/", h.HandleListExpense)
 	subrouter.PATCH("/:id", h.HandleUpdateExpense)
