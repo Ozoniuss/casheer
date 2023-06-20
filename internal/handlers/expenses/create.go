@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm/clause"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
@@ -16,20 +15,14 @@ import (
 
 func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 
-	entid := ctx.GetString("entid")
-
-	var req casheerapi.CreateExpenseRequest
-	err := ctx.ShouldBindJSON(&req)
-
-	if err != nil {
-		common.EmitError(ctx, NewCreateExpenseFailedError(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not bind request body: %s", err.Error())))
+	entid := ctx.GetInt("entid")
+	req, ok := common.CtxGetTyped[casheerapi.CreateExpenseRequest](ctx, "req")
+	if !ok {
 		return
 	}
 
 	expense := model.Expense{
-		EntryId:       uuid.MustParse(entid),
+		EntryId:       entid,
 		Value:         req.Value,
 		Description:   req.Description,
 		Name:          req.Name,
@@ -44,7 +37,7 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 		return
 	}
 
-	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(expense.EntryId)).Clauses(clause.Returning{}).Create(&expense).Error
+	err := h.db.WithContext(ctx).Scopes(model.RequiredEntry(expense.EntryId)).Clauses(clause.Returning{}).Create(&expense).Error
 
 	if err != nil {
 		switch {

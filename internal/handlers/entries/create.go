@@ -16,13 +16,8 @@ import (
 
 func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 
-	var req casheerapi.CreateEntryRequest
-	err := ctx.ShouldBindJSON(&req)
-
-	if err != nil {
-		common.EmitError(ctx, NewCreateEntryFailedError(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not bind request body: %s", err.Error())))
+	req, ok := common.CtxGetTyped[casheerapi.CreateEntryRequest](ctx, "req")
+	if !ok {
 		return
 	}
 
@@ -43,7 +38,7 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		entry.Year = *req.Year
 	}
 
-	err = h.db.WithContext(ctx).Scopes(model.ValidEntry(entry)).Clauses(clause.Returning{}).Create(&entry).Error
+	err := h.db.WithContext(ctx).Scopes(model.ValidEntry(entry)).Clauses(clause.Returning{}).Create(&entry).Error
 
 	// TODO: nicer error handling
 	if err != nil {

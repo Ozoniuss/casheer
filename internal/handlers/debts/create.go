@@ -13,13 +13,8 @@ import (
 
 func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 
-	var req casheerapi.CreateDebtRequest
-	err := ctx.ShouldBindJSON(&req)
-
-	if err != nil {
-		common.EmitError(ctx, NewCreateDebtFailedError(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not bind request body: %s", err.Error())))
+	req, ok := common.CtxGetTyped[casheerapi.CreateDebtRequest](ctx, "req")
+	if !ok {
 		return
 	}
 
@@ -36,7 +31,7 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 		Details: req.Details,
 	}
 
-	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Create(&Debt).Error
+	err := h.db.WithContext(ctx).Clauses(clause.Returning{}).Create(&Debt).Error
 
 	// TODO: nicer error handling
 	if err != nil {
