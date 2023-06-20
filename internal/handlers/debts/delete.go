@@ -9,32 +9,23 @@ import (
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 func (h *handler) HandleDeleteDebt(ctx *gin.Context) {
 
-	id := ctx.Param("id")
-	uuid, err := uuid.Parse(id)
-	if err != nil {
-		common.EmitError(ctx, NewDeleteDebtFailedError(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not delete debt: invalid uuid format: %s", id),
-		))
-		return
-	}
+	id := ctx.GetInt("id")
 
 	var debt model.Debt
-	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Where("id = ?", uuid).Delete(&debt).Error
+	err := h.db.WithContext(ctx).Clauses(clause.Returning{}).Where("id = ?", id).Delete(&debt).Error
 
 	if err != nil {
 		switch {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			common.EmitError(ctx, NewDeleteDebtFailedError(
 				http.StatusNotFound,
-				fmt.Sprintf("Could not delete debt: Debt %s not found.", uuid)))
+				fmt.Sprintf("Could not delete debt: Debt %d not found.", id)))
 			return
 		default:
 			common.EmitError(ctx, NewDeleteDebtFailedError(

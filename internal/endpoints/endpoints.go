@@ -30,10 +30,10 @@ func RegisterDebts(router *gin.Engine, h handlers.DebtHandler) {
 	subrouter := router.Group("/api/debts")
 
 	subrouter.POST("/", middlewares.BindJSONRequest[casheerapi.CreateDebtRequest](), h.HandleCreateDebt)
-	subrouter.DELETE("/:id", h.HandleDeleteDebt)
+	subrouter.DELETE("/:id", middlewares.GetURLParam("id"), h.HandleDeleteDebt)
 	subrouter.GET("/", h.HandleListDebt)
-	subrouter.PATCH("/:id", h.HandleUpdateDebt)
-	subrouter.GET("/:id", h.HandleGetDebt)
+	subrouter.PATCH("/:id", middlewares.GetURLParam("id"), h.HandleUpdateDebt)
+	subrouter.GET("/:id", middlewares.GetURLParam("id"), h.HandleGetDebt)
 }
 
 func RegisterExpenses(router *gin.Engine, h handlers.ExpenseHandler) {

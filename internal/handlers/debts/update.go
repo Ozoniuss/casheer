@@ -9,25 +9,16 @@ import (
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
 func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 
-	id := ctx.Param("id")
-	uuid, err := uuid.Parse(id)
-	if err != nil {
-		common.EmitError(ctx, NewUpdateDebtFailed(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not update debt: invalid uuid format: %s", id),
-		))
-		return
-	}
+	id := ctx.GetInt("id")
 
 	var req casheerapi.UpdateDebtRequest
-	err = ctx.ShouldBindJSON(&req)
+	err := ctx.ShouldBindJSON(&req)
 
 	if err != nil {
 		common.EmitError(ctx, NewUpdateDebtFailed(
@@ -51,7 +42,7 @@ func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 	}
 
 	var Debt model.Debt
-	err = h.db.WithContext(ctx).Model(&Debt).Clauses(clause.Returning{}).Where("id = ?", uuid).Updates(updatedFields).Error
+	err = h.db.WithContext(ctx).Model(&Debt).Clauses(clause.Returning{}).Where("id = ?", id).Updates(updatedFields).Error
 
 	// TODO: nicer error handling
 	if err != nil {
@@ -59,7 +50,7 @@ func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			common.EmitError(ctx, NewUpdateDebtFailed(
 				http.StatusNotFound,
-				fmt.Sprintf("Could not update debt: debt %s not found.", uuid)))
+				fmt.Sprintf("Could not update debt: debt %d not found.", id)))
 			return
 		default:
 			common.EmitError(ctx, NewUpdateDebtFailed(
