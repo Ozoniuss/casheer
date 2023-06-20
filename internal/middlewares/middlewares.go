@@ -12,7 +12,13 @@ import (
 
 // BindJSONRequest does the same job as ctx.ShouldBindJSON, while also writing
 // a custom error to the response if the binding is not succesful.
-func BindJSONRequest[T casheerapi.CreateEntryRequest | casheerapi.CreateDebtRequest | casheerapi.CreateExpenseRequest]() gin.HandlerFunc {
+func BindJSONRequest[
+	T casheerapi.CreateEntryRequest |
+		casheerapi.CreateDebtRequest |
+		casheerapi.CreateExpenseRequest |
+		casheerapi.UpdateExpenseRequest |
+		casheerapi.UpdateDebtRequest |
+		casheerapi.UpdateEntryRequest]() gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var req T
 		err := ctx.ShouldBindJSON(&req)
