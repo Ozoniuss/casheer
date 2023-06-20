@@ -16,21 +16,15 @@ import (
 func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 
 	id := ctx.GetInt("id")
-
-	var req casheerapi.UpdateEntryRequest
-	err := ctx.ShouldBindJSON(&req)
-
-	if err != nil {
-		common.EmitError(ctx, NewUpdateEntryFailed(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not bind request body: %s", err.Error())))
+	req, ok := common.CtxGetTyped[casheerapi.UpdateEntryRequest](ctx, "req")
+	if !ok {
 		return
 	}
 
 	// Find out what needs to be updated.
 	entry, updatedFields := getUpdatedFields(req)
 
-	err = h.db.WithContext(ctx).Preload("Expenses").Select(updatedFields).Clauses(clause.Returning{}).
+	err := h.db.WithContext(ctx).Preload("Expenses").Select(updatedFields).Clauses(clause.Returning{}).
 		Scopes(model.ValidEntryFields(entry, updatedFields)).
 		Where("id = ?", id).Updates(&entry).Error
 

@@ -9,7 +9,7 @@ import (
 )
 
 // CtxGetTypes is very similar to ctx.Get(), except it makes use of generics.
-func CtxGetTyped[T casheerapi.CreateEntryRequest | casheerapi.CreateExpenseRequest | casheerapi.CreateDebtRequest](ctx *gin.Context, param string) (T, bool) {
+func CtxGetTyped[T casheerapi.CreateEntryRequest | casheerapi.CreateExpenseRequest | casheerapi.CreateDebtRequest | casheerapi.UpdateEntryRequest](ctx *gin.Context, param string) (T, bool) {
 	var req T
 	reqval, ok := ctx.Get(param)
 	if !ok {
