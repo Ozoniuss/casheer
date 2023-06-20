@@ -74,7 +74,7 @@ func (h *handler) HandleGetRunningTotal(ctx *gin.Context) {
 	// Could be done with a SUM clause, but would have to ignore salary and
 	// I'd have to take a look at the syntax so fuck that.
 
-	var expectedIncome, runningIncome, expectedTotal, runningTotal int64
+	var expectedIncome, runningIncome, expectedTotal, runningTotal int
 
 	for _, e := range entries {
 

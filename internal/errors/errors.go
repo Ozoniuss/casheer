@@ -3,22 +3,63 @@ package errors
 import (
 	"fmt"
 	"net/http"
+	"strconv"
 
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
 
-func NewMissingParamError(missingParam string) public.Error {
+func NewInvalidURLError(detail string) public.Error {
 	return public.Error{
-		Title:  "Operation Failed",
+		Title:  "Invalid URL",
 		Status: http.StatusBadRequest,
-		Detail: fmt.Sprintf("Missing URL parameter: %s", missingParam),
+		Detail: detail,
 	}
 }
 
-func NewInvalidParamType(missingParam string) public.Error {
+func NewRequestBindingError(detail string) public.Error {
 	return public.Error{
-		Title:  "Operation Failed",
+		Title:  "Invalid JSON Body",
 		Status: http.StatusBadRequest,
-		Detail: fmt.Sprintf("Invalid type for URL parameter: %s", missingParam),
+		Detail: detail,
+	}
+}
+
+func NewQueryParamsBindingError(detail string) public.Error {
+	return public.Error{
+		Title:  "Invalid Query Params",
+		Status: http.StatusBadRequest,
+		Detail: detail,
+	}
+}
+
+func NewMissingContextParamError(detail string) public.Error {
+	return public.Error{
+		Title:  "Missing Context Parameter",
+		Status: http.StatusInternalServerError,
+		Detail: detail,
+	}
+}
+
+func NewInvalidContextParamError(detail string) public.Error {
+	return public.Error{
+		Title:  "Invalid Context Parameter",
+		Status: http.StatusInternalServerError,
+		Detail: detail,
+	}
+}
+
+func NewMissingParamError(missingParam string) public.Error {
+	return public.Error{
+		Title:  "Missing URL Parameter",
+		Status: http.StatusBadRequest,
+		Detail: fmt.Sprintf("Missing URL parameter: %s", strconv.QuoteToASCII(missingParam)),
+	}
+}
+
+func NewInvalidParamType(paramName string) public.Error {
+	return public.Error{
+		Title:  "Invalid URL Parameter",
+		Status: http.StatusBadRequest,
+		Detail: fmt.Sprintf("URL parameter %s is not an integer.", strconv.QuoteToASCII(paramName)),
 	}
 }
