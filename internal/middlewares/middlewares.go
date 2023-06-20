@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"fmt"
+	"strconv"
 
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
@@ -27,21 +28,49 @@ func BindJSONRequest[T casheerapi.CreateEntryRequest | casheerapi.CreateDebtRequ
 	}
 }
 
-func RequiredParam[T int](paramName string) gin.HandlerFunc {
+// GetURLParam does the same job as ctx.Param, while also writing a custom
+// error message if the param is not found or is not a valid integer.
+//
+// For now, all URL params represent identifiers, which are integers.
+func GetURLParam(paramName string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		param, ok := ctx.Get(paramName)
+		ok := retrieveAndSetParam(ctx, paramName)
 		if !ok {
-			common.EmitError(ctx, ierrors.NewMissingParamError(paramName))
 			ctx.Abort()
 			return
 		}
-		paramVal, ok := param.(T)
-		if !ok {
-			common.EmitError(ctx, ierrors.NewInvalidParamType(paramName))
-			ctx.Abort()
-			return
-		}
-		ctx.Set(paramName, paramVal)
 		ctx.Next()
 	}
+}
+
+// GetMultipleURLParam is the same as GetURLParam, except it retrieves values
+// for multiple URL parameters.
+func GetMultipleURLParam(paramNames ...string) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		for _, paramName := range paramNames {
+			ok := retrieveAndSetParam(ctx, paramName)
+			if !ok {
+				ctx.Abort()
+				return
+			}
+		}
+		ctx.Next()
+	}
+}
+
+func retrieveAndSetParam(ctx *gin.Context, paramName string) bool {
+	param := ctx.Param(paramName)
+	if param == "" {
+		common.EmitError(ctx, ierrors.NewMissingParamError(
+			paramName,
+		))
+		return false
+	}
+	paramVal, err := strconv.Atoi(param)
+	if err != nil {
+		common.EmitError(ctx, ierrors.NewInvalidParamType(paramName))
+		return false
+	}
+	ctx.Set(paramName, paramVal)
+	return true
 }
