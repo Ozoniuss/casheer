@@ -3,6 +3,9 @@
 -- Note that INTEGER PRIMARY KEY in sqlite3 is an alias to ROWID.
 -- https://www.sqlite.org/autoinc.html
 
+-- Todo: indexes
+-- Todo: maybe index just entry id to not also index expense id?
+
 CREATE TABLE IF NOT EXISTS entries(
     id INTEGER PRIMARY KEY,
     month INTEGER NOT NULL, -- smallint?
@@ -16,7 +19,7 @@ CREATE TABLE IF NOT EXISTS entries(
     expected_total INTEGER NOT NULL,
     running_total INTEGER NOT NULL,
     recurring BOOLEAN NOT NULL DEFAULT FALSE, -- this may not even be needed
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- do I really need timestamps tho?
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     deleted_at DATETIME, -- safety net
     CONSTRAINT unique_logical_entry UNIQUE (month, year, category, subcategory)
