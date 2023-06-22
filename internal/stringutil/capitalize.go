@@ -4,6 +4,10 @@ import "strings"
 
 func capitalize(s string, b *strings.Builder) string {
 
+	if len(s) == 0 {
+		return s
+	}
+
 	if s[0] > 'z' || s[0] < 'a' {
 		return s
 	}
