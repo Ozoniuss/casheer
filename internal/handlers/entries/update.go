@@ -7,6 +7,7 @@ import (
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/internal/model"
+	"github.com/Ozoniuss/casheer/internal/stringutil"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -25,7 +26,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	entry, updatedFields := getUpdatedFields(req)
 
 	err := h.db.WithContext(ctx).Preload("Expenses").Select(updatedFields).Clauses(clause.Returning{}).
-		Scopes(model.ValidEntryFields(entry, updatedFields)).
+		Scopes(model.ValidateModelFields[model.Entry](entry, stringutil.CapitalizeArray(updatedFields), model.InvalidEntryErr{})).
 		Where("id = ?", id).Updates(&entry).Error
 
 	// TODO: nicer error handling
