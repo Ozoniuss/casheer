@@ -3,6 +3,7 @@ package model
 import (
 	"strings"
 
+	"github.com/Ozoniuss/casheer/internal/stringutil"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
@@ -48,15 +49,10 @@ func ValidEntry(e Entry) func(db *gorm.DB) *gorm.DB {
 // ValidEntryFields works like ValidEntry, but can be used with a specific
 // subset of the entry's fields.
 func ValidEntryFields(e Entry, fields []string) func(db *gorm.DB) *gorm.DB {
-	// TODO: find a nicer way to update these fields
-	// fiels are specified lowercase to match the table names, but in order to
-	// match struct names they must be uppercased.
 
-	// Use one single builder to avoid unnecessary allocations.
-	b := strings.Builder{}
-	for i := 0; i < len(fields); i++ {
-		fields[i] = capitalize(fields[i], b)
-	}
+	// Fields in the database are lowercase, ensure they are uppercase to match
+	// struct fields.
+	stringutil.CapitalizeArray(fields)
 
 	return func(db *gorm.DB) *gorm.DB {
 		v := validator.New()
