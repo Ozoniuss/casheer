@@ -58,14 +58,14 @@ func TestCapitalizeArray(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(strings.Join(tt.input, ","), func(t *testing.T) {
-			CapitalizeArray(tt.input)
-			if len(tt.input) != len(tt.expected) {
-				t.Errorf("Expected length %d, but got length %d", len(tt.expected), len(tt.input))
+			out := CapitalizeArray(tt.input)
+			if len(out) != len(tt.expected) {
+				t.Errorf("Expected length %d, but got length %d", len(tt.expected), len(out))
 			}
 
-			for i := 0; i < len(tt.input); i++ {
-				if tt.input[i] != tt.expected[i] {
-					t.Errorf("Expected '%s', but got '%s'", tt.expected[i], tt.input[i])
+			for i := 0; i < len(out); i++ {
+				if out[i] != tt.expected[i] {
+					t.Errorf("Expected '%s', but got '%s'", tt.expected[i], out[i])
 				}
 			}
 		})

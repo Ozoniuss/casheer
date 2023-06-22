@@ -24,9 +24,11 @@ func capitalize(s string, b *strings.Builder) string {
 // CapitalizeArray takes an array of string values representing database column
 // names consisting of ASCII characters, and returns the same array with each
 // word having the starting letter capitalized.
-func CapitalizeArray(values []string) {
+func CapitalizeArray(values []string) []string {
+	out := make([]string, len(values))
 	b := strings.Builder{}
 	for i := 0; i < len(values); i++ {
-		values[i] = capitalize(values[i], &b)
+		out[i] = capitalize(values[i], &b)
 	}
+	return out
 }
