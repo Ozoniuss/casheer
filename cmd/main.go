@@ -23,7 +23,7 @@ func run() error {
 
 	switch config.Database.Type {
 	case cfg.SQLITE_DB:
-		conn, err = store.ConnectSqlite(config.SQLiteDatabase)
+		conn, err = store.ConnectSqlite(config.SQLiteDatabase.File)
 		if err != nil {
 			return fmt.Errorf("could not connect to sqlite database: %w", err)
 		}
