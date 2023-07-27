@@ -1,7 +1,6 @@
 package entries
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http/httptest"
 	"os"
@@ -64,7 +63,7 @@ func TestMain(m *testing.M) {
 		fmt.Printf("Error setting up tests: %s", err.Error())
 		os.Exit(1)
 	}
-	// Attempt to remove file anyway.
+	// Attempt to remove db file anyway.
 	defer os.Remove(dbname)
 	code := m.Run()
 	// call flag.Parse() here if TestMain uses flags
@@ -83,30 +82,32 @@ func TestHandleCreateExpense(t *testing.T) {
 
 	month := 10
 	year := 2021
-	ctx.Set("req", casheerapi.CreateEntryRequest{
+	dummyEntry := casheerapi.CreateEntryRequest{
 		Month:         &month,
 		Year:          &year,
 		Category:      "category",
 		Subcategory:   "subcategory",
 		ExpectedTotal: 1000,
-	})
+	}
+	ctx.Set("req", dummyEntry)
 
-	testHandler.HandleCreateEntry(ctx)
+	t.Run("Creating an entry should save the entry", func(t *testing.T) {
+		testHandler.HandleCreateEntry(ctx)
 
-	t.Run("Response format", func(t *testing.T) {
-		var resp casheerapi.CreateEntryResponse
-		err := json.Unmarshal(w.Body.Bytes(), &resp)
-		if err != nil {
-			panic(err)
-		}
-		// check attributes.
-	})
-
-	t.Run("Number of elements in database", func(t *testing.T) {
 		var entries []model.Entry
 		db.Find(&entries)
 		if len(entries) != 1 {
 			t.Errorf("Expected to have 1 entry, but found %d", len(entries))
 		}
+
+		savedEntry := entries[0]
+		if savedEntry.Month != month ||
+			savedEntry.Year != year ||
+			savedEntry.Category != dummyEntry.Category ||
+			savedEntry.Subcategory != dummyEntry.Subcategory ||
+			savedEntry.ExpectedTotal != dummyEntry.ExpectedTotal {
+			t.Errorf("Inserted: %+v\nretrieved %+v", dummyEntry, savedEntry)
+		}
+
 	})
 }
