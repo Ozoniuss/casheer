@@ -15,7 +15,7 @@ import (
 func (h *handler) HandleGetExpense(ctx *gin.Context) {
 
 	entid := ctx.GetInt("entid")
-	id := ctx.GetInt("id")
+	id := ctx.GetInt("expid")
 
 	var expense model.Expense
 	err := h.db.WithContext(ctx).Scopes(model.RequiredEntry(entid)).

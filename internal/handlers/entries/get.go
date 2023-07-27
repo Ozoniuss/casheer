@@ -14,7 +14,7 @@ import (
 
 func (h *handler) HandleGetEntry(ctx *gin.Context) {
 
-	id := ctx.GetInt("id")
+	id := ctx.GetInt("entid")
 
 	var entry model.Entry
 	err := h.db.WithContext(ctx).Preload("Expenses").Where("id = ?", id).Take(&entry).Error

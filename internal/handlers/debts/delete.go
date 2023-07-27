@@ -15,7 +15,7 @@ import (
 
 func (h *handler) HandleDeleteDebt(ctx *gin.Context) {
 
-	id := ctx.GetInt("id")
+	id := ctx.GetInt("dbtid")
 
 	var debt model.Debt
 	err := h.db.WithContext(ctx).Clauses(clause.Returning{}).Where("id = ?", id).Delete(&debt).Error

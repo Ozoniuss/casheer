@@ -15,7 +15,7 @@ import (
 
 func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 
-	id := ctx.GetInt("id")
+	id := ctx.GetInt("dbtid")
 
 	var req casheerapi.UpdateDebtRequest
 	err := ctx.ShouldBindJSON(&req)

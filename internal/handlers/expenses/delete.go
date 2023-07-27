@@ -17,7 +17,7 @@ func (h *handler) HandleDeleteExpense(ctx *gin.Context) {
 
 	// Todo: maybe index just entry id to not also index expense id?
 	entid := ctx.GetInt("entid")
-	id := ctx.GetInt("id")
+	id := ctx.GetInt("expid")
 
 	expense := model.Expense{}
 	err := h.db.WithContext(ctx).Scopes(model.RequiredEntry(entid)).Clauses(clause.Returning{}).

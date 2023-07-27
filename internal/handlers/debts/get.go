@@ -14,7 +14,7 @@ import (
 
 func (h *handler) HandleGetDebt(ctx *gin.Context) {
 
-	id := ctx.GetInt("id")
+	id := ctx.GetInt("dbtid")
 
 	var debt model.Debt
 	err := h.db.WithContext(ctx).Where("id = ?", id).Take(&debt).Error

@@ -19,20 +19,20 @@ func RegisterEntries(router *gin.Engine, h handlers.EntryHandler) {
 	// Using entid is necessary to avoid conflicting routes with expenses
 	// endpoints.
 	subrouter.POST("/", middlewares.BindJSONRequest[casheerapi.CreateEntryRequest](), h.HandleCreateEntry)
-	subrouter.DELETE("/:id", middlewares.GetURLParam("id"), h.HandleDeleteEntry)
+	subrouter.DELETE("/:entid", middlewares.GetURLParam("entid"), h.HandleDeleteEntry)
 	subrouter.GET("/", h.HandleListEntry)
-	subrouter.PATCH("/:id", middlewares.GetURLParam("id"), middlewares.BindJSONRequest[casheerapi.UpdateEntryRequest](), h.HandleUpdateEntry)
-	subrouter.GET("/:id", middlewares.GetURLParam("id"), h.HandleGetEntry)
+	subrouter.PATCH("/:entid", middlewares.GetURLParam("entid"), middlewares.BindJSONRequest[casheerapi.UpdateEntryRequest](), h.HandleUpdateEntry)
+	subrouter.GET("/:entid", middlewares.GetURLParam("entid"), h.HandleGetEntry)
 }
 
 func RegisterDebts(router *gin.Engine, h handlers.DebtHandler) {
 	subrouter := router.Group("/api/debts")
 
 	subrouter.POST("/", middlewares.BindJSONRequest[casheerapi.CreateDebtRequest](), h.HandleCreateDebt)
-	subrouter.DELETE("/:id", middlewares.GetURLParam("id"), h.HandleDeleteDebt)
+	subrouter.DELETE("/:dbtid", middlewares.GetURLParam("dbtid"), h.HandleDeleteDebt)
 	subrouter.GET("/", h.HandleListDebt)
-	subrouter.PATCH("/:id", middlewares.GetURLParam("id"), middlewares.BindJSONRequest[casheerapi.UpdateDebtRequest](), h.HandleUpdateDebt)
-	subrouter.GET("/:id", middlewares.GetURLParam("id"), h.HandleGetDebt)
+	subrouter.PATCH("/:dbtid", middlewares.GetURLParam("dbtid"), middlewares.BindJSONRequest[casheerapi.UpdateDebtRequest](), h.HandleUpdateDebt)
+	subrouter.GET("/:dbtid", middlewares.GetURLParam("dbtid"), h.HandleGetDebt)
 }
 
 func RegisterExpenses(router *gin.Engine, h handlers.ExpenseHandler) {
@@ -42,10 +42,10 @@ func RegisterExpenses(router *gin.Engine, h handlers.ExpenseHandler) {
 	subrouter := router.Group("/api/entries/:entid/expenses/").Use(middlewares.GetURLParam("entid"))
 
 	subrouter.POST("/", middlewares.BindJSONRequest[casheerapi.CreateExpenseRequest](), h.HandleCreateExpense)
-	subrouter.DELETE("/:id", middlewares.GetURLParam("id"), h.HandleDeleteExpense)
+	subrouter.DELETE("/:expid", middlewares.GetURLParam("expid"), h.HandleDeleteExpense)
 	subrouter.GET("/", h.HandleListExpense)
-	subrouter.PATCH("/:id", middlewares.GetURLParam("id"), middlewares.BindJSONRequest[casheerapi.UpdateExpenseRequest](), h.HandleUpdateExpense)
-	subrouter.GET("/:id", middlewares.GetURLParam("id"), h.HandleGetExpense)
+	subrouter.PATCH("/:expid", middlewares.GetURLParam("expid"), middlewares.BindJSONRequest[casheerapi.UpdateExpenseRequest](), h.HandleUpdateExpense)
+	subrouter.GET("/:expid", middlewares.GetURLParam("expid"), h.HandleGetExpense)
 }
 
 func RegisterTotals(router *gin.Engine, h handlers.TotalsHandler) {

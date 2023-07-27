@@ -16,7 +16,7 @@ import (
 
 func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 
-	id := ctx.GetInt("id")
+	id := ctx.GetInt("entid")
 	req, ok := common.CtxGetTyped[casheerapi.UpdateEntryRequest](ctx, "req")
 	if !ok {
 		return

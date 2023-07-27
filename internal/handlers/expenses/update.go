@@ -16,7 +16,7 @@ import (
 func (h *handler) HandleUpdateExpense(ctx *gin.Context) {
 
 	entid := ctx.GetInt("entid")
-	id := ctx.GetInt("id")
+	id := ctx.GetInt("expid")
 
 	req, ok := common.CtxGetTyped[casheerapi.UpdateExpenseRequest](ctx, "req")
 	if !ok {

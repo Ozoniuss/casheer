@@ -15,7 +15,7 @@ import (
 
 func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 
-	id := ctx.GetInt("id")
+	id := ctx.GetInt("entid")
 
 	entry := model.Entry{}
 	err := h.db.WithContext(ctx).Clauses(clause.Returning{}).Preload("expenses").Where("id = ?", id).Delete(&entry).Error
