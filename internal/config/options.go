@@ -75,6 +75,7 @@ func ParseConfig() (Config, error) {
 		cfg.WithEnvPrefix("CASHEER"),
 		cfg.WithEnvKeyReplacer("_"),
 		cfg.WithWriteFlag(),
+		cfg.WithReadFlag(),
 	}
 
 	err := cfg.NewConfig(&c, allOptions(), parserOptions...)

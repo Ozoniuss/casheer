@@ -1,0 +1,22 @@
+apipaths:
+    debts: http://localhost:8033/api/debts
+    entries: http://localhost:8033/api/entries
+    totals: http://localhost:8033/api/totals
+database:
+    host: 127.0.0.1
+    name: postgres
+    password: admin
+    port: 5432
+    type: sqlite
+    user: postgres
+postgres_database:
+    host: 127.0.0.1
+    name: defaultdb
+    password: admin
+    port: 5432
+    user: postgres
+server:
+    address: 127.0.0.1
+    port: 8033
+sqlite_database:
+    file: casheer.db
