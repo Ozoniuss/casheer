@@ -63,3 +63,11 @@ func NewInvalidParamType(paramName string) public.Error {
 		Detail: fmt.Sprintf("URL parameter %s is not an integer.", strconv.QuoteToASCII(paramName)),
 	}
 }
+
+func NewUnknownError(detail string) public.Error {
+	return public.Error{
+		Title:  "Unknown Error",
+		Status: http.StatusInternalServerError,
+		Detail: fmt.Sprintf("An unknown error occured: %s", detail),
+	}
+}
