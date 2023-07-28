@@ -1,23 +1,30 @@
 package main
 
 import (
+	"context"
 	"fmt"
+	"log/slog"
 	"os"
 
 	cfg "github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/router"
 	"github.com/Ozoniuss/casheer/internal/store"
 	"gorm.io/gorm"
-
-	log "github.com/Ozoniuss/stdlog"
 )
 
 func run() error {
+
+	log := slog.New(slog.NewTextHandler(
+		os.Stdout,
+		&slog.HandlerOptions{},
+	))
+	ctx := context.Background()
+
 	config, err := cfg.ParseConfig()
 	if err != nil {
 		return fmt.Errorf("could not parse config: %w", err)
 	}
-	log.Infof("parsed config: %+v\n", config)
+	log.InfoContext(ctx, fmt.Sprintf("parsed config: %+v\n", config))
 
 	var conn *gorm.DB
 
@@ -36,7 +43,7 @@ func run() error {
 		return fmt.Errorf("invalid database specified: %s", config.Database.Type)
 	}
 
-	log.Infoln("Connected to database.")
+	log.InfoContext(ctx, "Connected to database.")
 
 	engine, err := router.NewRouter(conn, config)
 	if err != nil {
@@ -50,7 +57,7 @@ func run() error {
 func main() {
 	err := run()
 	if err != nil {
-		log.Errf("Error running api: %s", err.Error())
+		fmt.Printf("Error running api: %s", err.Error())
 		os.Exit(1)
 	}
 }
