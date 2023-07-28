@@ -14,6 +14,13 @@ type Debt struct {
 	Details string
 }
 
+type InvalidDebtErr struct {
+}
+
+func (e InvalidDebtErr) Error() string {
+	return "invalid debt"
+}
+
 // AfterUpdate is a gorm hook that adds an error if the debt was not found
 // during an update operation. This implicitly assumes that the update query
 // executes with a "returning" clause that writes to an empty debt.
