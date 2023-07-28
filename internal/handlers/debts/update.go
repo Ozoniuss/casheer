@@ -16,14 +16,8 @@ import (
 func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 
 	id := ctx.GetInt("dbtid")
-
-	var req casheerapi.UpdateDebtRequest
-	err := ctx.ShouldBindJSON(&req)
-
-	if err != nil {
-		common.EmitError(ctx, NewUpdateDebtFailed(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not bind request body: %s", err.Error())))
+	req, ok := common.CtxGetTyped[casheerapi.UpdateDebtRequest](ctx, "req")
+	if !ok {
 		return
 	}
 
@@ -42,7 +36,7 @@ func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 	}
 
 	var Debt model.Debt
-	err = h.db.WithContext(ctx).Model(&Debt).Clauses(clause.Returning{}).Where("id = ?", id).Updates(updatedFields).Error
+	err := h.db.WithContext(ctx).Model(&Debt).Clauses(clause.Returning{}).Where("id = ?", id).Updates(updatedFields).Error
 
 	// TODO: nicer error handling
 	if err != nil {

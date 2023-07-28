@@ -1,7 +1,7 @@
 package debts
 
 import (
-	"fmt"
+	"errors"
 	"net/http"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
@@ -9,6 +9,8 @@ import (
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm/clause"
+
+	apierrors "github.com/Ozoniuss/casheer/internal/errors"
 )
 
 func (h *handler) HandleCreateDebt(ctx *gin.Context) {
@@ -18,31 +20,29 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 		return
 	}
 
-	if req.Person == "" {
-		common.EmitError(ctx, NewCreateDebtFailedError(
-			http.StatusBadRequest,
-			"Cannot create debt: empty person specified."))
-		return
-	}
-
-	Debt := model.Debt{
+	debt := model.Debt{
 		Person:  req.Person,
 		Amount:  req.Amount,
 		Details: req.Details,
 	}
 
-	err := h.db.WithContext(ctx).Clauses(clause.Returning{}).Create(&Debt).Error
+	err := h.db.WithContext(ctx).Scopes(model.ValidateModel[model.Debt](debt, model.InvalidDebtErr{})).Clauses(clause.Returning{}).Create(&debt).Error
 
 	// TODO: nicer error handling
 	if err != nil {
-		common.EmitError(ctx, NewCreateDebtFailedError(
-			http.StatusInternalServerError,
-			fmt.Sprintf("Could not create debt: %s", err.Error())))
-		return
+		switch {
+		case errors.Is(err, model.InvalidDebtErr{}):
+			{
+				common.EmitError(ctx,
+					NewInvalidDebtError(err.Error()))
+			}
+		default:
+			common.EmitError(ctx, apierrors.NewUnknownError(err.Error()))
+		}
 	}
 
 	resp := casheerapi.CreateDebtResponse{
-		Data: DebtToPublic(Debt, h.apiPaths),
+		Data: DebtToPublic(debt, h.apiPaths),
 	}
 
 	ctx.JSON(http.StatusCreated, &resp)
