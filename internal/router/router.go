@@ -14,6 +14,7 @@ import (
 	"github.com/Ozoniuss/casheer/internal/handlers/entries"
 	"github.com/Ozoniuss/casheer/internal/handlers/expenses"
 	"github.com/Ozoniuss/casheer/internal/handlers/totals"
+	"github.com/Ozoniuss/casheer/internal/middlewares"
 )
 
 // NewRouter initializes the gin router with the existing handlers and options.
@@ -23,6 +24,7 @@ func NewRouter(db *gorm.DB, config config.Config) (*gin.Engine, error) {
 		Host:   fmt.Sprintf("%s:%d", config.Server.Address, config.Server.Port),
 	}
 	r := gin.Default()
+	r.Use(middlewares.ErrorHandler())
 	{
 		h := handlers.NewDefault(config)
 		endpoints.RegisterDefaults(r, &h)
