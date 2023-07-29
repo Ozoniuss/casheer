@@ -1,6 +1,9 @@
 package router
 
 import (
+	"fmt"
+	"net/url"
+
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
@@ -15,6 +18,10 @@ import (
 
 // NewRouter initializes the gin router with the existing handlers and options.
 func NewRouter(db *gorm.DB, config config.Config) (*gin.Engine, error) {
+	baseURL := &url.URL{
+		Scheme: config.Server.Scheme,
+		Host:   fmt.Sprintf("%s:%d", config.Server.Address, config.Server.Port),
+	}
 	r := gin.Default()
 	{
 		h := handlers.NewDefault(config)
@@ -25,7 +32,7 @@ func NewRouter(db *gorm.DB, config config.Config) (*gin.Engine, error) {
 		endpoints.RegisterEntries(r, &h)
 	}
 	{
-		h := debts.NewHandler(db, config)
+		h := debts.NewHandler(db, baseURL.JoinPath(config.ApiPaths.Debts))
 		endpoints.RegisterDebts(r, &h)
 	}
 	{

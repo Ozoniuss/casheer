@@ -39,6 +39,8 @@ func serverOptions() []cfg.ConfigOption {
 	return []cfg.ConfigOption{
 		{FlagName: "server-address", Shorthand: "", Value: "127.0.0.1", ConfigKey: "server.address",
 			Usage: "Specifies the address on which the ports service listens for incoming calls."},
+		{FlagName: "server-scheme", Shorthand: "", Value: "http", ConfigKey: "server.scheme",
+			Usage: "Either http or https."},
 		{FlagName: "server-port", Shorthand: "", Value: int32(8033), ConfigKey: "server.port",
 			Usage: "Specifies the port on which the ports service listens for incoming calls."},
 	}
@@ -46,12 +48,14 @@ func serverOptions() []cfg.ConfigOption {
 
 func apiPathsOptions() []cfg.ConfigOption {
 	return []cfg.ConfigOption{
-		{FlagName: "apipaths-entries", Shorthand: "", Value: "http://localhost:8033/api/entries", ConfigKey: "apipaths.entries",
-			Usage: "Specifies the URL of the entry resource collection."},
-		{FlagName: "apipaths-totals", Shorthand: "", Value: "http://localhost:8033/api/totals", ConfigKey: "apipaths.totals",
-			Usage: "Specifies the URL of the totals resource collection."},
-		{FlagName: "apipaths-debts", Shorthand: "", Value: "http://localhost:8033/api/debts", ConfigKey: "apipaths.debts",
-			Usage: "Specifies the URL of the debts resource collection."},
+		{FlagName: "apipaths-entries", Shorthand: "", Value: "entries/", ConfigKey: "apipaths.entries",
+			Usage: "Path separator for entries."},
+		{FlagName: "apipaths-totals", Shorthand: "", Value: "totals/", ConfigKey: "apipaths.totals",
+			Usage: "Path separator for totals."},
+		{FlagName: "apipaths-debts", Shorthand: "", Value: "debts/", ConfigKey: "apipaths.debts",
+			Usage: "Path separator for debts."},
+		{FlagName: "apipaths-expenses", Shorthand: "", Value: "expenses/", ConfigKey: "apipaths.expenses",
+			Usage: "Path separator for expenses."},
 	}
 }
 

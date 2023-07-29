@@ -30,14 +30,16 @@ type SQLiteDatabase struct {
 }
 
 type Server struct {
+	Scheme  string
 	Address string
 	Port    int32
 }
 
 type ApiPaths struct {
-	Entries string
-	Debts   string
-	Totals  string
+	Entries  string
+	Expenses string
+	Debts    string
+	Totals   string
 }
 
 func newConfig() Config {
