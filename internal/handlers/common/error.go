@@ -14,4 +14,5 @@ func EmitError(ctx *gin.Context, err public.Error) {
 	ctx.JSON(err.Status, casheerapi.ErrorResponse{
 		Err: err,
 	})
+	ctx.Abort()
 }
