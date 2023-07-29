@@ -16,6 +16,11 @@ type Timestamps struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+// DefaultLinks allow the user to navigate back to the home page of the API.
+type DefaultLinks struct {
+	Home string `json:"home"`
+}
+
 // Error represents an error message that is sent to the client in case the
 // HTTP request returns an error.
 //
