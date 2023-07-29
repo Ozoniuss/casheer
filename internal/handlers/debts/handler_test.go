@@ -7,7 +7,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/internal/testutils"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
@@ -31,7 +30,7 @@ func TestMain(m *testing.M) {
 	}
 	// Attempt to remove db file anyway.
 	defer os.Remove(dbname)
-	testHandler = NewHandler(db, config.Config{})
+	testHandler = NewHandler(db, nil)
 	code := m.Run()
 	// call flag.Parse() here if TestMain uses flags
 	err = testutils.Teardown(db, dbname)

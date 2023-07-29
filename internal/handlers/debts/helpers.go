@@ -1,15 +1,14 @@
 package debts
 
 import (
-	"fmt"
+	"net/url"
 	"strconv"
 
-	"github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/model"
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
 
-func DebtToPublic(debt model.Debt, paths config.ApiPaths) public.DebtData {
+func DebtToPublic(debt model.Debt, debtsURL *url.URL) public.DebtData {
 	return public.DebtData{
 		ResourceID: public.ResourceID{
 			Id:   strconv.Itoa(debt.Id),
@@ -25,13 +24,13 @@ func DebtToPublic(debt model.Debt, paths config.ApiPaths) public.DebtData {
 			},
 		},
 		Links: public.DebtLinks{
-			Self:       fmt.Sprintf("%s/%d", paths.Debts, debt.Id),
-			Collection: paths.Debts + "/",
+			Self:       debtsURL.JoinPath(strconv.Itoa(debt.Id)).String(),
+			Collection: debtsURL.String(),
 		},
 	}
 }
 
-func DebtToPublicList(debt model.Debt, paths config.ApiPaths) public.DebtListItemData {
+func DebtToPublicList(debt model.Debt, debtsURL *url.URL) public.DebtListItemData {
 	return public.DebtListItemData{
 		ResourceID: public.ResourceID{
 			Id:   strconv.Itoa(debt.Id),
@@ -47,7 +46,7 @@ func DebtToPublicList(debt model.Debt, paths config.ApiPaths) public.DebtListIte
 			},
 		},
 		Links: public.DebtListItemLinks{
-			Self: fmt.Sprintf("%s/%d", paths.Debts, debt.Id),
+			Self: debtsURL.JoinPath(strconv.Itoa(debt.Id)).String(),
 		},
 	}
 }

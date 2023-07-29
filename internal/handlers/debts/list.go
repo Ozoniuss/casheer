@@ -11,8 +11,9 @@ import (
 
 func (h *handler) HandleListDebt(ctx *gin.Context) {
 
-	params, ok := common.CtxGetTyped[casheerapi.ListDebtParams](ctx, "queryparams")
-	if !ok {
+	params, err := common.CtxGetTyped[casheerapi.ListDebtParams](ctx, "queryparams")
+	if err != nil {
+		common.ErrorAndAbort(ctx, err)
 		return
 	}
 
@@ -25,7 +26,7 @@ func (h *handler) HandleListDebt(ctx *gin.Context) {
 	}
 
 	var debts []model.Debt
-	err := h.db.WithContext(ctx).Where(filters).Order("person asc").Order("amount desc").Order("id asc").Find(&debts).Error
+	err = h.db.WithContext(ctx).Where(filters).Order("person asc").Order("amount desc").Order("id asc").Find(&debts).Error
 
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
@@ -40,7 +41,7 @@ func (h *handler) HandleListDebt(ctx *gin.Context) {
 		},
 	}
 	for _, d := range debts {
-		resp.Data = append(resp.Data, DebtToPublicList(d, h.apiPaths))
+		resp.Data = append(resp.Data, DebtToPublicList(d, h.debtsURL))
 	}
 	ctx.JSON(http.StatusOK, &resp)
 }

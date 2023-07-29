@@ -1,22 +1,21 @@
 package debts
 
 import (
-	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm/clause"
-
-	apierrors "github.com/Ozoniuss/casheer/internal/errors"
 )
 
 func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 
-	req, ok := common.CtxGetTyped[casheerapi.CreateDebtRequest](ctx, "req")
-	if !ok {
+	req, err := common.CtxGetTyped[casheerapi.CreateDebtRequest](ctx, "req")
+	if err != nil {
+		common.ErrorAndAbort(ctx, err)
 		return
 	}
 
@@ -26,24 +25,19 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 		Details: req.Details,
 	}
 
-	err := h.db.WithContext(ctx).Scopes(model.ValidateModel[model.Debt](debt, model.InvalidDebtErr{})).Clauses(clause.Returning{}).Create(&debt).Error
-
-	// TODO: nicer error handling
+	err = h.db.WithContext(ctx).Scopes(model.ValidateModel[model.Debt](debt, model.InvalidDebtErr{})).Clauses(clause.Returning{}).Create(&debt).Error
 	if err != nil {
-		switch {
-		case errors.Is(err, model.InvalidDebtErr{}):
-			{
-				common.EmitError(ctx,
-					NewInvalidDebtError(err.Error()))
-			}
-		default:
-			common.EmitError(ctx, apierrors.NewUnknownError(err.Error()))
-		}
+		common.ErrorAndAbort(ctx, err)
+		return
 	}
 
 	resp := casheerapi.CreateDebtResponse{
-		Data: DebtToPublic(debt, h.apiPaths),
+		Data: DebtToPublic(
+			debt,
+			h.debtsURL,
+		),
+		Links: common.NewDefaultLinks(h.debtsURL),
 	}
-
+	ctx.Header("Locatinon", strconv.Itoa(debt.Id))
 	ctx.JSON(http.StatusCreated, &resp)
 }
