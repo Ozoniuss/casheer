@@ -22,7 +22,7 @@ type DebtAtrributes struct {
 }
 
 type DebtLinks struct {
-	Self       string `json:"self"`
+	Self       string `json:"self,omitempty"`
 	Collection string `json:"collection"`
 }
 
@@ -55,7 +55,8 @@ type DeleteDebtRequest struct {
 }
 
 type DeleteDebtResponse struct {
-	Data DebtData `json:"data"`
+	Data  DebtData  `json:"data"`
+	Links DebtLinks `json:"links"`
 }
 
 type ListDebtParams struct {
