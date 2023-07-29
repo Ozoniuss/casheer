@@ -3,6 +3,7 @@ package middlewares
 import (
 	"errors"
 
+	"github.com/Ozoniuss/casheer/internal/apierrors"
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/internal/handlers/debts"
@@ -29,11 +30,11 @@ func ErrorHandler() gin.HandlerFunc {
 		switch {
 
 		case errors.As(err, &missingContextParamError):
-			common.EmitError(ctx, ierrors.NewUnknownError("something went wrong while handling the request."))
+			common.EmitError(ctx, apierrors.NewUnknownError("something went wrong while handling the request."))
 			return
 
 		case errors.As(err, &invalidContextParamTypeError):
-			common.EmitError(ctx, ierrors.NewUnknownError("something went wrong while handling the request."))
+			common.EmitError(ctx, apierrors.NewUnknownError("something went wrong while handling the request."))
 			return
 
 		case errors.Is(err, model.InvalidDebtErr{}):
@@ -42,11 +43,11 @@ func ErrorHandler() gin.HandlerFunc {
 			return
 
 		case errors.Is(err, gorm.ErrRecordNotFound):
-			common.EmitError(ctx, ierrors.NewNotFoundError())
+			common.EmitError(ctx, apierrors.NewNotFoundError())
 			return
 
 		default:
-			common.EmitError(ctx, ierrors.NewUnknownError(err.Error()))
+			common.EmitError(ctx, apierrors.NewUnknownError(err.Error()))
 		}
 
 	}

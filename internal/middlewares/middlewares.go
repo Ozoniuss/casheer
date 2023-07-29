@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strconv"
 
-	ierrors "github.com/Ozoniuss/casheer/internal/errors"
+	ierrors "github.com/Ozoniuss/casheer/internal/apierrors"
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
@@ -37,7 +37,7 @@ func BindJSONRequest[
 func BindQueryParams[
 	T casheerapi.ListDebtParams |
 		casheerapi.ListEntryParams |
-		casheerapi.ListExpenseParams]() gin.HandlerFunc {
+		casheerapi.ListExpenseParams](paramName string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var params T
 		err := ctx.ShouldBindQuery(&params)
@@ -48,7 +48,7 @@ func BindQueryParams[
 			ctx.Abort()
 			return
 		}
-		ctx.Set("queryparams", params)
+		ctx.Set(paramName, params)
 		ctx.Next()
 	}
 }
