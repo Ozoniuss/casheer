@@ -71,3 +71,11 @@ func NewUnknownError(detail string) public.Error {
 		Detail: fmt.Sprintf("An unknown error occured: %s", detail),
 	}
 }
+
+func NewNotFoundError[T string | int](resource T) public.Error {
+	return public.Error{
+		Title:  "Not Found Error",
+		Status: http.StatusNotFound,
+		Detail: fmt.Sprintf("Resource %v was not found.", resource),
+	}
+}
