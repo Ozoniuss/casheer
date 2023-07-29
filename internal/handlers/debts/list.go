@@ -1,7 +1,6 @@
 package debts
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
@@ -12,13 +11,8 @@ import (
 
 func (h *handler) HandleListDebt(ctx *gin.Context) {
 
-	var params casheerapi.ListDebtParams
-	err := ctx.ShouldBindQuery(&params)
-
-	if err != nil {
-		common.EmitError(ctx, NewListDebtFailedError(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not bind query params: %s", err.Error())))
+	params, ok := common.CtxGetTyped[casheerapi.ListDebtParams](ctx, "queryparams")
+	if !ok {
 		return
 	}
 
@@ -31,12 +25,10 @@ func (h *handler) HandleListDebt(ctx *gin.Context) {
 	}
 
 	var debts []model.Debt
-	err = h.db.WithContext(ctx).Where(filters).Order("person asc").Order("amount desc").Order("id asc").Find(&debts).Error
+	err := h.db.WithContext(ctx).Where(filters).Order("person asc").Order("amount desc").Order("id asc").Find(&debts).Error
 
 	if err != nil {
-		common.EmitError(ctx, NewListDebtFailedError(
-			http.StatusInternalServerError,
-			fmt.Sprintf("Could not list debts: %s", err.Error())))
+		common.ErrorAndAbort(ctx, err)
 		return
 	}
 
