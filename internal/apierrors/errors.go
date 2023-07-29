@@ -1,4 +1,4 @@
-package errors
+package apierrors
 
 import (
 	"fmt"
@@ -80,10 +80,10 @@ func NewUnknownError(detail string) public.Error {
 	}
 }
 
-func NewNotFoundError[T string | int](resource T) public.Error {
+func NewNotFoundError() public.Error {
 	return public.Error{
 		Title:  "Not Found Error",
 		Status: http.StatusNotFound,
-		Detail: fmt.Sprintf("Resource %v was not found.", resource),
+		Detail: fmt.Sprintf("Resource was not found."),
 	}
 }
