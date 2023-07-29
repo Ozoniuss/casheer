@@ -1,15 +1,24 @@
 package endpoints
 
 import (
+	"net/http"
+
 	"github.com/Ozoniuss/casheer/internal/handlers"
 	"github.com/Ozoniuss/casheer/internal/middlewares"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
 )
 
+// See following for redirects.
+// https://datatracker.ietf.org/doc/html/rfc3986#section-5.4
+
 func RegisterDefaults(router *gin.Engine, h *handlers.DefaultHandler) {
-	router.GET("", h.DefaultHandler)
-	router.GET("/api", h.DefaultHandler)
+	router.GET("", func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusMovedPermanently, "/api/")
+	})
+	router.GET("/api", func(ctx *gin.Context) {
+		ctx.Redirect(http.StatusMovedPermanently, "api/")
+	})
 	router.GET("/api/", h.DefaultHandler)
 }
 
