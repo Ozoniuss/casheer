@@ -7,7 +7,7 @@ type PingResponse struct {
 
 type PingLinks struct {
 	Entries LinkWithDetails `json:"entries"`
-	Debts   LinkWithDetails `json:"details"`
+	Debts   LinkWithDetails `json:"debts"`
 	Totals  LinkWithDetails `json:"totals"`
 }
 

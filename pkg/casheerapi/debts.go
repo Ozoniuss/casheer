@@ -37,7 +37,8 @@ type CreateDebtRequest struct {
 }
 
 type CreateDebtResponse struct {
-	Data DebtData `json:"data"`
+	Data  DebtData  `json:"data"`
+	Links DebtLinks `json:"links"`
 }
 
 type UpdateDebtRequest struct {
