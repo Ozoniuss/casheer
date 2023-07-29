@@ -16,6 +16,14 @@ func NewInvalidURLError(detail string) public.Error {
 	}
 }
 
+func NewInvalidURLNoTrailingSlashError() public.Error {
+	return public.Error{
+		Title:  "Invalid URL",
+		Status: http.StatusBadRequest,
+		Detail: "Please add a trailing slash.",
+	}
+}
+
 func NewRequestBindingError(detail string) public.Error {
 	return public.Error{
 		Title:  "Invalid JSON Body",
