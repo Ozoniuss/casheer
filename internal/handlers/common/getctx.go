@@ -1,8 +1,6 @@
 package common
 
 import (
-	"fmt"
-
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
@@ -18,23 +16,17 @@ func CtxGetTyped[
 		casheerapi.UpdateDebtRequest |
 		casheerapi.ListExpenseParams |
 		casheerapi.ListEntryParams |
-		casheerapi.ListDebtParams](ctx *gin.Context, param string) (T, bool) {
+		casheerapi.ListDebtParams](ctx *gin.Context, param string) (T, error) {
 	var req T
 	reqval, ok := ctx.Get(param)
 	if !ok {
-		EmitError(ctx, ierrors.NewMissingContextParamError(
-			fmt.Sprintf("Context parameter %s not found.", param),
-		))
-		return req, false
+		return req, ierrors.NewMissingGinContextParamError(param)
 	}
 
 	req, ok = reqval.(T)
 	if !ok {
-		EmitError(ctx, ierrors.NewInvalidContextParamError(
-			fmt.Sprintf("Context parameter %s has invalid type.", param),
-		))
-		return req, false
+		return req, ierrors.NewInvalidContextParamTypeError(param)
 	}
 
-	return req, true
+	return req, nil
 }
