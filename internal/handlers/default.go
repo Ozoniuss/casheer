@@ -23,15 +23,15 @@ func (d *DefaultHandler) DefaultHandler(ctx *gin.Context) {
 		Info: "Welcome to the casheer api application. Navigate to one of the following links for further action.",
 		Links: casheerapi.PingLinks{
 			Entries: casheerapi.LinkWithDetails{
-				Href:    d.apiPaths.Entries + "/",
+				Href:    "entries/",
 				Details: "Manage entities.",
 			},
 			Debts: casheerapi.LinkWithDetails{
-				Href:    d.apiPaths.Debts + "/",
+				Href:    "debts/",
 				Details: "Manage debts.",
 			},
 			Totals: casheerapi.LinkWithDetails{
-				Href:    d.apiPaths.Totals + "/",
+				Href:    "totals/",
 				Details: "Manage totals.",
 			},
 		},
