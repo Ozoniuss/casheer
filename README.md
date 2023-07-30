@@ -1,45 +1,45 @@
 # Expense manager
 
-The goal of the application is to manage my own expenses. It basically allows me to plan ahead for each month as well as keep track of the active expenses, by entering them manually, going through my Revolut payments etc.
+The goal of the application is to manage my own expenses. It basically allows me to plan ahead for each month as well as keep track of the active expenses, either by entering them manually, automatically going through my Revolut payments etc. This is the API I will use for interacting with the expenses store.
 
-Proposed features
------------------
+Big Picture
+-----------
 
-There are three main functionalities in the application, that is:
+There are three main functionalities that the API, together with the client, shall fulfill:
 
 - Make a planning for each month of a year;
 - Keep track of a running total for that month by adding expenses;
 - Store debts.
 
-The planning is an orientative schedule of future expenses, and helps estimate the amount of money left at the end of each month. This is useful for planning investments, big purchases, vacations etc.
+The planning is an orientative schedule of future expenses, and helps estimate the amount of money left at the end of each month. This is useful for planning investments, big purchases, holidays etc.
 
-Below is a detailed list of features this application implements.
-
-Proposed features
+Proposed API Features
 -----------------
 
 For entries, I will support:
 
-- [x] Adding a new entry; (1) 
-- [x] Removing an existing entry; (2)
+- [x] Adding a new entry;
+- [x] Removing an existing entry;
 - [x] Retrieving a single entry and all its data;
 - [x] Updating an entry;
 - [x] Listing all entries;
-- [x] Filtering entries during listing operations;
-- [ ] Including all expenses of an entry in a list operation; 
+- [ ] Filtering entries during listing operations, most relevant filters being month, year and category;
+- [ ] Allowing to include all expenses of an entry in a list operation; 
 - [ ] Ordering entries during listing operations;
-- [ ] Paginating entries;  
-
 
 For debts, I will support:
 
-- [x] Adding a new debt; (1) 
-- [x] Removing an existing debt; (2)
+- [x] Adding a new debt;
+- [x] Removing an existing debt;
 - [x] Retrieving a single debt and all its data;
 - [x] Updating an debt;
 - [x] Listing all debts;
+- [x] Filtering debts based on person;
 - [ ] Ordering debts during listing operations; 
-  
+- [x] Default order should be by person increasingly, then by amount decreasingly.
+
+I don't expect to have more than 10-15 debts at a time, so filtering could be optional. Ordering, however, would be nice to have by person and amount.
+
 For expenses, I will support:
 
 - [x] Adding a new expense, given a valid entry; (1) 
@@ -49,6 +49,8 @@ For expenses, I will support:
 - [x] Listing all expenses for an entry;
 - [x] Filtering expenses during listing operations;
 - [ ] Ordering expenses during listing operations;
+
+Because the size of the content is limited and the app will mostly be used on the local network, pagination remains an optional thing that I will likely not implement. Usually, retrieving the entire sheet for a period is desired. Plus, it's often likely that the CLI tool will be used alongside the `less` tool, in which case paginating doesn't make as much sense.
 
 Expenses exist only in the context of an entry, and thus an entry identifier must always be provided, even if it is technically not required to actually perform the operation, such as deleting an expense. This constraint was added for uniformity reasons.
 
@@ -64,31 +66,34 @@ Constraints:
 Models
 ------
 
-A planning is defined for a particular month and year, and has several entries. Each entry holds the following information:
+A planning is defined for a particular month and year, and has several `entries`. Each `entry` holds the following information:
 
-- uuid (used to identify the entry and map expenses to it)
+- id
 - month
 - year
 - category
 - subcategory
 - expected total
-- ~~running total~~ (redundant since it can be computed from expenses, will be removed)
-- recurring (if set to true, will be automatically copied to next month)
+- ~~running total~~ redundant since it can be computed from expenses, will be removed
+- ~~recurring (if set to true, will be automatically copied to next month)~~ will be done on the client side
 
-I don't feel there is a need to have more than a category and a subcategory, otherwise this will turn into a hierarchical mess. The subcategory may also correspond to a one-time event. A good example of an entry that might attract multiple expense would be `transport, fuel` and a good example of an entry that might attract a single expense would be `personal, python-course`. Ideally, the entry category and subcategory should not contain whitespaces to allow for autocomplete in the CLI client.
+I don't feel there is a need to have more than a category and a subcategory, otherwise this will turn into a hierarchical mess. The subcategory may also correspond to a one-time event. A good example of an entry that might attract multiple expense would be `food, eating_out` (because you may eat out multiple times a month) and a good example of an entry that might attract a single expense would be `personal, python_course` (since you're only buying the course once). For me, this two-layer model offers a good amount of organization, covering both recurring expenses as well as one-time purchases.
 
-For each month, there is always a special category called `income`, which should be present for every month and year. There is no restriction on its subcategories, but it almost usually has `salary`. I might consider making additional fixed categories such as `health`, `investments` `food`, but I'm not doing that at the moment.
+To allow for autocomplete in the CLI client, it may be a good idea to not use whitespaces as a separator. The CLI may perform a query at first to load a bunch of stuff from the database and allow for autocompletion, but the implementation remains to be determined.
+
+For each month, there is always a special category called `income`, which should be present for every month and year. There is no restriction on its subcategories, but it almost usually has `salary`. Income is special, because a positive value adds to the running total quota, whereas a positive expense value decreases the running total quota. I might consider making additional fixed categories such as `health`, `investments` `food`, but I'm not doing that at the moment. Also not sure how to automatize the creation of this special category, but likely on the client.
  
-Then we have the expenses, which can be associated with entries. The expenses will contribute to the running total of an entry, either positively or negatively (an expense may have a negative value, as in "a friend paid me back 50$ from months ago"). An expense consists of the following data:
+Then we have the expenses, which can be associated with entries. That means, an expense exists only in the context of an entry, and an entry can have multiple expenses (one-to-many). The expenses will contribute to the running total of an entry, either positively or negatively (an expense may have a negative value, as in "a friend paid me back 50$ from months ago"). An expense consists of the following data:
 
 - uuid
 - entry uuid
 - value
+- currency
 - name
 - description (additional information about the expense)
 - payment method (may be optional)
 
-Lastly, there's debts. This holds both debts that are owed to me, but also debts that I own to other people. An entry for a debt contains the following data:
+Lastly, there's debts. This holds both debts that are owed to me, but also debts that I owe to other people. An entry for a debt contains the following data:
 
 - uuid
 - person
@@ -106,8 +111,8 @@ There's nothing particularly interesting to talk about here except maybe indexin
 
 Starting with the (back-off-the-envelope) estimations:
 
-- Around 5 active debts most of the time. Personally, it makes sense for me to store multiple debts of the same person individually, as it gives me a better view of what is going on. Even considering that, I don't expect to ever have more than, say, 20 active debts;
-- A quick search through my revolut history shows me that I have around 100 expenses on average recorded for a month, split accross 30 entries on average. For say 50 years, that is 100 * 12 * 50 = 60000 total records for expenses. This also requires 30 * 12 * 30 = 10,800 records for entries.
+- Around 5 active debts most of the time. Personally, it makes sense for me to store multiple debts of the same person individually, as it gives me a better overview of the transactions. Even considering that, I don't expect to ever have more than, say, 20 active debts as an all-time high;
+- A quick search through my revolut history shows me that I have around 100 expenses on average recorded for a month, split accross 30 entries on average. For say 50 years, that is 100 * 12 * 50 = 60000 total records for expenses. This also requires 30 * 12 * 50 = 18,000 records for entries.
 - Everything is soft-deleted for about 30 days before being hard-deleted, so it gives me some time to fix mistakes.
 
 Keep in mind that the estimation was for *50 years*. With all these considerations, I don't expect to have more than 100k total records in the database during this lifetime.
@@ -156,32 +161,3 @@ Perhaps one of the most important feature of a RESTful architecture that is impl
 By following these interfaces, a media type in json format had been defined for the resources. Each response will provide state transitions in the form of hyperlinks, which will allow the client to navigate between the available states of the application. This hypertext-enabled behavior is an essential constraint of REST API's, as explained by Roy Fielding himself in [this post](https://roy.gbiv.com/untangled/2008/rest-apis-must-be-hypertext-driven) on his website.
 
 TODO: detail connectors, data elements, views.
-
-Following code principles saves time
---------------------------------------
-
-I was writing the CLI and realized that I wasn't returning errors in the agreed format. This means I had to define an error wrapper in the public package to prefix the error details with the "error" keyword:
-
-```go
-type ErrorResponse struct {
-	Error Error `json:"error"`
-}
-```
-
-I realized though I'd dodged a bullet by defining a separate function to render errors to the client:
-
-```go
-// EmitError sends an error response back to the client.
-func EmitError(ctx *gin.Context, err public.Error) {
-	// ctx.JSON(err.Status, gin.H{
-	// 	"error": err,
-	// })
-	ctx.JSON(err.Status, casheerapi.ErrorResponse{
-		Error: err,
-	})
-}
-```
-
-I would've had to change every error response had I not factored this out separately.
-
-Obviously a pretty lame example but shows that coding principles are there for a good reason.
