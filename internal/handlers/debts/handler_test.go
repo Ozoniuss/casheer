@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"testing"
 
@@ -30,7 +31,11 @@ func TestMain(m *testing.M) {
 	}
 	// Attempt to remove db file anyway.
 	defer os.Remove(dbname)
-	testHandler = NewHandler(db, nil)
+	testHandler = NewHandler(db, &url.URL{
+		Scheme: "http",
+		Host:   "localhost:69",
+		Path:   "/doesnt/matter",
+	})
 	code := m.Run()
 	// call flag.Parse() here if TestMain uses flags
 	err = testutils.Teardown(db, dbname)
