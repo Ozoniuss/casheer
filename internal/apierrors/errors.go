@@ -95,3 +95,11 @@ func NewInvalidResourceError(detail string) public.Error {
 		Detail: detail,
 	}
 }
+
+func NewAlreadyExistsError(detail string) public.Error {
+	return public.Error{
+		Title:  "Resource Already Exists",
+		Status: http.StatusConflict,
+		Detail: detail,
+	}
+}
