@@ -71,7 +71,7 @@ type ListDebtLinks struct {
 
 type ListDebtResponse struct {
 	Data  []DebtListItemData `json:"data"`
-	Links ListDebtLinks      `json:"links"`
+	Links DefaultLinks       `json:"links"`
 }
 
 type GetDebtRequest struct {

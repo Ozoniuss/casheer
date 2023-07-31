@@ -34,11 +34,8 @@ func (h *handler) HandleListDebt(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.ListDebtResponse{
-		Data: make([]casheerapi.DebtListItemData, 0, len(debts)),
-		Links: casheerapi.ListDebtLinks{
-			Self:    h.apiPaths.Debts + "/",
-			Entries: h.apiPaths.Entries + "/",
-		},
+		Data:  make([]casheerapi.DebtListItemData, 0, len(debts)),
+		Links: common.NewDefaultLinks(h.debtsURL),
 	}
 	for _, d := range debts {
 		resp.Data = append(resp.Data, DebtToPublicList(d, h.debtsURL))
