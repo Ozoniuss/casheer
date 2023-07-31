@@ -1,11 +1,9 @@
 package entries
 
 import (
-	"fmt"
 	"net/url"
 	"strconv"
 
-	"github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/model"
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
@@ -43,11 +41,12 @@ func EntryToPublic(entry model.Entry, entriesURL *url.URL, runningTotal int) pub
 		Links: public.EntryLinks{
 			Self:       entriesURL.JoinPath(strconv.Itoa(entry.Id)).String(),
 			Collection: entriesURL.String(),
+			Expenses:   entriesURL.JoinPath(strconv.Itoa(entry.Id), "expenses/").String(),
 		},
 	}
 }
 
-func EntryToPublicList(entry model.Entry, apipath config.ApiPaths, runningTotal int) public.EntryListItemData {
+func EntryToPublicList(entry model.Entry, entriesURL *url.URL, runningTotal int) public.EntryListItemData {
 	return public.EntryListItemData{
 		ResourceID: public.ResourceID{
 			Id:   strconv.Itoa(entry.Id),
@@ -69,7 +68,7 @@ func EntryToPublicList(entry model.Entry, apipath config.ApiPaths, runningTotal 
 			RunningTotal: runningTotal,
 		},
 		Links: public.EntryListItemLinks{
-			Self: fmt.Sprintf("%s/%s", apipath.Entries, strconv.Itoa(entry.Id)),
+			Self: entriesURL.JoinPath(strconv.Itoa(entry.Id)).String(),
 		},
 	}
 }

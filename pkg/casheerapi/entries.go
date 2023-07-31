@@ -102,7 +102,7 @@ type ListEntryLinks struct {
 
 type ListEntryResponse struct {
 	Data  []EntryListItemData `json:"data"`
-	Links ListEntryLinks      `json:"links"`
+	Links DefaultLinks        `json:"links"`
 }
 
 type GetEntryRequest struct {
