@@ -3,7 +3,7 @@ package endpoints
 import (
 	"net/http"
 
-	ierrors "github.com/Ozoniuss/casheer/internal/errors"
+	ierrors "github.com/Ozoniuss/casheer/internal/apierrors"
 	"github.com/Ozoniuss/casheer/internal/handlers"
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/internal/middlewares"
@@ -50,7 +50,7 @@ func RegisterDebts(router *gin.Engine, h handlers.DebtHandler) {
 		common.EmitError(ctx, ierrors.NewInvalidURLNoTrailingSlashError())
 	})
 
-	subrouter.GET("/", middlewares.BindQueryParams[casheerapi.ListDebtParams](), h.HandleListDebt)
+	subrouter.GET("/", middlewares.BindQueryParams[casheerapi.ListDebtParams]("queryparams"), h.HandleListDebt)
 	subrouter.GET("", func(ctx *gin.Context) {
 		ctx.Redirect(http.StatusMovedPermanently, "debts/")
 	})
