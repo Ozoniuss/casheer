@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/Ozoniuss/casheer/internal/apierrors"
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
@@ -24,9 +25,11 @@ func ErrorHandler() gin.HandlerFunc {
 		}
 
 		err := ctx.Errors[0].Err
+		fmt.Printf("An error occured: %s\n", err.Error())
 
 		var missingContextParamError ierrors.MissingGinContextParam
 		var invalidContextParamTypeError ierrors.InvalidGinContextParamType
+		var invalidResourceError ierrors.InvalidModel
 		switch {
 
 		case errors.As(err, &missingContextParamError):
@@ -40,6 +43,10 @@ func ErrorHandler() gin.HandlerFunc {
 		case errors.Is(err, model.InvalidDebtErr{}):
 			common.EmitError(ctx,
 				debts.NewInvalidDebtError(err.Error()))
+			return
+
+		case errors.As(err, &invalidResourceError):
+			common.EmitError(ctx, apierrors.NewInvalidResourceError(invalidResourceError.Error()))
 			return
 
 		case errors.Is(err, gorm.ErrRecordNotFound):

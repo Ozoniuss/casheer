@@ -1,6 +1,7 @@
 package model
 
 import (
+	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/go-playground/validator/v10"
 	"gorm.io/gorm"
 )
@@ -12,6 +13,32 @@ func ValidateModel[T Entry | Expense | Debt](obj T, adderr error) func(db *gorm.
 		v := validator.New()
 		if err := v.Struct(obj); err != nil {
 			db.AddError(adderr)
+		}
+		return db
+	}
+}
+
+// ValidateModelScope can be used as a scope to validate any of the existing
+// GORM models. It makes use of go-validator.
+func ValidateModelScope[T Entry | Expense | Debt](obj T) func(db *gorm.DB) *gorm.DB {
+	return func(db *gorm.DB) *gorm.DB {
+		v := validator.New()
+		if err := v.Struct(obj); err != nil {
+			var dberr error
+			switch any(obj).(type) {
+			case Entry:
+				dberr = ierrors.NewInvalidModelError("entry", err)
+				break
+			case Expense:
+				dberr = ierrors.NewInvalidModelError("expense", err)
+				break
+			case Debt:
+				dberr = ierrors.NewInvalidModelError("debt", err)
+				break
+			default:
+				panic("this should not happen but it's not handled yet")
+			}
+			db.AddError(dberr)
 		}
 		return db
 	}

@@ -84,6 +84,14 @@ func NewNotFoundError() public.Error {
 	return public.Error{
 		Title:  "Not Found Error",
 		Status: http.StatusNotFound,
-		Detail: fmt.Sprintf("Resource was not found."),
+		Detail: "Resource was not found.",
+	}
+}
+
+func NewInvalidResourceError(detail string) public.Error {
+	return public.Error{
+		Title:  "Invalid Resource",
+		Status: http.StatusBadRequest,
+		Detail: detail,
 	}
 }

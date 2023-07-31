@@ -25,3 +25,19 @@ func NewInvalidContextParamTypeError(paramName string) InvalidGinContextParamTyp
 func (i InvalidGinContextParamType) Error() string {
 	return fmt.Sprintf("context parameter %s has invalid type.", i.paramName)
 }
+
+type InvalidModel struct {
+	modelName       string
+	validationError error
+}
+
+func NewInvalidModelError(resource string, validationError error) InvalidModel {
+	return InvalidModel{
+		modelName:       resource,
+		validationError: validationError,
+	}
+}
+
+func (r InvalidModel) Error() string {
+	return fmt.Sprintf("Invalid %s resource: %s", r.modelName, r.validationError.Error())
+}
