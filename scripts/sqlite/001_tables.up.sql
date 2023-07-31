@@ -46,5 +46,5 @@ CREATE TABLE IF NOT EXISTS debts(
     details TEXT COLLATE NOCASE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    deleted_at DATETIME, -- safety net
+    deleted_at DATETIME -- safety net
 );
