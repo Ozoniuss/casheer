@@ -102,6 +102,31 @@ func TestHandleCreateDebt(t *testing.T) {
 			t.Errorf("Debts are not the same: %+v and %+v", debts[0], debts[1])
 		}
 	})
+
+	t.Run("Creating an invalid debt should yield an error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		dummyDebt := casheerapi.CreateDebtRequest{
+			Person:  "", // invalid person
+			Amount:  5000,
+			Details: "some details",
+		}
+		ctx.Set("req", dummyDebt)
+
+		testHandler.HandleCreateDebt(ctx)
+
+		// Should not be in db.
+		var debts []model.Debt
+		testHandler.db.Find(&debts)
+		if len(debts) != 2 {
+			t.Errorf("Expected to have 2 debt, but found %d", len(debts))
+		}
+		if len(ctx.Errors) == 0 {
+			t.Error("Expected to have an error in the context")
+		}
+	})
+
 }
 
 func TestHandleDeleteDebt(t *testing.T) {
