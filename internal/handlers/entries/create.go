@@ -1,8 +1,6 @@
 package entries
 
 import (
-	"errors"
-	"fmt"
 	"net/http"
 	"time"
 
@@ -16,8 +14,9 @@ import (
 
 func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 
-	req, ok := common.CtxGetTyped[casheerapi.CreateEntryRequest](ctx, "req")
-	if !ok {
+	req, err := common.CtxGetTyped[casheerapi.CreateEntryRequest](ctx, "req")
+	if err != nil {
+		common.ErrorAndAbort(ctx, err)
 		return
 	}
 
@@ -30,7 +29,7 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		Year:          time.Now().Year(),
 	}
 
-	// If month or year are null, set them to the current month or year.
+	// If month or year are not null, overwrite current month / year.
 	if req.Month != nil {
 		entry.Month = *req.Month
 	}
@@ -38,29 +37,15 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		entry.Year = *req.Year
 	}
 
-	err := h.db.WithContext(ctx).Scopes(model.ValidateModel[model.Entry](entry, model.InvalidEntryErr{})).Clauses(clause.Returning{}).Create(&entry).Error
-
-	// TODO: nicer error handling
+	err = h.db.WithContext(ctx).Scopes(model.ValidateModelScope[model.Entry](entry)).Clauses(clause.Returning{}).Create(&entry).Error
 	if err != nil {
-		switch {
-		case errors.Is(err, model.InvalidEntryErr{}):
-			{
-				common.EmitError(ctx, NewCreateEntryFailedError(
-					http.StatusBadRequest,
-					fmt.Sprintf("Could not create entry: %s", err.Error()),
-				))
-			}
-		default:
-			common.EmitError(ctx, NewCreateEntryFailedError(
-				http.StatusBadRequest,
-				fmt.Sprintf("Could not create entry: %s", err.Error())))
-		}
+		common.ErrorAndAbort(ctx, err)
 		return
 	}
 
 	resp := casheerapi.CreateEntryResponse{
 		// Running total is obviously 0
-		Data: EntryToPublic(entry, h.apiPaths, 0),
+		Data: EntryToPublic(entry, h.entriesURL, 0),
 	}
 
 	ctx.JSON(http.StatusCreated, &resp)

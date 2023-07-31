@@ -30,7 +30,7 @@ func NewRouter(db *gorm.DB, config config.Config) (*gin.Engine, error) {
 		endpoints.RegisterDefaults(r, &h)
 	}
 	{
-		h := entries.NewHandler(db, config)
+		h := entries.NewHandler(db, baseURL.JoinPath(config.ApiPaths.Entries))
 		endpoints.RegisterEntries(r, &h)
 	}
 	{

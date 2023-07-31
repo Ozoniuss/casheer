@@ -17,10 +17,10 @@ import (
 func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 
 	id := ctx.GetInt("entid")
-	req, ok := common.CtxGetTyped[casheerapi.UpdateEntryRequest](ctx, "req")
-	if !ok {
-		return
-	}
+	req, _ := common.CtxGetTyped[casheerapi.UpdateEntryRequest](ctx, "req")
+	// if !ok {
+	// 	return
+	// }
 
 	// Find out what needs to be updated.
 	entry, updatedFields := getUpdatedFields(req)
@@ -52,7 +52,7 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.UpdateEntryResponse{
-		Data: EntryToPublic(entry, h.apiPaths, computeRunningTotal(entry.Expenses)),
+		Data: EntryToPublic(entry, h.entriesURL, computeRunningTotal(entry.Expenses)),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)

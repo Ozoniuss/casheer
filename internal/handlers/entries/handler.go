@@ -1,18 +1,21 @@
 package entries
 
 import (
+	"net/url"
+
 	"github.com/Ozoniuss/casheer/internal/config"
 	"gorm.io/gorm"
 )
 
 type handler struct {
-	db       *gorm.DB
-	apiPaths config.ApiPaths
+	db         *gorm.DB
+	entriesURL *url.URL
+	apiPaths   config.ApiPaths
 }
 
-func NewHandler(db *gorm.DB, config config.Config) handler {
+func NewHandler(db *gorm.DB, collection *url.URL) handler {
 	return handler{
-		db:       db,
-		apiPaths: config.ApiPaths,
+		db:         db,
+		entriesURL: collection,
 	}
 }

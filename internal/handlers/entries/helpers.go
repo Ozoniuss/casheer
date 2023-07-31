@@ -2,6 +2,7 @@ package entries
 
 import (
 	"fmt"
+	"net/url"
 	"strconv"
 
 	"github.com/Ozoniuss/casheer/internal/config"
@@ -18,7 +19,7 @@ func computeRunningTotal(expenses []model.Expense) int {
 	return rt
 }
 
-func EntryToPublic(entry model.Entry, apipath config.ApiPaths, runningTotal int) public.EntryData {
+func EntryToPublic(entry model.Entry, entriesURL *url.URL, runningTotal int) public.EntryData {
 	return public.EntryData{
 		ResourceID: public.ResourceID{
 			Id:   strconv.Itoa(entry.Id),
@@ -40,9 +41,8 @@ func EntryToPublic(entry model.Entry, apipath config.ApiPaths, runningTotal int)
 			RunningTotal: runningTotal,
 		},
 		Links: public.EntryLinks{
-			Self:       fmt.Sprintf("%s/%s", apipath.Entries, strconv.Itoa(entry.Id)),
-			Collection: fmt.Sprintf("%s/", apipath.Entries),
-			Expenses:   fmt.Sprintf("%s/%s/expenses/", apipath.Entries, strconv.Itoa(entry.Id)),
+			Self:       entriesURL.JoinPath(strconv.Itoa(entry.Id)).String(),
+			Collection: entriesURL.String(),
 		},
 	}
 }
