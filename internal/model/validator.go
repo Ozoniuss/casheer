@@ -6,18 +6,6 @@ import (
 	"gorm.io/gorm"
 )
 
-// ValidateModel can be used as a scope to validate any of the existing GORM
-// models. It makes use of go-validator.
-func ValidateModel[T Entry | Expense | Debt](obj T, adderr error) func(db *gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		v := validator.New()
-		if err := v.Struct(obj); err != nil {
-			db.AddError(adderr)
-		}
-		return db
-	}
-}
-
 // ValidateModelScope can be used as a scope to validate any of the existing
 // GORM models. It makes use of go-validator.
 func ValidateModelScope[T Entry | Expense | Debt](obj T) func(db *gorm.DB) *gorm.DB {

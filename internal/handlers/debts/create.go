@@ -25,7 +25,7 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 		Details: req.Details,
 	}
 
-	err = h.db.WithContext(ctx).Scopes(model.ValidateModel[model.Debt](debt, model.InvalidDebtErr{})).Clauses(clause.Returning{}).Create(&debt).Error
+	err = h.db.WithContext(ctx).Scopes(model.ValidateModelScope[model.Debt](debt)).Clauses(clause.Returning{}).Create(&debt).Error
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
 		return

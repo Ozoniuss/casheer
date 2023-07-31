@@ -7,8 +7,6 @@ import (
 	"github.com/Ozoniuss/casheer/internal/apierrors"
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
-	"github.com/Ozoniuss/casheer/internal/handlers/debts"
-	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
@@ -38,11 +36,6 @@ func ErrorHandler() gin.HandlerFunc {
 
 		case errors.As(err, &invalidContextParamTypeError):
 			common.EmitError(ctx, apierrors.NewUnknownError("something went wrong while handling the request."))
-			return
-
-		case errors.Is(err, model.InvalidDebtErr{}):
-			common.EmitError(ctx,
-				debts.NewInvalidDebtError(err.Error()))
 			return
 
 		case errors.As(err, &invalidResourceError):
