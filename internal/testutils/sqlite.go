@@ -2,16 +2,16 @@ package testutils
 
 import (
 	"fmt"
+	"io"
 	"os"
 
-	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/internal/store"
 	"gorm.io/gorm"
 )
 
 // Setup creates a temporary sqlite3 database folder, returning a database
 // connection.
-func Setup[T model.Entry | model.Debt | model.Expense](table T) (*gorm.DB, string, error) {
+func Setup(sqlpath string) (*gorm.DB, string, error) {
 	var err error
 	dbfile, err := os.CreateTemp(".", "*.db")
 	if err != nil {
@@ -25,8 +25,18 @@ func Setup[T model.Entry | model.Debt | model.Expense](table T) (*gorm.DB, strin
 		return nil, "", fmt.Errorf("connecting to temporary database %s: %s", dbname, err.Error())
 	}
 
-	// Create the table.
-	db.AutoMigrate(table)
+	sqlfile, err := os.Open(sqlpath)
+	if err != nil {
+		return nil, "", fmt.Errorf("opening sql file: %s", err.Error())
+	}
+	query, err := io.ReadAll(sqlfile)
+	if err != nil {
+		return nil, "", fmt.Errorf("reading sql file: %s", err.Error())
+	}
+	err = db.Exec(string(query)).Error
+	if err != nil {
+		return nil, "", fmt.Errorf("executing sql query: %s", err.Error())
+	}
 
 	return db, dbname, nil
 }

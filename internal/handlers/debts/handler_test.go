@@ -21,10 +21,12 @@ var dbname string
 var db *gorm.DB
 var testHandler handler
 
+const SQL_PATH = "../../../scripts/sqlite/001_tables.up.sql"
+
 func TestMain(m *testing.M) {
 	gin.SetMode(gin.TestMode)
 	var err error
-	db, dbname, err = testutils.Setup[model.Debt](model.Debt{})
+	db, dbname, err = testutils.Setup(SQL_PATH)
 	if err != nil {
 		fmt.Printf("Error setting up tests: %s", err.Error())
 		os.Exit(1)
