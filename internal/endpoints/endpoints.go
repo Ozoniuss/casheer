@@ -32,7 +32,7 @@ func RegisterEntries(router *gin.Engine, h handlers.EntryHandler) {
 		common.EmitError(ctx, ierrors.NewInvalidURLNoTrailingSlashError())
 	})
 
-	subrouter.GET("/", h.HandleListEntry)
+	subrouter.GET("/", middlewares.BindQueryParams[casheerapi.ListEntryParams]("queryparams"), h.HandleListEntry)
 	subrouter.GET("", func(ctx *gin.Context) {
 		ctx.Redirect(http.StatusMovedPermanently, "entries/")
 	})
