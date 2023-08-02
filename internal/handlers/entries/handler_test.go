@@ -155,3 +155,70 @@ func TestHandleCreateEntry(t *testing.T) {
 	})
 
 }
+
+// func TestHandleDeleteEntry(t *testing.T) {
+// 	dummyEntry := model.Entry{
+// 		BaseModel: model.BaseModel{
+// 			Id: rand.Int(),
+// 		},
+// 		Person:  "person",
+// 		Amount:  5000,
+// 		Details: "some details",
+// 	}
+// 	testHandler.db.Create(&dummyEntry)
+
+// 	t.Run("Deleting an existing entry should remove it", func(t *testing.T) {
+
+// 		w := httptest.NewRecorder()
+// 		ctx, _ := gin.CreateTestContext(w)
+
+// 		ctx.Set("dbtid", dummyEntry.Id)
+// 		testHandler.HandleDeleteEntry(ctx)
+
+// 		var entrys []model.Entry
+// 		testHandler.db.Where("id = ?", dummyEntry.Id).Find(&entrys)
+// 		if len(entrys) != 0 {
+// 			t.Error("Entry did not get deleted.")
+// 		}
+// 	})
+// }
+
+// func TestHandleUpdateEntry(t *testing.T) {
+// 	dummyEntry := model.Entry{
+// 		BaseModel: model.BaseModel{
+// 			Id: rand.Int(),
+// 		},
+// 		Person:  "person",
+// 		Amount:  5000,
+// 		Details: "some details",
+// 	}
+// 	testHandler.db.Create(&dummyEntry)
+
+// 	t.Run("Updating an existing entry should change it", func(t *testing.T) {
+
+// 		w := httptest.NewRecorder()
+// 		ctx, _ := gin.CreateTestContext(w)
+
+// 		newEntry := casheerapi.UpdateEntryRequest{
+// 			Person:  func() *string { p := "new person"; return &p }(),
+// 			Amount:  func() *int { a := 10000; return &a }(),
+// 			Details: func() *string { d := "new details"; return &d }(),
+// 		}
+
+// 		ctx.Set("dbtid", dummyEntry.Id)
+// 		ctx.Set("req", newEntry)
+// 		testHandler.HandleUpdateEntry(ctx)
+
+// 		var entrys []model.Entry
+// 		testHandler.db.Where("id = ?", dummyEntry.Id).Find(&entrys)
+// 		if len(entrys) != 1 {
+// 			t.Error("Number of entrys is wrong.")
+// 		}
+
+// 		if entrys[0].Amount != *newEntry.Amount ||
+// 			entrys[0].Details != *newEntry.Details ||
+// 			entrys[0].Person != *newEntry.Person {
+// 			t.Errorf("Entrys are not the same: %+v and %+v", entrys[0], newEntry)
+// 		}
+// 	})
+// }

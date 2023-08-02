@@ -1,9 +1,0 @@
-database:
-    host: 127.0.0.1
-    name: postgres
-    password: admin
-    port: 5432
-    user: postgres
-server:
-    address: 127.0.0.1
-    port: 8033

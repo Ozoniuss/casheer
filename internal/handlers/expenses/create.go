@@ -16,10 +16,10 @@ import (
 func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 
 	entid := ctx.GetInt("entid")
-	req, ok := common.CtxGetTyped[casheerapi.CreateExpenseRequest](ctx, "req")
-	if !ok {
-		return
-	}
+	req, _ := common.CtxGetTyped[casheerapi.CreateExpenseRequest](ctx, "req")
+	// if !ok {
+	// 	return
+	// }
 
 	expense := model.Expense{
 		EntryId:       entid,
