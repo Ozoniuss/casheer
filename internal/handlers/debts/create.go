@@ -2,7 +2,6 @@ package debts
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/internal/model"
@@ -38,6 +37,7 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 		),
 		Links: common.NewDefaultLinks(h.debtsURL),
 	}
-	ctx.Header("Locatinon", strconv.Itoa(debt.Id))
+	// See https://jsonapi.org/format/#crud-creating-responses-201
+	ctx.Header("Locatinon", resp.Data.Links.Self)
 	ctx.JSON(http.StatusCreated, &resp)
 }

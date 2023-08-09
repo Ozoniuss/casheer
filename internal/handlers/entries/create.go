@@ -47,6 +47,7 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		// Running total is obviously 0
 		Data: EntryToPublic(entry, h.entriesURL, 0),
 	}
-
+	// See https://jsonapi.org/format/#crud-creating-responses-201
+	ctx.Header("Locatinon", resp.Data.Links.Self)
 	ctx.JSON(http.StatusCreated, &resp)
 }
