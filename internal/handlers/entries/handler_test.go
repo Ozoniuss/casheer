@@ -3,9 +3,11 @@ package entries
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"reflect"
 	"testing"
 
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
@@ -63,8 +65,6 @@ func TestHandleCreateEntry(t *testing.T) {
 
 	t.Run("Creating a entry should save the entry", func(t *testing.T) {
 
-		fmt.Println("1")
-
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
 
@@ -90,8 +90,6 @@ func TestHandleCreateEntry(t *testing.T) {
 	})
 
 	t.Run("Creating an entry with the same month, year, category and subcategory should fail", func(t *testing.T) {
-
-		fmt.Println("2")
 
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
@@ -119,8 +117,6 @@ func TestHandleCreateEntry(t *testing.T) {
 	})
 
 	t.Run("Creating an invalid entry should yield an error", func(t *testing.T) {
-
-		fmt.Println("3")
 
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
@@ -154,4 +150,51 @@ func TestHandleCreateEntry(t *testing.T) {
 		}
 	})
 
+}
+
+func TestHandleDeleteEntry(t *testing.T) {
+
+	dummyEntry := model.Entry{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		Month:         10,
+		Year:          2023,
+		Category:      "category",
+		Subcategory:   "subcategory",
+		ExpectedTotal: 5000,
+	}
+
+	testHandler.db.Create(&dummyEntry)
+
+	t.Run("Deleting an existing entry should delete the entry", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("entid", dummyEntry.Id)
+		testHandler.HandleDeleteEntry(ctx)
+
+		var entries []model.Entry
+		testHandler.db.Where("id = ?", dummyEntry.Id).Find(&entries)
+		if len(entries) != 0 {
+			t.Errorf("Expected to have 0 entry, but found %d", len(entries))
+		}
+	})
+
+	t.Run("Deleting a non-existing entry should fail", func(t *testing.T) {
+
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("entid", dummyEntry.Id+1)
+		testHandler.HandleDeleteEntry(ctx)
+
+		if len(ctx.Errors) == 0 {
+			t.Fatalf("Expected to have an error attached to the context.")
+		}
+		var ctxerr = gorm.ErrRecordNotFound
+		if !errors.Is(ctx.Errors[0], ctxerr) {
+			t.Errorf("Expected error to be of type gorm.ErrRecordNotFound, got %s\n", reflect.TypeOf(ctx.Errors[0]))
+		}
+	})
 }
