@@ -13,7 +13,7 @@ import (
 // connection.
 func Setup(sqlpath string) (*gorm.DB, string, error) {
 	var err error
-	dbfile, err := os.CreateTemp(".", "*.db")
+	dbfile, err := os.CreateTemp(".", "*.testdb")
 	if err != nil {
 		return nil, "", err
 	}
