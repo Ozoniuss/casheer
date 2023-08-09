@@ -198,3 +198,50 @@ func TestHandleDeleteEntry(t *testing.T) {
 		}
 	})
 }
+
+func TestHandleGetEntry(t *testing.T) {
+
+	dummyEntry := model.Entry{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		Month:         10,
+		Year:          2023,
+		Category:      "category2",
+		Subcategory:   "subcategory2",
+		ExpectedTotal: 5000,
+	}
+	err := testHandler.db.Create(&dummyEntry).Error
+	if err != nil {
+		t.Fatalf("Could not create entry: %s\n", err)
+	}
+
+	t.Run("Retrieving an existing entry should not give an error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("entid", dummyEntry.Id)
+		testHandler.HandleGetEntry(ctx)
+
+		if len(ctx.Errors) != 0 {
+			t.Errorf("Expected to have no errors attached to the context, found %d. First error of type %v: %s\n", len(ctx.Errors), reflect.TypeOf(ctx.Errors[0]), ctx.Errors[0].Error())
+		}
+	})
+
+	t.Run("Retrieving a non-existing entry should give an error", func(t *testing.T) {
+
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("entid", dummyEntry.Id+1)
+		testHandler.HandleGetEntry(ctx)
+
+		if len(ctx.Errors) == 0 {
+			t.Error("Expected to have errors attached to the context, found none.")
+		}
+		var ctxerr = gorm.ErrRecordNotFound
+		if !errors.Is(ctx.Errors[0], ctxerr) {
+			t.Errorf("Expected error to be of type gorm.ErrRecordNotFound, got %s\n", reflect.TypeOf(ctx.Errors[0]))
+		}
+	})
+}
