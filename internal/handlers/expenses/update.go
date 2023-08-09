@@ -18,10 +18,10 @@ func (h *handler) HandleUpdateExpense(ctx *gin.Context) {
 	entid := ctx.GetInt("entid")
 	id := ctx.GetInt("expid")
 
-	req, ok := common.CtxGetTyped[casheerapi.UpdateExpenseRequest](ctx, "req")
-	if !ok {
-		return
-	}
+	req, _ := common.CtxGetTyped[casheerapi.UpdateExpenseRequest](ctx, "req")
+	// if !ok {
+	// 	return
+	// }
 
 	// This is needed to query using zero values as well, see
 	// https://gorm.io/docs/update.html#Updates-multiple-columns

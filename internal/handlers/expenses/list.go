@@ -15,10 +15,10 @@ func (h *handler) HandleListExpense(ctx *gin.Context) {
 	// At the moment only listing the expenses for a certain entry; it doesn't
 	// really make sense to list all of them.
 	entid := ctx.GetInt("entid")
-	params, ok := common.CtxGetTyped[casheerapi.ListExpenseParams](ctx, "queryparams")
-	if !ok {
-		return
-	}
+	params, _ := common.CtxGetTyped[casheerapi.ListExpenseParams](ctx, "queryparams")
+	// if !ok {
+	// 	return
+	// }
 
 	// This is needed to query using zero values as well, see
 	// https://gorm.io/docs/query.html#Struct-amp-Map-Conditions
