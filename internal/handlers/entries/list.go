@@ -1,7 +1,6 @@
 package entries
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
@@ -12,13 +11,10 @@ import (
 
 func (h *handler) HandleListEntry(ctx *gin.Context) {
 
-	var params casheerapi.ListEntryParams
-	err := ctx.ShouldBindQuery(&params)
+	params, err := common.CtxGetTyped[casheerapi.ListEntryParams](ctx, "queryparams")
 
 	if err != nil {
-		common.EmitError(ctx, NewListEntryFailedError(
-			http.StatusBadRequest,
-			fmt.Sprintf("Could not bind query params: %s", err.Error())))
+		common.ErrorAndAbort(ctx, err)
 		return
 	}
 
@@ -42,11 +38,8 @@ func (h *handler) HandleListEntry(ctx *gin.Context) {
 	var entries []model.Entry
 	err = h.db.WithContext(ctx).Preload("Expenses").Where(filters).Order("year desc").Order("month desc").Find(&entries).Error
 
-	// TODO: nicer error handling
 	if err != nil {
-		common.EmitError(ctx, NewListEntryFailedError(
-			http.StatusInternalServerError,
-			fmt.Sprintf("Could not list entries: %s", err.Error())))
+		common.ErrorAndAbort(ctx, err)
 		return
 	}
 

@@ -72,13 +72,13 @@ func TestHandleCreateEntry(t *testing.T) {
 
 		testHandler.HandleCreateEntry(ctx)
 
-		var entrys []model.Entry
-		testHandler.db.Find(&entrys)
-		if len(entrys) != 1 {
-			t.Errorf("Expected to have 1 entry, but found %d", len(entrys))
+		var entries []model.Entry
+		testHandler.db.Find(&entries)
+		if len(entries) != 1 {
+			t.Errorf("Expected to have 1 entry, but found %d", len(entries))
 		}
 
-		savedEntry := entrys[0]
+		savedEntry := entries[0]
 		if savedEntry.Month != *sharedEntry.Month ||
 			savedEntry.Year != *sharedEntry.Year ||
 			savedEntry.Category != sharedEntry.Category ||
@@ -97,11 +97,11 @@ func TestHandleCreateEntry(t *testing.T) {
 		ctx.Set("req", sharedEntry)
 		testHandler.HandleCreateEntry(ctx)
 
-		var entrys []model.Entry
-		testHandler.db.Find(&entrys)
-		fmt.Printf("%+v", entrys)
-		if len(entrys) != 1 {
-			t.Errorf("Expected to have 1 entry, but found %d", len(entrys))
+		var entries []model.Entry
+		testHandler.db.Find(&entries)
+		fmt.Printf("%+v", entries)
+		if len(entries) != 1 {
+			t.Errorf("Expected to have 1 entry, but found %d", len(entries))
 		}
 		if len(ctx.Errors) == 0 {
 			t.Fatalf("Expected to have an error attached to the context.")
@@ -135,10 +135,10 @@ func TestHandleCreateEntry(t *testing.T) {
 		testHandler.HandleCreateEntry(ctx)
 
 		// Should not be in db.
-		var entrys []model.Entry
-		testHandler.db.Find(&entrys)
-		if len(entrys) != 1 {
-			t.Errorf("Expected to have 1 entry, but found %d", len(entrys))
+		var entries []model.Entry
+		testHandler.db.Find(&entries)
+		if len(entries) != 1 {
+			t.Errorf("Expected to have 1 entry, but found %d", len(entries))
 		}
 		if len(ctx.Errors) == 0 {
 			t.Fatalf("Expected to have an error attached to the context.")
@@ -242,6 +242,56 @@ func TestHandleGetEntry(t *testing.T) {
 		var ctxerr = gorm.ErrRecordNotFound
 		if !errors.Is(ctx.Errors[0], ctxerr) {
 			t.Errorf("Expected error to be of type gorm.ErrRecordNotFound, got %s\n", reflect.TypeOf(ctx.Errors[0]))
+		}
+	})
+}
+
+func TestHandleListEntry(t *testing.T) {
+
+	dummyEntry1 := model.Entry{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		Month:         9,
+		Year:          2023,
+		Category:      "category3",
+		Subcategory:   "subcategory3",
+		ExpectedTotal: 3000,
+	}
+	dummyEntry2 := model.Entry{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		Month:         10,
+		Year:          2023,
+		Category:      "category4",
+		Subcategory:   "subcategory4",
+		ExpectedTotal: 5000,
+	}
+	dummyEntry3 := model.Entry{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		Month:         11,
+		Year:          2023,
+		Category:      "category5",
+		Subcategory:   "subcategory5",
+		ExpectedTotal: 5000,
+	}
+	err := testHandler.db.Create(&[]model.Entry{dummyEntry1, dummyEntry2, dummyEntry3}).Error
+	if err != nil {
+		t.Fatalf("Could not create entries: %s\n", err)
+	}
+
+	t.Run("Retrieving all entries should not give an error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+		ctx.Set("queryparams", casheerapi.ListEntryParams{})
+
+		testHandler.HandleListEntry(ctx)
+
+		if len(ctx.Errors) != 0 {
+			t.Errorf("Expected to have no errors attached to the context, found %d. First error of type %v: %s\n", len(ctx.Errors), reflect.TypeOf(ctx.Errors[0]), ctx.Errors[0].Error())
 		}
 	})
 }
