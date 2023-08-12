@@ -5,8 +5,11 @@ import (
 	"io"
 	"os"
 
-	"github.com/Ozoniuss/casheer/internal/store"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 // Setup creates a temporary sqlite3 database folder, returning a database
@@ -20,9 +23,11 @@ func Setup(sqlpath string) (*gorm.DB, string, error) {
 	dbname := dbfile.Name()
 	dbfile.Close()
 
-	db, err := store.ConnectSqlite(dbname)
+	db, err := gorm.Open(sqlite.Open(dbname), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
-		return nil, "", fmt.Errorf("connecting to temporary database %s: %s", dbname, err.Error())
+		return nil, "", fmt.Errorf("could not open database file: %w", err)
 	}
 
 	sqlfile, err := os.Open(sqlpath)
