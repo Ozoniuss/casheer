@@ -99,7 +99,6 @@ func TestHandleCreateEntry(t *testing.T) {
 
 		var entries []model.Entry
 		testHandler.db.Find(&entries)
-		fmt.Printf("%+v", entries)
 		if len(entries) != 1 {
 			t.Errorf("Expected to have 1 entry, but found %d", len(entries))
 		}
@@ -160,12 +159,42 @@ func TestHandleDeleteEntry(t *testing.T) {
 		},
 		Month:         10,
 		Year:          2023,
-		Category:      "category",
-		Subcategory:   "subcategory",
+		Category:      "categoryd",
+		Subcategory:   "subcategoryd",
 		ExpectedTotal: 5000,
 	}
 
-	testHandler.db.Create(&dummyEntry)
+	dummyEntryCascade := model.Entry{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		Month:         10,
+		Year:          2024,
+		Category:      "cascade",
+		Subcategory:   "cascade",
+		ExpectedTotal: 5000,
+	}
+
+	dummyExpense := model.Expense{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		EntryId: dummyEntryCascade.Id,
+		Value:   100,
+		Name:    "dummy expense",
+	}
+
+	err := testHandler.db.Create(&[]model.Entry{
+		dummyEntry, dummyEntryCascade,
+	}).Error
+	if err != nil {
+		t.Fatalf("Could not create entries: %s\n", err)
+	}
+
+	err = testHandler.db.Create(&dummyExpense).Error
+	if err != nil {
+		t.Fatalf("Could not create expense: %s\n", err)
+	}
 
 	t.Run("Deleting an existing entry should delete the entry", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -195,6 +224,23 @@ func TestHandleDeleteEntry(t *testing.T) {
 		var ctxerr = gorm.ErrRecordNotFound
 		if !errors.Is(ctx.Errors[0], ctxerr) {
 			t.Errorf("Expected error to be of type gorm.ErrRecordNotFound, got %s\n", reflect.TypeOf(ctx.Errors[0]))
+		}
+	})
+
+	t.Run("Deleting an entry with expenses should cascade to expenses", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("entid", dummyEntryCascade.Id)
+		testHandler.HandleDeleteEntry(ctx)
+
+		var expenses []model.Expense
+		testHandler.db.Where("entry_id = ?", dummyEntryCascade.Id).Find(&expenses)
+
+		fmt.Println("expenseees", expenses)
+
+		if len(expenses) != 0 {
+			t.Errorf("Expected to have 0 expenses, but found %d", len(expenses))
 		}
 	})
 }
