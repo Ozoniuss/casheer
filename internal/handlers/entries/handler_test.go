@@ -372,5 +372,24 @@ func TestHandleUpdateEntry(t *testing.T) {
 			t.Errorf("Updated: %+v\nretrieved %+v", req, savedEntry)
 		}
 	})
+	t.Run("Updating an entry with invalid fields should raise an error", func(t *testing.T) {
+
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("entid", dummyEntry.Id)
+
+		req := casheerapi.UpdateEntryRequest{
+			Month:       func() *int { m := 13; return &m }(),
+			Year:        func() *int { y := 2000; return &y }(),
+			Category:    func() *string { c := ""; return &c }(),
+			Subcategory: func() *string { s := ""; return &s }(),
+		}
+		ctx.Set("req", req)
+		testHandler.HandleUpdateEntry(ctx)
+
+		var target ierrors.InvalidModel
+		testutils.CheckCanBeContextError(t, ctx, &target)
+	})
 
 }
