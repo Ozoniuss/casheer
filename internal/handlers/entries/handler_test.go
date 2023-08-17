@@ -1,13 +1,11 @@
 package entries
 
 import (
-	"errors"
 	"fmt"
 	"math/rand"
 	"net/http/httptest"
 	"net/url"
 	"os"
-	"reflect"
 	"testing"
 
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
@@ -73,9 +71,15 @@ func TestHandleCreateEntry(t *testing.T) {
 		testHandler.HandleCreateEntry(ctx)
 
 		var entries []model.Entry
-		testHandler.db.Find(&entries)
+		err := testHandler.db.Find(&entries).Error
+		if err != nil {
+			t.Fatalf("Could not find entry: %s\n", err)
+		}
+
+		testutils.CheckNoContextErrors(t, ctx)
+
 		if len(entries) != 1 {
-			t.Errorf("Expected to have 1 entry, but found %d", len(entries))
+			t.Errorf("Expected to have 1 entry, but found %d\n", len(entries))
 		}
 
 		savedEntry := entries[0]
@@ -84,7 +88,7 @@ func TestHandleCreateEntry(t *testing.T) {
 			savedEntry.Category != sharedEntry.Category ||
 			savedEntry.Subcategory != sharedEntry.Subcategory ||
 			savedEntry.ExpectedTotal != sharedEntry.ExpectedTotal {
-			t.Errorf("Inserted: %+v\nretrieved %+v", sharedEntry, savedEntry)
+			t.Errorf("Inserted: %+v\nretrieved %+v\n", sharedEntry, savedEntry)
 		}
 
 	})
@@ -98,19 +102,18 @@ func TestHandleCreateEntry(t *testing.T) {
 		testHandler.HandleCreateEntry(ctx)
 
 		var entries []model.Entry
-		testHandler.db.Find(&entries)
+		err := testHandler.db.Find(&entries).Error
+		if err != nil {
+			t.Fatalf("Could not find entries: %s\n", err)
+		}
 		if len(entries) != 1 {
 			t.Errorf("Expected to have 1 entry, but found %d", len(entries))
 		}
-		if len(ctx.Errors) == 0 {
-			t.Fatalf("Expected to have an error attached to the context.")
-		}
-		var ctxerr sqlite3.Error
-		ok := errors.As(ctx.Errors[0], &ctxerr)
-		if !ok {
-			t.Error("Expected error to be of type sqlite3.Error")
-		}
-		if ctxerr.Code != sqlite3.ErrConstraint && ctxerr.ExtendedCode != sqlite3.ErrConstraintUnique {
+
+		var target sqlite3.Error
+		testutils.CheckCanBeContextError(t, ctx, &target)
+
+		if target.Code != sqlite3.ErrConstraint && target.ExtendedCode != sqlite3.ErrConstraintUnique {
 			t.Error("Expected error to be Unique Constraint Error")
 		}
 	})
@@ -139,14 +142,8 @@ func TestHandleCreateEntry(t *testing.T) {
 		if len(entries) != 1 {
 			t.Errorf("Expected to have 1 entry, but found %d", len(entries))
 		}
-		if len(ctx.Errors) == 0 {
-			t.Fatalf("Expected to have an error attached to the context.")
-		}
-		var ctxerr ierrors.InvalidModel
-		ok := errors.As(ctx.Errors[0], &ctxerr)
-		if !ok {
-			t.Error("Expected error to be of type ierrors.InvalidModel")
-		}
+		var target ierrors.InvalidModel
+		testutils.CheckCanBeContextError(t, ctx, &target)
 	})
 
 }
@@ -203,6 +200,8 @@ func TestHandleDeleteEntry(t *testing.T) {
 		ctx.Set("entid", dummyEntry.Id)
 		testHandler.HandleDeleteEntry(ctx)
 
+		testutils.CheckNoContextErrors(t, ctx)
+
 		var entries []model.Entry
 		testHandler.db.Where("id = ?", dummyEntry.Id).Find(&entries)
 		if len(entries) != 0 {
@@ -218,13 +217,7 @@ func TestHandleDeleteEntry(t *testing.T) {
 		ctx.Set("entid", dummyEntry.Id+1)
 		testHandler.HandleDeleteEntry(ctx)
 
-		if len(ctx.Errors) == 0 {
-			t.Fatalf("Expected to have an error attached to the context.")
-		}
-		var ctxerr = gorm.ErrRecordNotFound
-		if !errors.Is(ctx.Errors[0], ctxerr) {
-			t.Errorf("Expected error to be of type gorm.ErrRecordNotFound, got %s\n", reflect.TypeOf(ctx.Errors[0]))
-		}
+		testutils.CheckIsContextError(t, ctx, gorm.ErrRecordNotFound)
 	})
 
 	t.Run("Deleting an entry with expenses should cascade to expenses", func(t *testing.T) {
@@ -236,8 +229,6 @@ func TestHandleDeleteEntry(t *testing.T) {
 
 		var expenses []model.Expense
 		testHandler.db.Where("entry_id = ?", dummyEntryCascade.Id).Find(&expenses)
-
-		fmt.Println("expenseees", expenses)
 
 		if len(expenses) != 0 {
 			t.Errorf("Expected to have 0 expenses, but found %d", len(expenses))
@@ -269,9 +260,7 @@ func TestHandleGetEntry(t *testing.T) {
 		ctx.Set("entid", dummyEntry.Id)
 		testHandler.HandleGetEntry(ctx)
 
-		if len(ctx.Errors) != 0 {
-			t.Errorf("Expected to have no errors attached to the context, found %d. First error of type %v: %s\n", len(ctx.Errors), reflect.TypeOf(ctx.Errors[0]), ctx.Errors[0].Error())
-		}
+		testutils.CheckNoContextErrors(t, ctx)
 	})
 
 	t.Run("Retrieving a non-existing entry should give an error", func(t *testing.T) {
@@ -282,13 +271,7 @@ func TestHandleGetEntry(t *testing.T) {
 		ctx.Set("entid", dummyEntry.Id+1)
 		testHandler.HandleGetEntry(ctx)
 
-		if len(ctx.Errors) == 0 {
-			t.Error("Expected to have errors attached to the context, found none.")
-		}
-		var ctxerr = gorm.ErrRecordNotFound
-		if !errors.Is(ctx.Errors[0], ctxerr) {
-			t.Errorf("Expected error to be of type gorm.ErrRecordNotFound, got %s\n", reflect.TypeOf(ctx.Errors[0]))
-		}
+		testutils.CheckIsContextError(t, ctx, gorm.ErrRecordNotFound)
 	})
 }
 
@@ -335,10 +318,7 @@ func TestHandleListEntry(t *testing.T) {
 		ctx.Set("queryparams", casheerapi.ListEntryParams{})
 
 		testHandler.HandleListEntry(ctx)
-
-		if len(ctx.Errors) != 0 {
-			t.Errorf("Expected to have no errors attached to the context, found %d. First error of type %v: %s\n", len(ctx.Errors), reflect.TypeOf(ctx.Errors[0]), ctx.Errors[0].Error())
-		}
+		testutils.CheckNoContextErrors(t, ctx)
 	})
 }
 
@@ -382,6 +362,7 @@ func TestHandleUpdateEntry(t *testing.T) {
 			t.Fatalf("Could not retrieve entry: %s\n", err)
 		}
 
+		testutils.CheckNoContextErrors(t, ctx)
 
 		savedEntry := entries[0]
 		if savedEntry.Month != *req.Month ||
