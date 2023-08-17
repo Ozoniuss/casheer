@@ -34,7 +34,7 @@ func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 		// required in order to produce the output resource.
 		entry.Expenses = expenses
 
-		txerr = h.db.Delete(&expenses).Error
+		txerr = h.db.Debug().Where("id in ?", getExpenseIds(expenses)).Delete(&[]model.Expense{}).Error
 		if txerr != nil {
 			return txerr
 		}
@@ -52,4 +52,12 @@ func (h *handler) HandleDeleteEntry(ctx *gin.Context) {
 	resp.Data.Links.Self = ""
 
 	ctx.JSON(http.StatusOK, &resp)
+}
+
+func getExpenseIds(expenses []model.Expense) []int {
+	ids := make([]int, 0, len(expenses))
+	for _, e := range expenses {
+		ids = append(ids, e.Id)
+	}
+	return ids
 }
