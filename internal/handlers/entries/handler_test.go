@@ -341,3 +341,55 @@ func TestHandleListEntry(t *testing.T) {
 		}
 	})
 }
+
+func TestHandleUpdateEntry(t *testing.T) {
+
+	dummyEntry := model.Entry{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		Month:         10,
+		Year:          2023,
+		Category:      "update",
+		Subcategory:   "update",
+		ExpectedTotal: 5000,
+	}
+	err := testHandler.db.Create(&dummyEntry).Error
+	if err != nil {
+		t.Fatalf("Could not create entry: %s\n", err)
+	}
+
+	t.Run("Updating an entry with valid fields should update it correctly", func(t *testing.T) {
+
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("entid", dummyEntry.Id)
+
+		req := casheerapi.UpdateEntryRequest{
+			Month:       func() *int { m := 12; return &m }(),
+			Year:        func() *int { y := 2024; return &y }(),
+			Category:    func() *string { c := "u1"; return &c }(),
+			Subcategory: func() *string { s := "u1"; return &s }(),
+			Recurring:   func() *bool { r := true; return &r }(),
+		}
+		ctx.Set("req", req)
+		testHandler.HandleUpdateEntry(ctx)
+
+		var entries []model.Entry
+		err := testHandler.db.Where("id = ?", dummyEntry.Id).Find(&entries).Error
+		if err != nil {
+			t.Fatalf("Could not retrieve entry: %s\n", err)
+		}
+
+
+		savedEntry := entries[0]
+		if savedEntry.Month != *req.Month ||
+			savedEntry.Year != *req.Year ||
+			savedEntry.Category != *req.Category ||
+			savedEntry.Subcategory != *req.Subcategory {
+			t.Errorf("Updated: %+v\nretrieved %+v", req, savedEntry)
+		}
+	})
+
+}
