@@ -8,6 +8,8 @@ import (
 	"os"
 	"testing"
 
+	ierrors "github.com/Ozoniuss/casheer/internal/errors"
+
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/internal/testutils"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
@@ -63,8 +65,13 @@ func TestHandleCreateDebt(t *testing.T) {
 
 		testHandler.HandleCreateDebt(ctx)
 
+		testutils.CheckNoContextErrors(t, ctx)
+
 		var debts []model.Debt
-		testHandler.db.Find(&debts)
+		err := testHandler.db.Find(&debts).Error
+		if err != nil {
+			t.Fatalf("Could not find debts: %s\n", err)
+		}
 		if len(debts) != 1 {
 			t.Errorf("Expected to have 1 debt, but found %d", len(debts))
 		}
@@ -92,8 +99,13 @@ func TestHandleCreateDebt(t *testing.T) {
 
 		testHandler.HandleCreateDebt(ctx)
 
+		testutils.CheckNoContextErrors(t, ctx)
+
 		var debts []model.Debt
-		testHandler.db.Find(&debts)
+		err := testHandler.db.Find(&debts).Error
+		if err != nil {
+			t.Fatalf("Could not find debts: %s\n", err)
+		}
 		if len(debts) != 2 {
 			t.Errorf("Expected to have 2 debt, but found %d", len(debts))
 		}
@@ -124,9 +136,7 @@ func TestHandleCreateDebt(t *testing.T) {
 		if len(debts) != 2 {
 			t.Errorf("Expected to have 2 debt, but found %d", len(debts))
 		}
-		if len(ctx.Errors) == 0 {
-			t.Error("Expected to have an error in the context")
-		}
+		testutils.CheckCanBeContextError(t, ctx, &ierrors.InvalidModel{})
 	})
 
 }
@@ -140,7 +150,10 @@ func TestHandleDeleteDebt(t *testing.T) {
 		Amount:  5000,
 		Details: "some details",
 	}
-	testHandler.db.Create(&dummyDebt)
+	err := testHandler.db.Create(&dummyDebt).Error
+	if err != nil {
+		t.Fatalf("Could not create debt:%s\n", err)
+	}
 
 	t.Run("Deleting an existing debt should remove it", func(t *testing.T) {
 
@@ -150,11 +163,77 @@ func TestHandleDeleteDebt(t *testing.T) {
 		ctx.Set("dbtid", dummyDebt.Id)
 		testHandler.HandleDeleteDebt(ctx)
 
+		testutils.CheckNoContextErrors(t, ctx)
+
 		var debts []model.Debt
-		testHandler.db.Where("id = ?", dummyDebt.Id).Find(&debts)
+		err := testHandler.db.Where("id = ?", dummyDebt.Id).Find(&debts).Error
+		if err != nil {
+			t.Fatalf("Could not find debts:%s\n", err)
+		}
 		if len(debts) != 0 {
 			t.Error("Debt did not get deleted.")
 		}
+	})
+}
+
+func TestHandleGetDebt(t *testing.T) {
+	dummyDebt := model.Debt{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		Person:  "person",
+		Amount:  5000,
+		Details: "some details",
+	}
+	err := testHandler.db.Create(&dummyDebt).Error
+	if err != nil {
+		t.Fatalf("Could not create debt:%s\n", err)
+	}
+
+	t.Run("Retrieving an existing debt should not give an error", func(t *testing.T) {
+
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("dbtid", dummyDebt.Id)
+		testHandler.HandleGetDebt(ctx)
+
+		testutils.CheckNoContextErrors(t, ctx)
+	})
+
+	t.Run("Retrieving an invalid debt should give an error", func(t *testing.T) {
+
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("dbtid", dummyDebt.Id+1)
+		testHandler.HandleGetDebt(ctx)
+
+		testutils.CheckIsContextError(t, ctx, gorm.ErrRecordNotFound)
+	})
+}
+
+func TestHandleListDebt(t *testing.T) {
+	dummyDebt := model.Debt{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		Person:  "person",
+		Amount:  5000,
+		Details: "some details",
+	}
+	err := testHandler.db.Create(&dummyDebt).Error
+	if err != nil {
+		t.Fatalf("Could not create debt:%s\n", err)
+	}
+
+	t.Run("Retrieving all debts should not give an error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("queryparams", casheerapi.ListDebtParams{})
+		testHandler.HandleListDebt(ctx)
+		testutils.CheckNoContextErrors(t, ctx)
 	})
 }
 
@@ -167,12 +246,17 @@ func TestHandleUpdateDebt(t *testing.T) {
 		Amount:  5000,
 		Details: "some details",
 	}
-	testHandler.db.Create(&dummyDebt)
+	err := testHandler.db.Create(&dummyDebt).Error
+	if err != nil {
+		t.Fatalf("Could not update debt: %s\n", err)
+	}
 
-	t.Run("Updating an existing debt should change it", func(t *testing.T) {
+	t.Run("Updating an existing debt should update it correctly", func(t *testing.T) {
 
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("dbtid", dummyDebt.Id)
 
 		newDebt := casheerapi.UpdateDebtRequest{
 			Person:  func() *string { p := "new person"; return &p }(),
@@ -180,12 +264,17 @@ func TestHandleUpdateDebt(t *testing.T) {
 			Details: func() *string { d := "new details"; return &d }(),
 		}
 
-		ctx.Set("dbtid", dummyDebt.Id)
 		ctx.Set("req", newDebt)
 		testHandler.HandleUpdateDebt(ctx)
 
 		var debts []model.Debt
-		testHandler.db.Where("id = ?", dummyDebt.Id).Find(&debts)
+		err := testHandler.db.Where("id = ?", dummyDebt.Id).Find(&debts).Error
+		if err != nil {
+			t.Fatalf("Could not find debts: %s\n", err)
+		}
+
+		testutils.CheckNoContextErrors(t, ctx)
+
 		if len(debts) != 1 {
 			t.Error("Number of debts is wrong.")
 		}
@@ -195,5 +284,26 @@ func TestHandleUpdateDebt(t *testing.T) {
 			debts[0].Person != *newDebt.Person {
 			t.Errorf("Debts are not the same: %+v and %+v", debts[0], newDebt)
 		}
+	})
+
+	t.Run("Updating a debt with invalid fields should raise an error", func(t *testing.T) {
+
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("dbtid", dummyDebt.Id)
+
+		newDebt := casheerapi.UpdateDebtRequest{
+			Person:  func() *string { p := ""; return &p }(),
+			Amount:  func() *int { a := 10000; return &a }(),
+			Details: func() *string { d := "new details"; return &d }(),
+		}
+
+		ctx.Set("req", newDebt)
+		testHandler.HandleUpdateDebt(ctx)
+
+		var target ierrors.InvalidModel
+		testutils.CheckCanBeContextError(t, ctx, &target)
+
 	})
 }
