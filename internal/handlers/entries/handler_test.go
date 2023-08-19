@@ -2,10 +2,10 @@ package entries
 
 import (
 	"fmt"
-	"math/rand"
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"strconv"
 	"testing"
 
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
@@ -23,6 +23,27 @@ var db *gorm.DB
 var testHandler handler
 
 const SQL_PATH = "../../../scripts/sqlite/001_tables.up.sql"
+
+var rand = testutils.NewUniqueRand()
+
+// newEntry creates a random unique entry for this test.
+func newEntry(t *testing.T, db *gorm.DB) model.Entry {
+	month := rand.Intn(12) + 1
+	year := rand.Intn(10) + 2023
+	entry := model.Entry{
+		Month:         month,
+		Year:          year,
+		Category:      strconv.Itoa(rand.Int()),
+		Subcategory:   strconv.Itoa(rand.Int()),
+		ExpectedTotal: 5000,
+	}
+
+	err := testHandler.db.Create(&entry).Error
+	if err != nil {
+		t.Fatalf("Could not create entry: %s\n", err)
+	}
+	return entry
+}
 
 func TestMain(m *testing.M) {
 	gin.SetMode(gin.TestMode)
@@ -150,27 +171,8 @@ func TestHandleCreateEntry(t *testing.T) {
 
 func TestHandleDeleteEntry(t *testing.T) {
 
-	dummyEntry := model.Entry{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Month:         10,
-		Year:          2023,
-		Category:      "categoryd",
-		Subcategory:   "subcategoryd",
-		ExpectedTotal: 5000,
-	}
-
-	dummyEntryCascade := model.Entry{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Month:         10,
-		Year:          2024,
-		Category:      "cascade",
-		Subcategory:   "cascade",
-		ExpectedTotal: 5000,
-	}
+	dummyEntry := newEntry(t, testHandler.db)
+	dummyEntryCascade := newEntry(t, testHandler.db)
 
 	dummyExpense := model.Expense{
 		BaseModel: model.BaseModel{
@@ -180,15 +182,7 @@ func TestHandleDeleteEntry(t *testing.T) {
 		Value:   100,
 		Name:    "dummy expense",
 	}
-
-	err := testHandler.db.Create(&[]model.Entry{
-		dummyEntry, dummyEntryCascade,
-	}).Error
-	if err != nil {
-		t.Fatalf("Could not create entries: %s\n", err)
-	}
-
-	err = testHandler.db.Create(&dummyExpense).Error
+	err := testHandler.db.Create(&dummyExpense).Error
 	if err != nil {
 		t.Fatalf("Could not create expense: %s\n", err)
 	}
@@ -214,7 +208,7 @@ func TestHandleDeleteEntry(t *testing.T) {
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
 
-		ctx.Set("entid", dummyEntry.Id+1)
+		ctx.Set("entid", rand.Int())
 		testHandler.HandleDeleteEntry(ctx)
 
 		testutils.CheckIsContextError(t, ctx, gorm.ErrRecordNotFound)
@@ -238,20 +232,7 @@ func TestHandleDeleteEntry(t *testing.T) {
 
 func TestHandleGetEntry(t *testing.T) {
 
-	dummyEntry := model.Entry{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Month:         10,
-		Year:          2023,
-		Category:      "category2",
-		Subcategory:   "subcategory2",
-		ExpectedTotal: 5000,
-	}
-	err := testHandler.db.Create(&dummyEntry).Error
-	if err != nil {
-		t.Fatalf("Could not create entry: %s\n", err)
-	}
+	dummyEntry := newEntry(t, testHandler.db)
 
 	t.Run("Retrieving an existing entry should not give an error", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -277,40 +258,9 @@ func TestHandleGetEntry(t *testing.T) {
 
 func TestHandleListEntry(t *testing.T) {
 
-	dummyEntry1 := model.Entry{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Month:         9,
-		Year:          2023,
-		Category:      "category3",
-		Subcategory:   "subcategory3",
-		ExpectedTotal: 3000,
-	}
-	dummyEntry2 := model.Entry{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Month:         10,
-		Year:          2023,
-		Category:      "category4",
-		Subcategory:   "subcategory4",
-		ExpectedTotal: 5000,
-	}
-	dummyEntry3 := model.Entry{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Month:         11,
-		Year:          2023,
-		Category:      "category5",
-		Subcategory:   "subcategory5",
-		ExpectedTotal: 5000,
-	}
-	err := testHandler.db.Create(&[]model.Entry{dummyEntry1, dummyEntry2, dummyEntry3}).Error
-	if err != nil {
-		t.Fatalf("Could not create entries: %s\n", err)
-	}
+	newEntry(t, testHandler.db)
+	newEntry(t, testHandler.db)
+	newEntry(t, testHandler.db)
 
 	t.Run("Retrieving all entries should not give an error", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -324,20 +274,7 @@ func TestHandleListEntry(t *testing.T) {
 
 func TestHandleUpdateEntry(t *testing.T) {
 
-	dummyEntry := model.Entry{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Month:         10,
-		Year:          2023,
-		Category:      "update",
-		Subcategory:   "update",
-		ExpectedTotal: 5000,
-	}
-	err := testHandler.db.Create(&dummyEntry).Error
-	if err != nil {
-		t.Fatalf("Could not create entry: %s\n", err)
-	}
+	dummyEntry := newEntry(t, testHandler.db)
 
 	t.Run("Updating an entry with valid fields should update it correctly", func(t *testing.T) {
 

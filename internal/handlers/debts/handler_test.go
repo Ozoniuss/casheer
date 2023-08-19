@@ -25,6 +25,22 @@ var testHandler handler
 
 const SQL_PATH = "../../../scripts/sqlite/001_tables.up.sql"
 
+func newDebt(t *testing.T, db *gorm.DB) model.Debt {
+	debt := model.Debt{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		Person:  "person",
+		Amount:  5000,
+		Details: "some details",
+	}
+	err := db.Create(&debt).Error
+	if err != nil {
+		t.Fatalf("Could not create debt:%s\n", err)
+	}
+	return debt
+}
+
 func TestMain(m *testing.M) {
 	gin.SetMode(gin.TestMode)
 	var err error
@@ -142,18 +158,7 @@ func TestHandleCreateDebt(t *testing.T) {
 }
 
 func TestHandleDeleteDebt(t *testing.T) {
-	dummyDebt := model.Debt{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Person:  "person",
-		Amount:  5000,
-		Details: "some details",
-	}
-	err := testHandler.db.Create(&dummyDebt).Error
-	if err != nil {
-		t.Fatalf("Could not create debt:%s\n", err)
-	}
+	dummyDebt := newDebt(t, db)
 
 	t.Run("Deleting an existing debt should remove it", func(t *testing.T) {
 
@@ -177,18 +182,7 @@ func TestHandleDeleteDebt(t *testing.T) {
 }
 
 func TestHandleGetDebt(t *testing.T) {
-	dummyDebt := model.Debt{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Person:  "person",
-		Amount:  5000,
-		Details: "some details",
-	}
-	err := testHandler.db.Create(&dummyDebt).Error
-	if err != nil {
-		t.Fatalf("Could not create debt:%s\n", err)
-	}
+	dummyDebt := newDebt(t, db)
 
 	t.Run("Retrieving an existing debt should not give an error", func(t *testing.T) {
 
@@ -214,18 +208,9 @@ func TestHandleGetDebt(t *testing.T) {
 }
 
 func TestHandleListDebt(t *testing.T) {
-	dummyDebt := model.Debt{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Person:  "person",
-		Amount:  5000,
-		Details: "some details",
-	}
-	err := testHandler.db.Create(&dummyDebt).Error
-	if err != nil {
-		t.Fatalf("Could not create debt:%s\n", err)
-	}
+	newDebt(t, db)
+	newDebt(t, db)
+	newDebt(t, db)
 
 	t.Run("Retrieving all debts should not give an error", func(t *testing.T) {
 		w := httptest.NewRecorder()
@@ -238,18 +223,7 @@ func TestHandleListDebt(t *testing.T) {
 }
 
 func TestHandleUpdateDebt(t *testing.T) {
-	dummyDebt := model.Debt{
-		BaseModel: model.BaseModel{
-			Id: rand.Int(),
-		},
-		Person:  "person",
-		Amount:  5000,
-		Details: "some details",
-	}
-	err := testHandler.db.Create(&dummyDebt).Error
-	if err != nil {
-		t.Fatalf("Could not update debt: %s\n", err)
-	}
+	dummyDebt := newDebt(t, db)
 
 	t.Run("Updating an existing debt should update it correctly", func(t *testing.T) {
 
