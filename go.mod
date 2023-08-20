@@ -1,6 +1,6 @@
 module github.com/Ozoniuss/casheer
 
-go 1.21rc3
+go 1.21
 
 require (
 	github.com/Ozoniuss/configer v0.3.0
