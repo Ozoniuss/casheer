@@ -12,7 +12,8 @@ import (
 func computeRunningTotal(expenses []model.Expense) int {
 	var rt int = 0
 	for _, exp := range expenses {
-		rt += exp.Value
+		// TODO: take into account currency, if doing so
+		rt += exp.Value.Amount
 	}
 	return rt
 }

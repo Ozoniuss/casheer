@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/Ozoniuss/casheer/internal/currency"
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/internal/testutils"
@@ -179,7 +180,7 @@ func TestHandleDeleteEntry(t *testing.T) {
 			Id: rand.Int(),
 		},
 		EntryId: dummyEntryCascade.Id,
-		Value:   100,
+		Value:   currency.NewUSDValue(1000),
 		Name:    "dummy expense",
 	}
 	err := testHandler.db.Create(&dummyExpense).Error
