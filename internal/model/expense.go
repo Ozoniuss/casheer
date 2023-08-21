@@ -1,6 +1,8 @@
 package model
 
 import (
+	"fmt"
+
 	"github.com/Ozoniuss/casheer/internal/currency"
 	"gorm.io/gorm"
 )
@@ -17,11 +19,12 @@ type Expense struct {
 	PaymentMethod string
 }
 
-type NoEntryFoundErr struct {
+type ErrExpenseInvalidEntryKey struct {
+	entryKey int
 }
 
-func (e *NoEntryFoundErr) Error() string {
-	return "no entry found"
+func (e ErrExpenseInvalidEntryKey) Error() string {
+	return fmt.Sprintf("entry with id %d was not found", e.entryKey)
 }
 
 // RequiredEntry can be used as a scope to return a custom error if the
@@ -36,7 +39,9 @@ func RequiredEntry(entryId int) func(db *gorm.DB) *gorm.DB {
 		}
 
 		if len(entries) == 0 {
-			db.AddError(&NoEntryFoundErr{})
+			db.AddError(ErrExpenseInvalidEntryKey{
+				entryKey: entryId,
+			})
 		}
 		return db
 	}
