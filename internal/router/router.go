@@ -42,7 +42,7 @@ func NewRouter(db *gorm.DB, config config.Config) (*gin.Engine, error) {
 		endpoints.RegisterTotals(r, &h)
 	}
 	{
-		h := expenses.NewHandler(db, config)
+		h := expenses.NewHandler(db, baseURL.JoinPath(config.ApiPaths.Entries))
 		endpoints.RegisterExpenses(r, &h)
 	}
 	return r, nil
