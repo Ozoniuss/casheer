@@ -1,21 +1,19 @@
 package expenses
 
 import (
-	"github.com/Ozoniuss/casheer/internal/config"
-	"github.com/go-playground/validator/v10"
+	"net/url"
+
 	"gorm.io/gorm"
 )
 
 type handler struct {
-	db        *gorm.DB
-	validator *validator.Validate
-	apiPaths  config.ApiPaths
+	db         *gorm.DB
+	entriesURL *url.URL
 }
 
-func NewHandler(db *gorm.DB, config config.Config) handler {
+func NewHandler(db *gorm.DB, collection *url.URL) handler {
 	return handler{
-		db:        db,
-		validator: validator.New(),
-		apiPaths:  config.ApiPaths,
+		db:         db,
+		entriesURL: collection,
 	}
 }
