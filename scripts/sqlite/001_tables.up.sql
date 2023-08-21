@@ -28,7 +28,9 @@ CREATE TABLE IF NOT EXISTS entries(
 CREATE TABLE IF NOT EXISTS expenses(
     id INTEGER PRIMARY KEY,
     entry_id INTEGER NOT NULL,
-    value INTEGER NOT NULL,
+    amount INTEGER NOT NULL,
+    currency TEXT NOT NULL, -- iso 4217 currency code
+    exponent INTEGER NOT NULL,
     name TEXT NOT NULL COLLATE NOCASE,
     description TEXT COLLATE NOCASE,
     payment_method TEXT COLLATE NOCASE,

@@ -1,6 +1,7 @@
 package model
 
 import (
+	"github.com/Ozoniuss/casheer/internal/currency"
 	"gorm.io/gorm"
 )
 
@@ -9,8 +10,8 @@ import (
 type Expense struct {
 	BaseModel
 
-	EntryId       int    `validate:"required"`
-	Value         int    `validate:"required"`
+	EntryId int `validate:"required"`
+	currency.Value
 	Name          string `validate:"required"`
 	Description   string
 	PaymentMethod string

@@ -15,7 +15,9 @@ type ExpenseListItemData struct {
 }
 
 type ExpenseAttributes struct {
-	Value         int    `json:"value"`
+	Amount        int    `json:"amount"`
+	Currency      string `json:"currency"`
+	Exponent      int    `json:"exponent"`
 	Name          string `json:"name"`
 	Description   string `json:"description"`
 	PaymentMethod string `json:"payment_method"`
@@ -32,7 +34,9 @@ type ExpenseListItemLinks struct {
 }
 
 type CreateExpenseRequest struct {
-	Value         int    `json:"value"`
+	Amount        int    `json:"amount"`
+	Currency      string `json:"currency"`
+	Exponent      *int   `json:"exponent,omitempty"`
 	Name          string `json:"name"`
 	Description   string `json:"description"`
 	PaymentMethod string `json:"payment_method"`
@@ -43,7 +47,9 @@ type CreateExpenseResponse struct {
 }
 
 type UpdateExpenseRequest struct {
-	Value         *int    `json:"value,omitempty"`
+	Amount        *int    `json:"amount,omitempty"`
+	Currency      *string `json:"currency,omitempty"`
+	Exponent      *int    `json:"exponent,omitempty"`
 	Name          *string `json:"name,omitempty"`
 	Description   *string `json:"description,omitempty"`
 	PaymentMethod *string `json:"payment_method,omitempty"`
@@ -61,7 +67,9 @@ type DeleteExpenseResponse struct {
 }
 
 type ListExpenseParams struct {
-	Value         *int    `json:"value,omitempty"`
+	Amount        *int    `json:"amount,omitempty"`
+	Currency      *string `json:"currency,omitempty"`
+	AllCurrencies *bool   `json:"all_currencies,omitempty"`
 	Name          *string `json:"name,omitempty"`
 	Description   *string `json:"description,omitempty"`
 	PaymentMethod *string `json:"payment_method,omitempty"`
