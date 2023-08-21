@@ -55,6 +55,11 @@ func newExpense(t *testing.T, db *gorm.DB, entryId int) model.Expense {
 		Description:   "mydescription",
 		PaymentMethod: "card",
 	}
+
+	err := testHandler.db.Create(&expense).Error
+	if err != nil {
+		t.Fatalf("Could not create expense: %s\n", err)
+	}
 	return expense
 }
 
@@ -175,66 +180,51 @@ func TestHandleCreateExpense(t *testing.T) {
 
 }
 
-// func TestHandleDeleteEntry(t *testing.T) {
+func TestHandleDeleteEntry(t *testing.T) {
 
-// 	dummyEntry := newEntry(t, testHandler.db)
-// 	dummyEntryCascade := newEntry(t, testHandler.db)
+	entry := newEntry(t, testHandler.db)
+	expense := newExpense(t, testHandler.db, entry.Id)
 
-// 	dummyExpense := model.Expense{
-// 		BaseModel: model.BaseModel{
-// 			Id: rand.Int(),
-// 		},
-// 		EntryId: dummyEntryCascade.Id,
-// 		Value:   currency.NewUSDValue(1000),
-// 		Name:    "dummy expense",
-// 	}
-// 	err := testHandler.db.Create(&dummyExpense).Error
-// 	if err != nil {
-// 		t.Fatalf("Could not create expense: %s\n", err)
-// 	}
+	t.Run("Deleting an existing expense should delete the expense", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
 
-// 	t.Run("Deleting an existing entry should delete the entry", func(t *testing.T) {
-// 		w := httptest.NewRecorder()
-// 		ctx, _ := gin.CreateTestContext(w)
+		ctx.Set("entid", entry.Id)
+		ctx.Set("expid", expense.Id)
 
-// 		ctx.Set("entid", dummyEntry.Id)
-// 		testHandler.HandleDeleteEntry(ctx)
+		testHandler.HandleDeleteExpense(ctx)
+		testutils.CheckNoContextErrors(t, ctx)
 
-// 		testutils.CheckNoContextErrors(t, ctx)
+		var expenses []model.Expense
+		testHandler.db.Where("id = ?", expense.Id).Find(&expenses)
+		if len(expenses) != 0 {
+			t.Errorf("Expected to have 0 entry, but found %d", len(expenses))
+		}
+	})
 
-// 		var entries []model.Entry
-// 		testHandler.db.Where("id = ?", dummyEntry.Id).Find(&entries)
-// 		if len(entries) != 0 {
-// 			t.Errorf("Expected to have 0 entry, but found %d", len(entries))
-// 		}
-// 	})
+	t.Run("Deleting an expense with invalid ID should fail", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
 
-// 	t.Run("Deleting a non-existing entry should fail", func(t *testing.T) {
+		ctx.Set("entid", entry.Id)
+		ctx.Set("expid", rand.Int())
 
-// 		w := httptest.NewRecorder()
-// 		ctx, _ := gin.CreateTestContext(w)
+		testHandler.HandleDeleteExpense(ctx)
+		testutils.CheckIsContextError(t, ctx, gorm.ErrRecordNotFound)
+	})
 
-// 		ctx.Set("entid", rand.Int())
-// 		testHandler.HandleDeleteEntry(ctx)
+	t.Run("Deleting an existing expense with invalid entry ID should fail", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
 
-// 		testutils.CheckIsContextError(t, ctx, gorm.ErrRecordNotFound)
-// 	})
+		ctx.Set("entid", rand.Int())
+		ctx.Set("expid", expense.Id)
 
-// 	t.Run("Deleting an entry with expenses should cascade to expenses", func(t *testing.T) {
-// 		w := httptest.NewRecorder()
-// 		ctx, _ := gin.CreateTestContext(w)
+		testHandler.HandleDeleteExpense(ctx)
+		testutils.CheckCanBeContextError(t, ctx, &model.ErrExpenseInvalidEntryKey{})
+	})
 
-// 		ctx.Set("entid", dummyEntryCascade.Id)
-// 		testHandler.HandleDeleteEntry(ctx)
-
-// 		var expenses []model.Expense
-// 		testHandler.db.Where("entry_id = ?", dummyEntryCascade.Id).Find(&expenses)
-
-// 		if len(expenses) != 0 {
-// 			t.Errorf("Expected to have 0 expenses, but found %d", len(expenses))
-// 		}
-// 	})
-// }
+}
 
 // func TestHandleGetEntry(t *testing.T) {
 
