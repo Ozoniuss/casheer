@@ -17,11 +17,11 @@ type Value struct {
 	Exponent int
 }
 
-func NewValue(amount int, code string, exp int) (Value, error) {
+func NewValue(amount int, currency string, exp int) (Value, error) {
 
 	value := Value{
 		Amount:   amount,
-		Currency: code,
+		Currency: currency,
 		Exponent: exp,
 	}
 
@@ -33,26 +33,24 @@ func NewValue(amount int, code string, exp int) (Value, error) {
 	return value, nil
 }
 
-func NewUSDValue(amount int) Value {
-	return Value{
-		Currency: USD,
-		Amount:   amount,
-		Exponent: -2,
+func NewValueBasedOnCurrency(amount int, currency string, exponent *int) (Value, error) {
+
+	// May change in the future, but at the moment the only currencies that
+	// are allowed have the least valuable unit two orders of magnitude smaller
+	// than the actual unit.
+	actualExponent := -2
+	if exponent != nil {
+		actualExponent = *exponent
 	}
-}
-func NewEURValue(amount int) Value {
-	return Value{
-		Currency: EUR,
-		Amount:   amount,
-		Exponent: -2,
+
+	if isValidCurrency(currency) {
+		return Value{
+			Amount:   amount,
+			Currency: currency,
+			Exponent: actualExponent,
+		}, nil
 	}
-}
-func NewRONValue(amount int) Value {
-	return Value{
-		Currency: RON,
-		Amount:   amount,
-		Exponent: -2,
-	}
+	return Value{}, ErrInvalidCurrency{attemptedCurrency: currency}
 }
 
 // ISO 4217 compliant currency codes
@@ -61,3 +59,9 @@ const (
 	RON = "RON"
 	USD = "USD"
 )
+
+func isValidCurrency(currency string) bool {
+	return currency == EUR ||
+		currency == RON ||
+		currency == USD
+}
