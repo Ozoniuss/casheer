@@ -71,7 +71,7 @@ func RegisterExpenses(router *gin.Engine, h handlers.ExpenseHandler) {
 		common.EmitError(ctx, ierrors.NewInvalidURLNoTrailingSlashError())
 	})
 
-	subrouter.GET("/", h.HandleListExpense)
+	subrouter.GET("/", middlewares.BindQueryParams[casheerapi.ListExpenseParams]("queryparams"), h.HandleListExpense)
 	subrouter.GET("", func(ctx *gin.Context) {
 		ctx.Redirect(http.StatusMovedPermanently, "expenses/")
 	})
