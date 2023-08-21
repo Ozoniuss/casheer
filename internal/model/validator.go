@@ -16,13 +16,10 @@ func ValidateModelScope[T Entry | Expense | Debt](obj T) func(db *gorm.DB) *gorm
 			switch any(obj).(type) {
 			case Entry:
 				dberr = ierrors.NewInvalidModelError("entry", err)
-				break
 			case Expense:
 				dberr = ierrors.NewInvalidModelError("expense", err)
-				break
 			case Debt:
 				dberr = ierrors.NewInvalidModelError("debt", err)
-				break
 			default:
 				panic("this should not happen but it's not handled yet")
 			}
