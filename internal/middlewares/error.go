@@ -5,8 +5,10 @@ import (
 	"fmt"
 
 	"github.com/Ozoniuss/casheer/internal/apierrors"
+	"github.com/Ozoniuss/casheer/internal/currency"
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
+	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/gin-gonic/gin"
 	"github.com/mattn/go-sqlite3"
 	"gorm.io/gorm"
@@ -31,6 +33,10 @@ func ErrorHandler() gin.HandlerFunc {
 		var invalidResourceError ierrors.InvalidModel
 		var sqlite3err sqlite3.Error
 
+		var invalidEntryKey model.ErrExpenseInvalidEntryKey
+
+		var invalidCurrencyError currency.ErrInvalidCurrency
+
 		switch {
 
 		case errors.As(err, &missingContextParamError):
@@ -52,6 +58,15 @@ func ErrorHandler() gin.HandlerFunc {
 			} else {
 				fmt.Println("UNHANDLED")
 			}
+			return
+
+		case errors.As(err, &invalidCurrencyError):
+			common.EmitError(ctx, apierrors.NewInvalidResourceError(invalidCurrencyError.Error()))
+			return
+
+		case errors.As(err, &invalidEntryKey):
+			common.EmitError(ctx, apierrors.NewInvalidResourceError(invalidEntryKey.Error()))
+			return
 
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			common.EmitError(ctx, apierrors.NewNotFoundError())
