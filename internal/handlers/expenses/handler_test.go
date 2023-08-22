@@ -226,31 +226,46 @@ func TestHandleDeleteEntry(t *testing.T) {
 
 }
 
-// func TestHandleGetEntry(t *testing.T) {
+func TestHandleGetEntry(t *testing.T) {
 
-// 	dummyEntry := newEntry(t, testHandler.db)
+	entry := newEntry(t, testHandler.db)
+	expense := newExpense(t, testHandler.db, entry.Id)
 
-// 	t.Run("Retrieving an existing entry should not give an error", func(t *testing.T) {
-// 		w := httptest.NewRecorder()
-// 		ctx, _ := gin.CreateTestContext(w)
+	t.Run("Retrieving an existing expense should not give an error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
 
-// 		ctx.Set("entid", dummyEntry.Id)
-// 		testHandler.HandleGetEntry(ctx)
+		ctx.Set("entid", entry.Id)
+		ctx.Set("expid", expense.Id)
+		testHandler.HandleGetExpense(ctx)
 
-// 		testutils.CheckNoContextErrors(t, ctx)
-// 	})
+		testutils.CheckNoContextErrors(t, ctx)
+	})
 
-// 	t.Run("Retrieving a non-existing entry should give an error", func(t *testing.T) {
+	t.Run("Retrieving a non-existing entry with valid entry id should give an error", func(t *testing.T) {
 
-// 		w := httptest.NewRecorder()
-// 		ctx, _ := gin.CreateTestContext(w)
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
 
-// 		ctx.Set("entid", dummyEntry.Id+1)
-// 		testHandler.HandleGetEntry(ctx)
+		ctx.Set("entid", entry.Id)
+		ctx.Set("expid", rand.Int())
+		testHandler.HandleGetExpense(ctx)
 
-// 		testutils.CheckIsContextError(t, ctx, gorm.ErrRecordNotFound)
-// 	})
-// }
+		testutils.CheckIsContextError(t, ctx, gorm.ErrRecordNotFound)
+	})
+
+	t.Run("Retrieving any expense with non-existing entry id should give an error", func(t *testing.T) {
+
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		ctx.Set("entid", rand.Int())
+		ctx.Set("expid", expense.Id)
+		testHandler.HandleGetExpense(ctx)
+
+		testutils.CheckCanBeContextError(t, ctx, &model.ErrExpenseInvalidEntryKey{})
+	})
+}
 
 // func TestHandleListEntry(t *testing.T) {
 
