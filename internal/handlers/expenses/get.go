@@ -20,6 +20,7 @@ func (h *handler) HandleGetExpense(ctx *gin.Context) {
 
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
+		return
 	}
 
 	resp := casheerapi.GetExpenseResponse{

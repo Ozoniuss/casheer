@@ -267,21 +267,73 @@ func TestHandleGetEntry(t *testing.T) {
 	})
 }
 
-// func TestHandleListEntry(t *testing.T) {
+func TestHandleListEntry(t *testing.T) {
 
-// 	newEntry(t, testHandler.db)
-// 	newEntry(t, testHandler.db)
-// 	newEntry(t, testHandler.db)
+	entry := newEntry(t, testHandler.db)
+	expense1 := model.Expense{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		EntryId:       entry.Id,
+		Value:         currency.NewEURValue(1000),
+		PaymentMethod: "card",
+	}
+	expense2 := model.Expense{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		EntryId:       entry.Id,
+		Value:         currency.NewEURValue(500),
+		PaymentMethod: "cash",
+	}
+	expense3 := model.Expense{
+		BaseModel: model.BaseModel{
+			Id: rand.Int(),
+		},
+		EntryId:       entry.Id,
+		Value:         currency.NewUSDValue(1000),
+		PaymentMethod: "card",
+	}
+	err := testHandler.db.Create(&[]model.Expense{expense1, expense2, expense3}).Error
+	if err != nil {
+		t.Fatalf("Could not create expenses: %s\n", err)
+	}
 
-// 	t.Run("Retrieving all entries should not give an error", func(t *testing.T) {
-// 		w := httptest.NewRecorder()
-// 		ctx, _ := gin.CreateTestContext(w)
-// 		ctx.Set("queryparams", casheerapi.ListEntryParams{})
+	t.Run("Retrieving all expenses of an entry should not give an error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+		ctx.Set("queryparams", casheerapi.ListExpenseParams{})
+		ctx.Set("entid", entry.Id)
 
-// 		testHandler.HandleListEntry(ctx)
-// 		testutils.CheckNoContextErrors(t, ctx)
-// 	})
-// }
+		testHandler.HandleListExpense(ctx)
+		testutils.CheckNoContextErrors(t, ctx)
+	})
+	t.Run("Retrieving all expenses of a non-existent entry should not give an error", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+		ctx.Set("queryparams", casheerapi.ListExpenseParams{})
+
+		ctx.Set("entid", rand.Int())
+
+		testHandler.HandleListExpense(ctx)
+		testutils.CheckCanBeContextError(t, ctx, &model.ErrExpenseInvalidEntryKey{})
+	})
+	t.Run("Retrieving all expenses of an entry should not give an error even when filters are applied", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+
+		currencyFilter := "EUR"
+		paymentMethodFilter := "card"
+		ctx.Set("queryparams", casheerapi.ListExpenseParams{
+			Currency:      &currencyFilter,
+			PaymentMethod: &paymentMethodFilter,
+		})
+		ctx.Set("entid", entry.Id)
+
+		testHandler.HandleListExpense(ctx)
+		testutils.CheckNoContextErrors(t, ctx)
+	})
+}
 
 // func TestHandleUpdateEntry(t *testing.T) {
 
