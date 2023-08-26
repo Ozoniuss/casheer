@@ -32,7 +32,7 @@ func (e ErrExpenseInvalidEntryKey) Error() string {
 func RequiredEntry(entryId int) func(db *gorm.DB) *gorm.DB {
 	return func(db *gorm.DB) *gorm.DB {
 		var entries []Entry
-		err := db.Session(&gorm.Session{}).Where("id = ?", entryId).Find(&entries).Error
+		err := db.Session(&gorm.Session{NewDB: true}).Table("entries").Where("id = ?", entryId).Find(&entries).Error
 
 		if err != nil {
 			db.AddError(err)
