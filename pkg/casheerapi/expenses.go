@@ -67,9 +67,9 @@ type DeleteExpenseResponse struct {
 }
 
 type ListExpenseParams struct {
-	Amount        *int    `json:"amount,omitempty"`
+	AmountGt      *int    `json:"amount[gt],omitempty"`
+	AmountLt      *int    `json:"amount[lt],omitempty"`
 	Currency      *string `json:"currency,omitempty"`
-	AllCurrencies *bool   `json:"all_currencies,omitempty"`
 	Name          *string `json:"name,omitempty"`
 	Description   *string `json:"description,omitempty"`
 	PaymentMethod *string `json:"payment_method,omitempty"`
