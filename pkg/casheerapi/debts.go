@@ -40,10 +40,18 @@ type CreateDebtResponse struct {
 	Links DefaultLinks `json:"links"`
 }
 
-type UpdateDebtRequest struct {
+type UpdateDebtData struct {
+	Attributes UpdateDebtAttributes `json:"attributes"`
+}
+
+type UpdateDebtAttributes struct {
 	Person  *string `json:"person,omitempty"`
 	Amount  *int    `json:"amount,omitempty"`
 	Details *string `json:"details,omitempty"`
+}
+
+type UpdateDebtRequest struct {
+	Data UpdateDebtData `json:"data"`
 }
 
 type UpdateDebtResponse struct {

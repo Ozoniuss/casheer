@@ -245,9 +245,13 @@ func TestHandleUpdateDebt(t *testing.T) {
 		ctx.Set("dbtid", dummyDebt.Id)
 
 		newDebt := casheerapi.UpdateDebtRequest{
-			Person:  func() *string { p := "new person"; return &p }(),
-			Amount:  func() *int { a := 10000; return &a }(),
-			Details: func() *string { d := "new details"; return &d }(),
+			Data: casheerapi.UpdateDebtData{
+				Attributes: casheerapi.UpdateDebtAttributes{
+					Person:  func() *string { p := "new person"; return &p }(),
+					Amount:  func() *int { a := 10000; return &a }(),
+					Details: func() *string { d := "new details"; return &d }(),
+				},
+			},
 		}
 
 		ctx.Set("req", newDebt)
@@ -265,9 +269,9 @@ func TestHandleUpdateDebt(t *testing.T) {
 			t.Error("Number of debts is wrong.")
 		}
 
-		if debts[0].Amount != *newDebt.Amount ||
-			debts[0].Details != *newDebt.Details ||
-			debts[0].Person != *newDebt.Person {
+		if debts[0].Amount != *newDebt.Data.Attributes.Amount ||
+			debts[0].Details != *newDebt.Data.Attributes.Details ||
+			debts[0].Person != *newDebt.Data.Attributes.Person {
 			t.Errorf("Debts are not the same: %+v and %+v", debts[0], newDebt)
 		}
 	})
@@ -280,9 +284,13 @@ func TestHandleUpdateDebt(t *testing.T) {
 		ctx.Set("dbtid", dummyDebt.Id)
 
 		newDebt := casheerapi.UpdateDebtRequest{
-			Person:  func() *string { p := ""; return &p }(),
-			Amount:  func() *int { a := 10000; return &a }(),
-			Details: func() *string { d := "new details"; return &d }(),
+			Data: casheerapi.UpdateDebtData{
+				Attributes: casheerapi.UpdateDebtAttributes{
+					Person:  func() *string { p := ""; return &p }(),
+					Amount:  func() *int { a := 10000; return &a }(),
+					Details: func() *string { d := "new details"; return &d }(),
+				},
+			},
 		}
 
 		ctx.Set("req", newDebt)
