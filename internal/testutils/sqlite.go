@@ -51,12 +51,10 @@ func Setup(sqlpath string) (*gorm.DB, string, error) {
 func Teardown(db *gorm.DB, dbname string) error {
 	instance, _ := db.DB()
 
-	err := instance.Close()
-	if err != nil {
-		return fmt.Errorf("closing testing database %s: %s", dbname, err.Error())
-	}
+	// Attempt to close the instance, do nothing in case of error.
+	instance.Close()
 
-	err = os.Remove(dbname)
+	err := os.Remove(dbname)
 	if err != nil {
 		return fmt.Errorf("removing temporary database %s: %s", dbname, err.Error())
 	}
