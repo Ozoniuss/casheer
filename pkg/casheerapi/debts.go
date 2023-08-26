@@ -31,9 +31,8 @@ type DebtListItemLinks struct {
 }
 
 type CreateDebtRequest struct {
-	Person  string `json:"person"`
-	Amount  int    `json:"amount"`
-	Details string `json:"details"`
+	// Note that ResourceID and Links are ignored.
+	Data DebtData
 }
 
 type CreateDebtResponse struct {

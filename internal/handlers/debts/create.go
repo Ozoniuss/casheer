@@ -19,9 +19,9 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 	}
 
 	debt := model.Debt{
-		Person:  req.Person,
-		Amount:  req.Amount,
-		Details: req.Details,
+		Person:  req.Data.Attributes.Person,
+		Amount:  req.Data.Attributes.Amount,
+		Details: req.Data.Attributes.Details,
 	}
 
 	err = h.db.WithContext(ctx).Scopes(model.ValidateModelScope[model.Debt](debt)).Clauses(clause.Returning{}).Create(&debt).Error

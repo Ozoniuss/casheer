@@ -73,9 +73,13 @@ func TestHandleCreateDebt(t *testing.T) {
 		ctx, _ := gin.CreateTestContext(w)
 
 		dummyDebt := casheerapi.CreateDebtRequest{
-			Person:  "person",
-			Amount:  5000,
-			Details: "some details",
+			Data: casheerapi.DebtData{
+				Attributes: casheerapi.DebtAtrributes{
+					Person:  "person",
+					Amount:  5000,
+					Details: "some details",
+				},
+			},
 		}
 		ctx.Set("req", dummyDebt)
 
@@ -93,9 +97,9 @@ func TestHandleCreateDebt(t *testing.T) {
 		}
 
 		savedDebt := debts[0]
-		if savedDebt.Amount != dummyDebt.Amount ||
-			savedDebt.Details != dummyDebt.Details ||
-			savedDebt.Person != dummyDebt.Person {
+		if savedDebt.Amount != dummyDebt.Data.Attributes.Amount ||
+			savedDebt.Details != dummyDebt.Data.Attributes.Details ||
+			savedDebt.Person != dummyDebt.Data.Attributes.Person {
 			t.Errorf("Inserted: %+v\nretrieved %+v", dummyDebt, savedDebt)
 		}
 
@@ -107,9 +111,13 @@ func TestHandleCreateDebt(t *testing.T) {
 		ctx, _ := gin.CreateTestContext(w)
 
 		dummyDebt := casheerapi.CreateDebtRequest{
-			Person:  "person",
-			Amount:  5000,
-			Details: "some details",
+			Data: casheerapi.DebtData{
+				Attributes: casheerapi.DebtAtrributes{
+					Person:  "person",
+					Amount:  5000,
+					Details: "some details",
+				},
+			},
 		}
 		ctx.Set("req", dummyDebt)
 
@@ -138,9 +146,13 @@ func TestHandleCreateDebt(t *testing.T) {
 		ctx, _ := gin.CreateTestContext(w)
 
 		dummyDebt := casheerapi.CreateDebtRequest{
-			Person:  "", // invalid person
-			Amount:  5000,
-			Details: "some details",
+			Data: casheerapi.DebtData{
+				Attributes: casheerapi.DebtAtrributes{
+					Person:  "", // invalid person
+					Amount:  5000,
+					Details: "some details",
+				},
+			},
 		}
 		ctx.Set("req", dummyDebt)
 
