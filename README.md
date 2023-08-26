@@ -1,3 +1,5 @@
+> This version is build based on the [JSON:API](https://jsonapi.org/) specification, and at some point will be compliant to the specification.
+
 # Expense manager
 
 The goal of the application is to manage my own expenses. It basically allows me to plan ahead for each month as well as keep track of the active expenses, either by entering them manually, automatically going through my Revolut payments etc. This is the API I will use for interacting with the expenses store.
