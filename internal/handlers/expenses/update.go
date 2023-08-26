@@ -1,15 +1,12 @@
 package expenses
 
 import (
-	"errors"
-	"fmt"
 	"net/http"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"gorm.io/gorm/clause"
 )
 
@@ -18,50 +15,57 @@ func (h *handler) HandleUpdateExpense(ctx *gin.Context) {
 	entid := ctx.GetInt("entid")
 	id := ctx.GetInt("expid")
 
-	req, _ := common.CtxGetTyped[casheerapi.UpdateExpenseRequest](ctx, "req")
-	// if !ok {
-	// 	return
-	// }
-
-	// This is needed to query using zero values as well, see
-	// https://gorm.io/docs/update.html#Updates-multiple-columns
-	var updatedFields = make(map[string]any)
-
-	if req.Value != nil {
-		updatedFields["value"] = *req.Value
-	}
-	if req.Description != nil {
-		updatedFields["description"] = *req.Description
-	}
-	if req.Name != nil {
-		updatedFields["name"] = *req.Name
-	}
-	if req.PaymentMethod != nil {
-		updatedFields["payment_method"] = *req.PaymentMethod
+	req, err := common.CtxGetTyped[casheerapi.UpdateExpenseRequest](ctx, "req")
+	if err != nil {
+		common.ErrorAndAbort(ctx, err)
+		return
 	}
 
-	var expense model.Expense
-	err := h.db.WithContext(ctx).Scopes(model.RequiredEntry(entid)).
-		Model(&expense).Clauses(clause.Returning{}).Where("id = ?", id).Updates(updatedFields).Error
+	expense, updatedFields := getUpdatedFields(req)
+	expense.EntryId = entid
+	err = h.db.WithContext(ctx).Select(updatedFields).Scopes(model.RequiredEntry(entid)).Clauses(clause.Returning{}).Scopes(model.ValidateModelScope[model.Expense](expense)).Where("id = ?", id).Updates(&expense).Error
 
 	if err != nil {
-		switch {
-		case errors.Is(err, gorm.ErrRecordNotFound):
-			common.EmitError(ctx, NewUpdateExpenseFailed(
-				http.StatusNotFound,
-				fmt.Sprintf("Could not update expense: expense %d not found.", id)))
-			return
-		default:
-			common.EmitError(ctx, NewUpdateExpenseFailed(
-				http.StatusInternalServerError,
-				fmt.Sprintf("Could not update expense: %s", err.Error())))
-			return
-		}
+		common.ErrorAndAbort(ctx, err)
 	}
-
 	resp := casheerapi.UpdateExpenseResponse{
-		Data: ExpenseToPublic(expense, h.apiPaths),
+		Data: ExpenseToPublic(expense, h.entriesURL),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)
+}
+
+func getUpdatedFields(req casheerapi.UpdateExpenseRequest) (model.Expense, []string) {
+
+	// See https://gorm.io/docs/update.html#Updates-multiple-columns
+	var updatedFields = make([]string, 0, 6)
+	expense := model.Expense{}
+
+	// TODO: proper validation here.
+	if req.Amount != nil {
+		updatedFields = append(updatedFields, "amount")
+		expense.Amount = *req.Amount
+	}
+	if req.Currency != nil {
+		updatedFields = append(updatedFields, "currency")
+		expense.Currency = *req.Currency
+	}
+	if req.Description != nil {
+		updatedFields = append(updatedFields, "description")
+		expense.Description = *req.Description
+	}
+	if req.Exponent != nil {
+		updatedFields = append(updatedFields, "exponent")
+		expense.Exponent = *req.Exponent
+	}
+	if req.Name != nil {
+		updatedFields = append(updatedFields, "name")
+		expense.Name = *req.Name
+	}
+	if req.PaymentMethod != nil {
+		updatedFields = append(updatedFields, "payment_method")
+		expense.PaymentMethod = *req.PaymentMethod
+	}
+
+	return expense, updatedFields
 }

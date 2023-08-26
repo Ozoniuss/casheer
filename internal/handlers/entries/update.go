@@ -19,14 +19,11 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 		return
 	}
 
-	// Find out what needs to be updated.
 	entry, updatedFields := getUpdatedFields(req)
-
 	err = h.db.WithContext(ctx).Preload("Expenses").Select(updatedFields).Clauses(clause.Returning{}).
 		Scopes(model.ValidateModelScope[model.Entry](entry)).
 		Where("id = ?", id).Updates(&entry).Error
 
-	// TODO: nicer error handling
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
 	}

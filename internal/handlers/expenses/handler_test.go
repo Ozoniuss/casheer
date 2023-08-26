@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/Ozoniuss/casheer/internal/currency"
+	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/internal/testutils"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
@@ -335,61 +336,65 @@ func TestHandleListEntry(t *testing.T) {
 	})
 }
 
-// func TestHandleUpdateEntry(t *testing.T) {
+func TestHandleUpdateEntry(t *testing.T) {
 
-// 	dummyEntry := newEntry(t, testHandler.db)
+	entry := newEntry(t, testHandler.db)
+	expense := newExpense(t, testHandler.db, entry.Id)
+	t.Run("Updating an expense with valid fields should update it correctly", func(t *testing.T) {
 
-// 	t.Run("Updating an entry with valid fields should update it correctly", func(t *testing.T) {
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
 
-// 		w := httptest.NewRecorder()
-// 		ctx, _ := gin.CreateTestContext(w)
+		ctx.Set("entid", entry.Id)
+		ctx.Set("expid", expense.Id)
 
-// 		ctx.Set("entid", dummyEntry.Id)
+		req := casheerapi.UpdateExpenseRequest{
+			Amount:        func() *int { m := 600; return &m }(),
+			Currency:      func() *string { usd := currency.USD; return &usd }(),
+			Exponent:      func() *int { e := 0; return &e }(),
+			Name:          func() *string { s := "newname"; return &s }(),
+			Description:   func() *string { s := "newdesc"; return &s }(),
+			PaymentMethod: func() *string { s := "newpm"; return &s }(),
+		}
+		ctx.Set("req", req)
+		testHandler.HandleUpdateExpense(ctx)
 
-// 		req := casheerapi.UpdateEntryRequest{
-// 			Month:       func() *int { m := 12; return &m }(),
-// 			Year:        func() *int { y := 2024; return &y }(),
-// 			Category:    func() *string { c := "u1"; return &c }(),
-// 			Subcategory: func() *string { s := "u1"; return &s }(),
-// 			Recurring:   func() *bool { r := true; return &r }(),
-// 		}
-// 		ctx.Set("req", req)
-// 		testHandler.HandleUpdateEntry(ctx)
+		var savedExpense model.Expense
+		err := testHandler.db.Where("id = ?", expense.Id).First(&savedExpense).Error
+		if err != nil {
+			t.Fatalf("Could not retrieve expense %d: %s\n", savedExpense.Id, err)
+		}
 
-// 		var entries []model.Entry
-// 		err := testHandler.db.Where("id = ?", dummyEntry.Id).Find(&entries).Error
-// 		if err != nil {
-// 			t.Fatalf("Could not retrieve entry: %s\n", err)
-// 		}
+		testutils.CheckNoContextErrors(t, ctx)
+		if savedExpense.Amount != *req.Amount ||
+			savedExpense.Currency != *req.Currency ||
+			savedExpense.Exponent != *req.Exponent ||
+			savedExpense.Name != *req.Name ||
+			savedExpense.Description != *req.Description ||
+			savedExpense.PaymentMethod != *req.PaymentMethod {
+			t.Errorf("Inserted: %+v\nretrieved %+v\n", req, savedExpense)
+		}
+	})
+	t.Run("Updating an entry with invalid fields should raise an error", func(t *testing.T) {
 
-// 		testutils.CheckNoContextErrors(t, ctx)
+		w := httptest.NewRecorder()
+		ctx, _ := gin.CreateTestContext(w)
+		ctx.Set("entid", entry.Id)
+		ctx.Set("expid", expense.Id)
 
-// 		savedEntry := entries[0]
-// 		if savedEntry.Month != *req.Month ||
-// 			savedEntry.Year != *req.Year ||
-// 			savedEntry.Category != *req.Category ||
-// 			savedEntry.Subcategory != *req.Subcategory {
-// 			t.Errorf("Updated: %+v\nretrieved %+v", req, savedEntry)
-// 		}
-// 	})
-// 	t.Run("Updating an entry with invalid fields should raise an error", func(t *testing.T) {
+		req := casheerapi.UpdateExpenseRequest{
+			Amount:        func() *int { m := 600; return &m }(),
+			Currency:      func() *string { usd := "fakecurrency"; return &usd }(),
+			Exponent:      func() *int { e := 0; return &e }(),
+			Name:          func() *string { s := "newname"; return &s }(),
+			Description:   func() *string { s := "newdesc"; return &s }(),
+			PaymentMethod: func() *string { s := "newpm"; return &s }(),
+		}
+		ctx.Set("req", req)
+		testHandler.HandleUpdateExpense(ctx)
 
-// 		w := httptest.NewRecorder()
-// 		ctx, _ := gin.CreateTestContext(w)
+		var target ierrors.InvalidModel
+		testutils.CheckCanBeContextError(t, ctx, &target)
+	})
 
-// 		ctx.Set("entid", dummyEntry.Id)
-
-// 		req := casheerapi.UpdateEntryRequest{
-// 			Month:       func() *int { m := 13; return &m }(),
-// 			Year:        func() *int { y := 2000; return &y }(),
-// 			Category:    func() *string { c := ""; return &c }(),
-// 			Subcategory: func() *string { s := ""; return &s }(),
-// 		}
-// 		ctx.Set("req", req)
-// 		testHandler.HandleUpdateEntry(ctx)
-
-// 		var target ierrors.InvalidModel
-// 		testutils.CheckCanBeContextError(t, ctx, &target)
-// 	})
-
-// }
+}

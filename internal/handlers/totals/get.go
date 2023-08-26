@@ -82,12 +82,12 @@ func (h *handler) HandleGetRunningTotal(ctx *gin.Context) {
 		if e.Category == "income" {
 			expectedIncome += e.ExpectedTotal
 			for _, exp := range e.Expenses {
-				runningIncome += exp.Value
+				runningIncome += exp.Value.Amount
 			}
 		} else {
 			expectedTotal += e.ExpectedTotal
 			for _, exp := range e.Expenses {
-				runningTotal += exp.Value
+				runningTotal += exp.Value.Amount
 			}
 		}
 	}
