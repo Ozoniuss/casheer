@@ -25,6 +25,7 @@ func NewRouter(db *gorm.DB, config config.Config) (*gin.Engine, error) {
 	}
 	r := gin.Default()
 	r.Use(middlewares.ErrorHandler())
+	r.Use(middlewares.JSONApiContentType())
 	{
 		h := handlers.NewDefault(config)
 		endpoints.RegisterDefaults(r, &h)
