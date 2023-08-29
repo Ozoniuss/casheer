@@ -7,8 +7,8 @@ Big Picture
 
 There are three main functionalities that the API, together with the client, shall fulfill:
 
-- Make a planning for each month of a year;
-- Keep track of a running total for that month by adding expenses;
+- Make a planning for each month of a year, by defining entries for the respective month and year;
+- Keep track of a running total for that month by adding expenses to those entries;
 - Store debts.
 
 The planning is an orientative schedule of future expenses, and helps estimate the amount of money left at the end of each month. This is useful for planning investments, big purchases, holidays etc.
@@ -19,13 +19,13 @@ Proposed API Features
 For entries, I will support:
 
 - [x] Adding a new entry;
-- [x] Removing an existing entry;
-- [x] Retrieving a single entry and all its data;
+- [x] Removing an existing entry, cascading to all expenses;
+- [x] Retrieving a single entry and all its expenses;
 - [x] Updating an entry;
-- [x] Listing all entries;
-- [ ] Filtering entries during listing operations, most relevant filters being month, year and category;
-- [ ] Allowing to include all expenses of an entry in a list operation; 
-- [ ] Ordering entries during listing operations;
+- [x] Listing all entries:
+- - [x] filtering by month, year, category, subcategory (exact matches);
+- - [ ] (OPTIONAL) sorting entries;
+- [ ] (OPTIONAL) Allowing to include all expenses of an entry in a list operation.
 
 For debts, I will support:
 
@@ -33,22 +33,23 @@ For debts, I will support:
 - [x] Removing an existing debt;
 - [x] Retrieving a single debt and all its data;
 - [x] Updating an debt;
-- [x] Listing all debts;
-- [x] Filtering debts based on person;
-- [ ] Ordering debts during listing operations; 
-- [x] Default order should be by person increasingly, then by amount decreasingly.
-
-I don't expect to have more than 10-15 debts at a time, so filtering could be optional. Ordering, however, would be nice to have by person and amount.
+- [x] Listing all debts:
+- - [x] filtering debts based on person;
+- - [ ] (OPTIONAL) sorting debts;
+- - [x] default order should be by person increasingly, then by amount decreasingly.
+- [ ] (OPTIONAL) filtering debts (although I don't expect to ever have more than 10 debts at a time, so this is likely useless 😉)
 
 For expenses, I will support:
 
-- [x] Adding a new expense, given a valid entry; (1) 
-- [x] Removing an existing expense; (2)
+- [x] Adding a new expense;
+- [x] Removing an existing expense;
 - [x] Retrieving a single expense and all its data;
 - [x] Updating an expense;
-- [x] Listing all expenses for an entry;
-- [x] Filtering expenses during listing operations;
-- [ ] Ordering expenses during listing operations;
+- [x] Listing all expenses for an entry:
+- - [x] filtering expenses, based on currency, name, payment method, amount;
+- - [ ] (OPTIONAL) sorting expenses;
+
+Note that an expense exists only within the context of an entry. So, all these operations above are valid only given that the associated entry exists.
 
 Because the size of the content is limited and the app will mostly be used on the local network, pagination remains an optional thing that I will likely not implement. Usually, retrieving the entire sheet for a period is desired. Plus, it's often likely that the CLI tool will be used alongside the `less` tool, in which case paginating doesn't make as much sense.
 
