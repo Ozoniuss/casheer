@@ -1,10 +1,10 @@
 package middlewares
 
 import (
-	"fmt"
 	"strconv"
 
-	ierrors "github.com/Ozoniuss/casheer/internal/apierrors"
+	"github.com/Ozoniuss/casheer/internal/apierrors"
+	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
@@ -23,10 +23,7 @@ func BindJSONRequest[
 		var req T
 		err := ctx.ShouldBindJSON(&req)
 		if err != nil {
-			common.EmitError(ctx, ierrors.NewRequestBindingError(
-				fmt.Sprintf("Could not bind request body: %s", err.Error()),
-			))
-			ctx.Abort()
+			common.ErrorAndAbort(ctx, ierrors.NewInvalidJsonBodyError(err))
 			return
 		}
 		ctx.Set("req", req)
@@ -44,7 +41,7 @@ func BindQueryParams[
 		var params T
 		err := ctx.ShouldBindQuery(&params)
 		if err != nil {
-			common.ErrorAndAbort(ctx, err)
+			common.ErrorAndAbort(ctx, ierrors.NewInvalidQueryParamsError(err))
 			return
 		}
 		ctx.Set(paramName, params)
@@ -85,14 +82,14 @@ func GetMultipleURLParam(paramNames ...string) gin.HandlerFunc {
 func retrieveAndSetParam(ctx *gin.Context, paramName string) bool {
 	param := ctx.Param(paramName)
 	if param == "" {
-		common.EmitError(ctx, ierrors.NewMissingParamError(
+		common.EmitError(ctx, apierrors.NewMissingParamError(
 			paramName,
 		))
 		return false
 	}
 	paramVal, err := strconv.Atoi(param)
 	if err != nil {
-		common.EmitError(ctx, ierrors.NewInvalidParamType(paramName))
+		common.EmitError(ctx, apierrors.NewInvalidParamType(paramName))
 		return false
 	}
 	ctx.Set(paramName, paramVal)

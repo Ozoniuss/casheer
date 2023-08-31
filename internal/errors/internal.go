@@ -59,3 +59,21 @@ func (q InvalidQueryParams) Error() string {
 func (q InvalidQueryParams) Unwrap() error {
 	return q.orig
 }
+
+type InvalidJsonBody struct {
+	orig error
+}
+
+func NewInvalidJsonBodyError(orig error) InvalidJsonBody {
+	return InvalidJsonBody{
+		orig: orig,
+	}
+}
+
+func (j InvalidJsonBody) Error() string {
+	return j.orig.Error()
+}
+
+func (j InvalidJsonBody) Unwrap() error {
+	return j.orig
+}

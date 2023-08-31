@@ -29,6 +29,7 @@ func ErrorHandler() gin.HandlerFunc {
 		fmt.Printf("An error occured: %s\n", err.Error())
 
 		var invalidQueryParamsError ierrors.InvalidQueryParams
+		var invalidJsonBodyError ierrors.InvalidJsonBody
 		var missingContextParamError ierrors.MissingGinContextParam
 		var invalidContextParamTypeError ierrors.InvalidGinContextParamType
 		var invalidResourceError ierrors.InvalidModel
@@ -41,7 +42,10 @@ func ErrorHandler() gin.HandlerFunc {
 		switch {
 
 		case errors.As(err, &invalidQueryParamsError):
-			common.EmitError(ctx, apierrors.NewQueryParamsBindingError(fmt.Sprintf("Could not bind query parameters: %s", invalidQueryParamsError)))
+			common.EmitError(ctx, apierrors.NewQueryParamsBindingError(fmt.Sprintf("Invalid query parameters: %s", invalidQueryParamsError)))
+
+		case errors.As(err, &invalidJsonBodyError):
+			common.EmitError(ctx, apierrors.NewRequestBindingError(fmt.Sprintf("Invalid request body: %s", invalidJsonBodyError)))
 
 		case errors.As(err, &missingContextParamError):
 			common.EmitError(ctx, apierrors.NewUnknownError("something went wrong while handling the request."))
