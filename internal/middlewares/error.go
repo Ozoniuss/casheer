@@ -28,6 +28,7 @@ func ErrorHandler() gin.HandlerFunc {
 		err := ctx.Errors[0].Err
 		fmt.Printf("An error occured: %s\n", err.Error())
 
+		var invalidQueryParamsError ierrors.InvalidQueryParams
 		var missingContextParamError ierrors.MissingGinContextParam
 		var invalidContextParamTypeError ierrors.InvalidGinContextParamType
 		var invalidResourceError ierrors.InvalidModel
@@ -38,6 +39,9 @@ func ErrorHandler() gin.HandlerFunc {
 		var invalidCurrencyError currency.ErrInvalidCurrency
 
 		switch {
+
+		case errors.As(err, &invalidQueryParamsError):
+			common.EmitError(ctx, apierrors.NewQueryParamsBindingError(fmt.Sprintf("Could not bind query parameters: %s", invalidQueryParamsError)))
 
 		case errors.As(err, &missingContextParamError):
 			common.EmitError(ctx, apierrors.NewUnknownError("something went wrong while handling the request."))

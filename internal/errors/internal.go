@@ -41,3 +41,21 @@ func NewInvalidModelError(resource string, validationError error) InvalidModel {
 func (r InvalidModel) Error() string {
 	return fmt.Sprintf("Invalid %s resource: %s", r.modelName, r.validationError.Error())
 }
+
+type InvalidQueryParams struct {
+	orig error
+}
+
+func NewInvalidQueryParamsError(orig error) InvalidQueryParams {
+	return InvalidQueryParams{
+		orig: orig,
+	}
+}
+
+func (q InvalidQueryParams) Error() string {
+	return q.orig.Error()
+}
+
+func (q InvalidQueryParams) Unwrap() error {
+	return q.orig
+}

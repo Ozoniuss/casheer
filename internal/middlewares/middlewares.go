@@ -11,7 +11,7 @@ import (
 )
 
 // BindJSONRequest does the same job as ctx.ShouldBindJSON, while also writing
-// a custom error to the response if the binding is not succesful.
+// a custom error to the response if the binding is not successful.
 func BindJSONRequest[
 	T casheerapi.CreateEntryRequest |
 		casheerapi.CreateDebtRequest |
@@ -34,6 +34,8 @@ func BindJSONRequest[
 	}
 }
 
+// BindQueryParams does the same job as ctx.ShouldBindQuery, while also writing
+// a custom error to the response if the binding is not successful.
 func BindQueryParams[
 	T casheerapi.ListDebtParams |
 		casheerapi.ListEntryParams |
@@ -42,10 +44,7 @@ func BindQueryParams[
 		var params T
 		err := ctx.ShouldBindQuery(&params)
 		if err != nil {
-			common.EmitError(ctx, ierrors.NewQueryParamsBindingError(
-				fmt.Sprintf("Could not bind query params: %s", err.Error()),
-			))
-			ctx.Abort()
+			common.ErrorAndAbort(ctx, err)
 			return
 		}
 		ctx.Set(paramName, params)
