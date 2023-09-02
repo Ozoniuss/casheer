@@ -34,12 +34,17 @@ type ExpenseListItemLinks struct {
 }
 
 type CreateExpenseRequest struct {
-	Amount        int    `json:"amount"`
-	Currency      string `json:"currency"`
-	Exponent      *int   `json:"exponent,omitempty"`
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	PaymentMethod string `json:"payment_method"`
+	Data struct {
+		Type       string `json:"type" binding:"required"`
+		Attributes struct {
+			Amount        int    `json:"amount" binding:"required"`
+			Currency      string `json:"currency" binding:"required"`
+			Exponent      *int   `json:"exponent,omitempty"`
+			Name          string `json:"name" binding:"required"`
+			Description   string `json:"description"`
+			PaymentMethod string `json:"payment_method" binding:"required"`
+		} `json:"attributes" binding:"required"`
+	} `json:"data" binding:"required"`
 }
 
 type CreateExpenseResponse struct {
@@ -47,12 +52,17 @@ type CreateExpenseResponse struct {
 }
 
 type UpdateExpenseRequest struct {
-	Amount        *int    `json:"amount,omitempty"`
-	Currency      *string `json:"currency,omitempty"`
-	Exponent      *int    `json:"exponent,omitempty"`
-	Name          *string `json:"name,omitempty"`
-	Description   *string `json:"description,omitempty"`
-	PaymentMethod *string `json:"payment_method,omitempty"`
+	Data struct {
+		Type       string `json:"type" binding:"required"`
+		Attributes struct {
+			Amount        *int    `json:"amount,omitempty"`
+			Currency      *string `json:"currency,omitempty"`
+			Exponent      *int    `json:"exponent,omitempty"`
+			Name          *string `json:"name,omitempty"`
+			Description   *string `json:"description,omitempty"`
+			PaymentMethod *string `json:"payment_method,omitempty"`
+		} `json:"attributes" binding:"required"`
+	} `json:"data" binding:"required"`
 }
 
 type UpdateExpenseResponse struct {

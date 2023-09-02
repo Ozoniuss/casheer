@@ -42,29 +42,29 @@ func getUpdatedFields(req casheerapi.UpdateExpenseRequest) (model.Expense, []str
 	expense := model.Expense{}
 
 	// TODO: proper validation here.
-	if req.Amount != nil {
+	if req.Data.Attributes.Amount != nil {
 		updatedFields = append(updatedFields, "amount")
-		expense.Amount = *req.Amount
+		expense.Amount = *req.Data.Attributes.Amount
 	}
-	if req.Currency != nil {
+	if req.Data.Attributes.Currency != nil {
 		updatedFields = append(updatedFields, "currency")
-		expense.Currency = *req.Currency
+		expense.Currency = *req.Data.Attributes.Currency
 	}
-	if req.Description != nil {
+	if req.Data.Attributes.Description != nil {
 		updatedFields = append(updatedFields, "description")
-		expense.Description = *req.Description
+		expense.Description = *req.Data.Attributes.Description
 	}
-	if req.Exponent != nil {
+	if req.Data.Attributes.Exponent != nil {
 		updatedFields = append(updatedFields, "exponent")
-		expense.Exponent = *req.Exponent
+		expense.Exponent = *req.Data.Attributes.Exponent
 	}
-	if req.Name != nil {
+	if req.Data.Attributes.Name != nil {
 		updatedFields = append(updatedFields, "name")
-		expense.Name = *req.Name
+		expense.Name = *req.Data.Attributes.Name
 	}
-	if req.PaymentMethod != nil {
+	if req.Data.Attributes.PaymentMethod != nil {
 		updatedFields = append(updatedFields, "payment_method")
-		expense.PaymentMethod = *req.PaymentMethod
+		expense.PaymentMethod = *req.Data.Attributes.PaymentMethod
 	}
 
 	return expense, updatedFields

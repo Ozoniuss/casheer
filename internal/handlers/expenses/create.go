@@ -21,7 +21,7 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 		return
 	}
 
-	value, err := currency.NewValueBasedOnCurrency(req.Amount, req.Currency, req.Exponent)
+	value, err := currency.NewValueBasedOnCurrency(req.Data.Attributes.Amount, req.Data.Attributes.Currency, req.Data.Attributes.Exponent)
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
 		return
@@ -30,9 +30,9 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 	expense := model.Expense{
 		EntryId:       entid,
 		Value:         value,
-		Description:   req.Description,
-		Name:          req.Name,
-		PaymentMethod: req.PaymentMethod,
+		Description:   req.Data.Attributes.Description,
+		Name:          req.Data.Attributes.Name,
+		PaymentMethod: req.Data.Attributes.PaymentMethod,
 	}
 
 	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(expense.EntryId)).Clauses(clause.Returning{}).Create(&expense).Error

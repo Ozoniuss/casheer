@@ -101,11 +101,33 @@ func TestHandleCreateExpense(t *testing.T) {
 		ctx.Set("entid", entry.Id)
 
 		req := casheerapi.CreateExpenseRequest{
-			Amount:        100,
-			Currency:      "EUR",
-			Name:          "test",
-			Description:   "test",
-			PaymentMethod: "card",
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Amount        int    "json:\"amount\" binding:\"required\""
+					Currency      string "json:\"currency\" binding:\"required\""
+					Exponent      *int   "json:\"exponent,omitempty\""
+					Name          string "json:\"name\" binding:\"required\""
+					Description   string "json:\"description\""
+					PaymentMethod string "json:\"payment_method\" binding:\"required\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "expense",
+				Attributes: struct {
+					Amount        int    "json:\"amount\" binding:\"required\""
+					Currency      string "json:\"currency\" binding:\"required\""
+					Exponent      *int   "json:\"exponent,omitempty\""
+					Name          string "json:\"name\" binding:\"required\""
+					Description   string "json:\"description\""
+					PaymentMethod string "json:\"payment_method\" binding:\"required\""
+				}{
+					Amount:        100,
+					Currency:      "EUR",
+					Name:          "test",
+					Description:   "test",
+					PaymentMethod: "card",
+				},
+			},
 		}
 		ctx.Set("req", req)
 
@@ -124,12 +146,12 @@ func TestHandleCreateExpense(t *testing.T) {
 		}
 
 		savedExpense := expenses[0]
-		if savedExpense.Amount != req.Amount ||
-			savedExpense.Currency != req.Currency ||
+		if savedExpense.Amount != req.Data.Attributes.Amount ||
+			savedExpense.Currency != req.Data.Attributes.Currency ||
 			savedExpense.Exponent != -2 ||
-			savedExpense.Name != req.Name ||
-			savedExpense.Description != req.Description ||
-			savedExpense.PaymentMethod != req.PaymentMethod {
+			savedExpense.Name != req.Data.Attributes.Name ||
+			savedExpense.Description != req.Data.Attributes.Description ||
+			savedExpense.PaymentMethod != req.Data.Attributes.PaymentMethod {
 			t.Errorf("Inserted: %+v\nretrieved %+v\n", req, savedExpense)
 		}
 
@@ -143,11 +165,33 @@ func TestHandleCreateExpense(t *testing.T) {
 		ctx.Set("entid", entry.Id)
 
 		req := casheerapi.CreateExpenseRequest{
-			Amount:        100,
-			Currency:      "invalid",
-			Name:          "test",
-			Description:   "test",
-			PaymentMethod: "card",
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Amount        int    "json:\"amount\" binding:\"required\""
+					Currency      string "json:\"currency\" binding:\"required\""
+					Exponent      *int   "json:\"exponent,omitempty\""
+					Name          string "json:\"name\" binding:\"required\""
+					Description   string "json:\"description\""
+					PaymentMethod string "json:\"payment_method\" binding:\"required\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "expense",
+				Attributes: struct {
+					Amount        int    "json:\"amount\" binding:\"required\""
+					Currency      string "json:\"currency\" binding:\"required\""
+					Exponent      *int   "json:\"exponent,omitempty\""
+					Name          string "json:\"name\" binding:\"required\""
+					Description   string "json:\"description\""
+					PaymentMethod string "json:\"payment_method\" binding:\"required\""
+				}{
+					Amount:        100,
+					Currency:      "invalid",
+					Name:          "test",
+					Description:   "test",
+					PaymentMethod: "card",
+				},
+			},
 		}
 		ctx.Set("req", req)
 
@@ -165,11 +209,33 @@ func TestHandleCreateExpense(t *testing.T) {
 		ctx.Set("entid", rand.Int())
 
 		req := casheerapi.CreateExpenseRequest{
-			Amount:        100,
-			Currency:      "EUR",
-			Name:          "test",
-			Description:   "test",
-			PaymentMethod: "card",
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Amount        int    "json:\"amount\" binding:\"required\""
+					Currency      string "json:\"currency\" binding:\"required\""
+					Exponent      *int   "json:\"exponent,omitempty\""
+					Name          string "json:\"name\" binding:\"required\""
+					Description   string "json:\"description\""
+					PaymentMethod string "json:\"payment_method\" binding:\"required\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "expense",
+				Attributes: struct {
+					Amount        int    "json:\"amount\" binding:\"required\""
+					Currency      string "json:\"currency\" binding:\"required\""
+					Exponent      *int   "json:\"exponent,omitempty\""
+					Name          string "json:\"name\" binding:\"required\""
+					Description   string "json:\"description\""
+					PaymentMethod string "json:\"payment_method\" binding:\"required\""
+				}{
+					Amount:        100,
+					Currency:      "EUR",
+					Name:          "test",
+					Description:   "test",
+					PaymentMethod: "card",
+				},
+			},
 		}
 		ctx.Set("req", req)
 
@@ -349,12 +415,34 @@ func TestHandleUpdateEntry(t *testing.T) {
 		ctx.Set("expid", expense.Id)
 
 		req := casheerapi.UpdateExpenseRequest{
-			Amount:        func() *int { m := 600; return &m }(),
-			Currency:      func() *string { usd := currency.USD; return &usd }(),
-			Exponent:      func() *int { e := 0; return &e }(),
-			Name:          func() *string { s := "newname"; return &s }(),
-			Description:   func() *string { s := "newdesc"; return &s }(),
-			PaymentMethod: func() *string { s := "newpm"; return &s }(),
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Amount        *int    "json:\"amount,omitempty\""
+					Currency      *string "json:\"currency,omitempty\""
+					Exponent      *int    "json:\"exponent,omitempty\""
+					Name          *string "json:\"name,omitempty\""
+					Description   *string "json:\"description,omitempty\""
+					PaymentMethod *string "json:\"payment_method,omitempty\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "expense",
+				Attributes: struct {
+					Amount        *int    "json:\"amount,omitempty\""
+					Currency      *string "json:\"currency,omitempty\""
+					Exponent      *int    "json:\"exponent,omitempty\""
+					Name          *string "json:\"name,omitempty\""
+					Description   *string "json:\"description,omitempty\""
+					PaymentMethod *string "json:\"payment_method,omitempty\""
+				}{
+					Amount:        func() *int { m := 600; return &m }(),
+					Currency:      func() *string { usd := currency.USD; return &usd }(),
+					Exponent:      func() *int { e := 0; return &e }(),
+					Name:          func() *string { s := "newname"; return &s }(),
+					Description:   func() *string { s := "newdesc"; return &s }(),
+					PaymentMethod: func() *string { s := "newpm"; return &s }(),
+				},
+			},
 		}
 		ctx.Set("req", req)
 		testHandler.HandleUpdateExpense(ctx)
@@ -366,12 +454,12 @@ func TestHandleUpdateEntry(t *testing.T) {
 		}
 
 		testutils.CheckNoContextErrors(t, ctx)
-		if savedExpense.Amount != *req.Amount ||
-			savedExpense.Currency != *req.Currency ||
-			savedExpense.Exponent != *req.Exponent ||
-			savedExpense.Name != *req.Name ||
-			savedExpense.Description != *req.Description ||
-			savedExpense.PaymentMethod != *req.PaymentMethod {
+		if savedExpense.Amount != *req.Data.Attributes.Amount ||
+			savedExpense.Currency != *req.Data.Attributes.Currency ||
+			savedExpense.Exponent != *req.Data.Attributes.Exponent ||
+			savedExpense.Name != *req.Data.Attributes.Name ||
+			savedExpense.Description != *req.Data.Attributes.Description ||
+			savedExpense.PaymentMethod != *req.Data.Attributes.PaymentMethod {
 			t.Errorf("Inserted: %+v\nretrieved %+v\n", req, savedExpense)
 		}
 	})
@@ -383,12 +471,34 @@ func TestHandleUpdateEntry(t *testing.T) {
 		ctx.Set("expid", expense.Id)
 
 		req := casheerapi.UpdateExpenseRequest{
-			Amount:        func() *int { m := 600; return &m }(),
-			Currency:      func() *string { usd := "fakecurrency"; return &usd }(),
-			Exponent:      func() *int { e := 0; return &e }(),
-			Name:          func() *string { s := "newname"; return &s }(),
-			Description:   func() *string { s := "newdesc"; return &s }(),
-			PaymentMethod: func() *string { s := "newpm"; return &s }(),
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Amount        *int    "json:\"amount,omitempty\""
+					Currency      *string "json:\"currency,omitempty\""
+					Exponent      *int    "json:\"exponent,omitempty\""
+					Name          *string "json:\"name,omitempty\""
+					Description   *string "json:\"description,omitempty\""
+					PaymentMethod *string "json:\"payment_method,omitempty\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "expense",
+				Attributes: struct {
+					Amount        *int    "json:\"amount,omitempty\""
+					Currency      *string "json:\"currency,omitempty\""
+					Exponent      *int    "json:\"exponent,omitempty\""
+					Name          *string "json:\"name,omitempty\""
+					Description   *string "json:\"description,omitempty\""
+					PaymentMethod *string "json:\"payment_method,omitempty\""
+				}{
+					Amount:        func() *int { m := 600; return &m }(),
+					Currency:      func() *string { usd := "fakecurrency"; return &usd }(),
+					Exponent:      func() *int { e := 0; return &e }(),
+					Name:          func() *string { s := "newname"; return &s }(),
+					Description:   func() *string { s := "newdesc"; return &s }(),
+					PaymentMethod: func() *string { s := "newpm"; return &s }(),
+				},
+			},
 		}
 		ctx.Set("req", req)
 		testHandler.HandleUpdateExpense(ctx)
