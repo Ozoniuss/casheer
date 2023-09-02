@@ -40,9 +40,7 @@ func EntryToPublic(entry model.Entry, entriesURL *url.URL, runningTotal int) pub
 			RunningTotal: runningTotal,
 		},
 		Links: public.EntryLinks{
-			Self:       entriesURL.JoinPath(strconv.Itoa(entry.Id)).String(),
-			Collection: entriesURL.String(),
-			Expenses:   entriesURL.JoinPath(strconv.Itoa(entry.Id), "expenses/").String(),
+			Self: entriesURL.JoinPath(strconv.Itoa(entry.Id)).String(),
 		},
 	}
 }

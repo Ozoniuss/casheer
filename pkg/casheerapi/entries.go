@@ -31,10 +31,7 @@ type EntryAtrributes struct {
 }
 
 type EntryLinks struct {
-	Self       string `json:"self"`
-	Collection string `json:"collection"`
-	Expenses   string `json:"expenses"`
-	Total      string `json:"total"`
+	Self string `json:"self"`
 }
 
 // No need to return the collection, not the total, as it is returned as a link
