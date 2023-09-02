@@ -42,29 +42,29 @@ func getUpdatedFields(req casheerapi.UpdateEntryRequest) (model.Entry, []string)
 	entry := model.Entry{}
 
 	// TODO: proper validation here.
-	if req.Month != nil {
+	if req.Data.Attributes.Month != nil {
 		updatedFields = append(updatedFields, "month")
-		entry.Month = *req.Month
+		entry.Month = *req.Data.Attributes.Month
 	}
-	if req.Year != nil {
+	if req.Data.Attributes.Year != nil {
 		updatedFields = append(updatedFields, "year")
-		entry.Year = *req.Year
+		entry.Year = *req.Data.Attributes.Year
 	}
-	if req.Category != nil {
+	if req.Data.Attributes.Category != nil {
 		updatedFields = append(updatedFields, "category")
-		entry.Category = *req.Category
+		entry.Category = *req.Data.Attributes.Category
 	}
-	if req.Subcategory != nil {
+	if req.Data.Attributes.Subcategory != nil {
 		updatedFields = append(updatedFields, "subcategory")
-		entry.Subcategory = *req.Subcategory
+		entry.Subcategory = *req.Data.Attributes.Subcategory
 	}
-	if req.Recurring != nil {
+	if req.Data.Attributes.Recurring != nil {
 		updatedFields = append(updatedFields, "recurring")
-		entry.Recurring = *req.Recurring
+		entry.Recurring = *req.Data.Attributes.Recurring
 	}
-	if req.ExpectedTotal != nil {
+	if req.Data.Attributes.ExpectedTotal != nil {
 		updatedFields = append(updatedFields, "expected_total")
-		entry.ExpectedTotal = *req.ExpectedTotal
+		entry.ExpectedTotal = *req.Data.Attributes.ExpectedTotal
 	}
 
 	return entry, updatedFields

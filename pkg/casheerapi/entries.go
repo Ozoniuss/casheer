@@ -55,12 +55,17 @@ type EntryListItemLinks struct {
 }
 
 type CreateEntryRequest struct {
-	Month         *int   `json:"month,omitempty"`
-	Year          *int   `json:"year,omitempty"`
-	Category      string `json:"category"`
-	Subcategory   string `json:"subcategory"`
-	ExpectedTotal int    `json:"expected_total"`
-	Recurring     bool   `json:"recurring"`
+	Data struct {
+		Type       string `json:"type" binding:"required"`
+		Attributes struct {
+			Month         *int   `json:"month,omitempty"`
+			Year          *int   `json:"year,omitempty"`
+			Category      string `json:"category" binding:"required"`
+			Subcategory   string `json:"subcategory" binding:"required"`
+			ExpectedTotal int    `json:"expected_total" binding:"required"`
+			Recurring     bool   `json:"recurring"`
+		} `json:"attributes"`
+	} `json:"data"`
 }
 
 type CreateEntryResponse struct {
@@ -68,12 +73,17 @@ type CreateEntryResponse struct {
 }
 
 type UpdateEntryRequest struct {
-	Month         *int    `json:"month,omitempty"`
-	Year          *int    `json:"year,omitempty"`
-	Category      *string `json:"category,omitempty"`
-	Subcategory   *string `json:"subcategory,omitempty"`
-	Recurring     *bool   `json:"recurring,omitempty"`
-	ExpectedTotal *int    `json:"expected_total,omitempty"`
+	Data struct {
+		Type       string `json:"type"`
+		Attributes struct {
+			Month         *int    `json:"month,omitempty"`
+			Year          *int    `json:"year,omitempty"`
+			Category      *string `json:"category,omitempty"`
+			Subcategory   *string `json:"subcategory,omitempty"`
+			Recurring     *bool   `json:"recurring,omitempty"`
+			ExpectedTotal *int    `json:"expected_total,omitempty"`
+		} `json:"attributes" binding:"required"`
+	} `json:"data" binding:"required"`
 }
 
 type UpdateEntryResponse struct {

@@ -21,20 +21,20 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 	}
 
 	entry := model.Entry{
-		Category:      req.Category,
-		Subcategory:   req.Subcategory,
-		ExpectedTotal: req.ExpectedTotal,
-		Recurring:     req.Recurring,
+		Category:      req.Data.Attributes.Category,
+		Subcategory:   req.Data.Attributes.Subcategory,
+		ExpectedTotal: req.Data.Attributes.ExpectedTotal,
+		Recurring:     req.Data.Attributes.Recurring,
 		Month:         int(time.Now().Month()),
 		Year:          time.Now().Year(),
 	}
 
 	// If month or year are not null, overwrite current month / year.
-	if req.Month != nil {
-		entry.Month = *req.Month
+	if req.Data.Attributes.Month != nil {
+		entry.Month = *req.Data.Attributes.Month
 	}
-	if req.Year != nil {
-		entry.Year = *req.Year
+	if req.Data.Attributes.Year != nil {
+		entry.Year = *req.Data.Attributes.Year
 	}
 
 	err = h.db.WithContext(ctx).Scopes(model.ValidateModelScope[model.Entry](entry)).Clauses(clause.Returning{}).Create(&entry).Error

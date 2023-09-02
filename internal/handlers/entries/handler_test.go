@@ -76,11 +76,33 @@ func TestHandleCreateEntry(t *testing.T) {
 	sharedMonth := 10
 	sharedYear := 2023
 	sharedEntry := casheerapi.CreateEntryRequest{
-		Month:         &sharedMonth,
-		Year:          &sharedYear,
-		Category:      "category",
-		Subcategory:   "subcategory",
-		ExpectedTotal: 5000,
+		Data: struct {
+			Type       string "json:\"type\" binding:\"required\""
+			Attributes struct {
+				Month         *int   "json:\"month,omitempty\""
+				Year          *int   "json:\"year,omitempty\""
+				Category      string "json:\"category\" binding:\"required\""
+				Subcategory   string "json:\"subcategory\" binding:\"required\""
+				ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
+				Recurring     bool   "json:\"recurring\""
+			} "json:\"attributes\""
+		}{
+			Type: "entry",
+			Attributes: struct {
+				Month         *int   "json:\"month,omitempty\""
+				Year          *int   "json:\"year,omitempty\""
+				Category      string "json:\"category\" binding:\"required\""
+				Subcategory   string "json:\"subcategory\" binding:\"required\""
+				ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
+				Recurring     bool   "json:\"recurring\""
+			}{
+				Month:         &sharedMonth,
+				Year:          &sharedYear,
+				Category:      "category",
+				Subcategory:   "subcategory",
+				ExpectedTotal: 5000,
+			},
+		},
 	}
 
 	t.Run("Creating a entry should save the entry", func(t *testing.T) {
@@ -105,11 +127,11 @@ func TestHandleCreateEntry(t *testing.T) {
 		}
 
 		savedEntry := entries[0]
-		if savedEntry.Month != *sharedEntry.Month ||
-			savedEntry.Year != *sharedEntry.Year ||
-			savedEntry.Category != sharedEntry.Category ||
-			savedEntry.Subcategory != sharedEntry.Subcategory ||
-			savedEntry.ExpectedTotal != sharedEntry.ExpectedTotal {
+		if savedEntry.Month != *sharedEntry.Data.Attributes.Month ||
+			savedEntry.Year != *sharedEntry.Data.Attributes.Year ||
+			savedEntry.Category != sharedEntry.Data.Attributes.Category ||
+			savedEntry.Subcategory != sharedEntry.Data.Attributes.Subcategory ||
+			savedEntry.ExpectedTotal != sharedEntry.Data.Attributes.ExpectedTotal {
 			t.Errorf("Inserted: %+v\nretrieved %+v\n", sharedEntry, savedEntry)
 		}
 
@@ -148,11 +170,33 @@ func TestHandleCreateEntry(t *testing.T) {
 		month := -10 // invalid month
 		year := 1900 // invalid year
 		dummyEntry := casheerapi.CreateEntryRequest{
-			Month:         &month,
-			Year:          &year,
-			Category:      "category",
-			Subcategory:   "subcategory",
-			ExpectedTotal: 5000,
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Month         *int   "json:\"month,omitempty\""
+					Year          *int   "json:\"year,omitempty\""
+					Category      string "json:\"category\" binding:\"required\""
+					Subcategory   string "json:\"subcategory\" binding:\"required\""
+					ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
+					Recurring     bool   "json:\"recurring\""
+				} "json:\"attributes\""
+			}{
+				Type: "entry",
+				Attributes: struct {
+					Month         *int   "json:\"month,omitempty\""
+					Year          *int   "json:\"year,omitempty\""
+					Category      string "json:\"category\" binding:\"required\""
+					Subcategory   string "json:\"subcategory\" binding:\"required\""
+					ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
+					Recurring     bool   "json:\"recurring\""
+				}{
+					Month:         &month,
+					Year:          &year,
+					Category:      "category",
+					Subcategory:   "subcategory",
+					ExpectedTotal: 5000,
+				},
+			},
 		}
 		ctx.Set("req", dummyEntry)
 
@@ -285,11 +329,33 @@ func TestHandleUpdateEntry(t *testing.T) {
 		ctx.Set("entid", dummyEntry.Id)
 
 		req := casheerapi.UpdateEntryRequest{
-			Month:       func() *int { m := 12; return &m }(),
-			Year:        func() *int { y := 2024; return &y }(),
-			Category:    func() *string { c := "u1"; return &c }(),
-			Subcategory: func() *string { s := "u1"; return &s }(),
-			Recurring:   func() *bool { r := true; return &r }(),
+			Data: struct {
+				Type       string "json:\"type\""
+				Attributes struct {
+					Month         *int    "json:\"month,omitempty\""
+					Year          *int    "json:\"year,omitempty\""
+					Category      *string "json:\"category,omitempty\""
+					Subcategory   *string "json:\"subcategory,omitempty\""
+					Recurring     *bool   "json:\"recurring,omitempty\""
+					ExpectedTotal *int    "json:\"expected_total,omitempty\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "entry",
+				Attributes: struct {
+					Month         *int    "json:\"month,omitempty\""
+					Year          *int    "json:\"year,omitempty\""
+					Category      *string "json:\"category,omitempty\""
+					Subcategory   *string "json:\"subcategory,omitempty\""
+					Recurring     *bool   "json:\"recurring,omitempty\""
+					ExpectedTotal *int    "json:\"expected_total,omitempty\""
+				}{
+					Month:       func() *int { m := 12; return &m }(),
+					Year:        func() *int { y := 2024; return &y }(),
+					Category:    func() *string { c := "u1"; return &c }(),
+					Subcategory: func() *string { s := "u1"; return &s }(),
+					Recurring:   func() *bool { r := true; return &r }(),
+				},
+			},
 		}
 		ctx.Set("req", req)
 		testHandler.HandleUpdateEntry(ctx)
@@ -303,10 +369,10 @@ func TestHandleUpdateEntry(t *testing.T) {
 		testutils.CheckNoContextErrors(t, ctx)
 
 		savedEntry := entries[0]
-		if savedEntry.Month != *req.Month ||
-			savedEntry.Year != *req.Year ||
-			savedEntry.Category != *req.Category ||
-			savedEntry.Subcategory != *req.Subcategory {
+		if savedEntry.Month != *req.Data.Attributes.Month ||
+			savedEntry.Year != *req.Data.Attributes.Year ||
+			savedEntry.Category != *req.Data.Attributes.Category ||
+			savedEntry.Subcategory != *req.Data.Attributes.Subcategory {
 			t.Errorf("Updated: %+v\nretrieved %+v", req, savedEntry)
 		}
 	})
@@ -318,10 +384,31 @@ func TestHandleUpdateEntry(t *testing.T) {
 		ctx.Set("entid", dummyEntry.Id)
 
 		req := casheerapi.UpdateEntryRequest{
-			Month:       func() *int { m := 13; return &m }(),
-			Year:        func() *int { y := 2000; return &y }(),
-			Category:    func() *string { c := ""; return &c }(),
-			Subcategory: func() *string { s := ""; return &s }(),
+			Data: struct {
+				Type       string "json:\"type\""
+				Attributes struct {
+					Month         *int    "json:\"month,omitempty\""
+					Year          *int    "json:\"year,omitempty\""
+					Category      *string "json:\"category,omitempty\""
+					Subcategory   *string "json:\"subcategory,omitempty\""
+					Recurring     *bool   "json:\"recurring,omitempty\""
+					ExpectedTotal *int    "json:\"expected_total,omitempty\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Attributes: struct {
+					Month         *int    "json:\"month,omitempty\""
+					Year          *int    "json:\"year,omitempty\""
+					Category      *string "json:\"category,omitempty\""
+					Subcategory   *string "json:\"subcategory,omitempty\""
+					Recurring     *bool   "json:\"recurring,omitempty\""
+					ExpectedTotal *int    "json:\"expected_total,omitempty\""
+				}{
+					Month:       func() *int { m := 13; return &m }(),
+					Year:        func() *int { y := 2000; return &y }(),
+					Category:    func() *string { c := ""; return &c }(),
+					Subcategory: func() *string { s := ""; return &s }(),
+				},
+			},
 		}
 		ctx.Set("req", req)
 		testHandler.HandleUpdateEntry(ctx)
