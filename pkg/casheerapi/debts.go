@@ -68,15 +68,14 @@ type ListDebtParams struct {
 	Person *string `form:"person,omitempty"`
 }
 
-// Returns an entries link to reveal other possible state transitions.
 type ListDebtLinks struct {
-	Self    string `json:"self"`
-	Entries string `json:"entries"`
+	Self string   `json:"self"`
+	Home HomeLink `json:"home"`
 }
 
 type ListDebtResponse struct {
 	Data  []DebtListItemData `json:"data"`
-	Links DefaultLinks       `json:"links"`
+	Links ListDebtLinks      `json:"links"`
 }
 
 type GetDebtRequest struct {

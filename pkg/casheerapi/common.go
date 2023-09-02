@@ -13,3 +13,8 @@ type Timestamps struct {
 type DefaultLinks struct {
 	Home string `json:"home"`
 }
+
+type HomeLink struct {
+	Href  string `json:"href"`
+	Title string `json:"title"`
+}

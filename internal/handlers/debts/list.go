@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
+	"github.com/Ozoniuss/casheer/internal/handlers/home"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
@@ -34,8 +35,11 @@ func (h *handler) HandleListDebt(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.ListDebtResponse{
-		Data:  make([]casheerapi.DebtListItemData, 0, len(debts)),
-		Links: common.NewDefaultLinks(h.debtsURL),
+		Data: make([]casheerapi.DebtListItemData, 0, len(debts)),
+		Links: casheerapi.ListDebtLinks{
+			Self: h.debtsURL.String(),
+			Home: home.NewHomeLink(h.debtsURL.JoinPath("..")), // TODO: pass main link as reference
+		},
 	}
 	for _, d := range debts {
 		resp.Data = append(resp.Data, DebtToPublicList(d, h.debtsURL))
