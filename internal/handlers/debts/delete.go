@@ -24,9 +24,6 @@ func (h *handler) HandleDeleteDebt(ctx *gin.Context) {
 
 	resp := casheerapi.DeleteDebtResponse{
 		Data: DebtToPublic(debt, h.debtsURL),
-		Links: casheerapi.DebtLinks{
-			Collection: h.debtsURL.String(),
-		},
 	}
 	resp.Data.Links.Self = ""
 

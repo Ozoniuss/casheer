@@ -24,8 +24,7 @@ func DebtToPublic(debt model.Debt, debtsURL *url.URL) public.DebtData {
 			},
 		},
 		Links: public.DebtLinks{
-			Self:       debtsURL.JoinPath(strconv.Itoa(debt.Id)).String(),
-			Collection: debtsURL.String(),
+			Self: debtsURL.JoinPath(strconv.Itoa(debt.Id)).String(),
 		},
 	}
 }
