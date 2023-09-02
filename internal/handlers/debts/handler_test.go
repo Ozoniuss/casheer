@@ -73,8 +73,20 @@ func TestHandleCreateDebt(t *testing.T) {
 		ctx, _ := gin.CreateTestContext(w)
 
 		dummyDebt := casheerapi.CreateDebtRequest{
-			Data: casheerapi.DebtData{
-				Attributes: casheerapi.DebtAtrributes{
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Person  string "json:\"person\" binding:\"required\""
+					Amount  int    "json:\"amount\" binding:\"required\""
+					Details string "json:\"details\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "debt",
+				Attributes: struct {
+					Person  string "json:\"person\" binding:\"required\""
+					Amount  int    "json:\"amount\" binding:\"required\""
+					Details string "json:\"details\""
+				}{
 					Person:  "person",
 					Amount:  5000,
 					Details: "some details",
@@ -111,8 +123,20 @@ func TestHandleCreateDebt(t *testing.T) {
 		ctx, _ := gin.CreateTestContext(w)
 
 		dummyDebt := casheerapi.CreateDebtRequest{
-			Data: casheerapi.DebtData{
-				Attributes: casheerapi.DebtAtrributes{
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Person  string "json:\"person\" binding:\"required\""
+					Amount  int    "json:\"amount\" binding:\"required\""
+					Details string "json:\"details\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "debt",
+				Attributes: struct {
+					Person  string "json:\"person\" binding:\"required\""
+					Amount  int    "json:\"amount\" binding:\"required\""
+					Details string "json:\"details\""
+				}{
 					Person:  "person",
 					Amount:  5000,
 					Details: "some details",
@@ -146,8 +170,20 @@ func TestHandleCreateDebt(t *testing.T) {
 		ctx, _ := gin.CreateTestContext(w)
 
 		dummyDebt := casheerapi.CreateDebtRequest{
-			Data: casheerapi.DebtData{
-				Attributes: casheerapi.DebtAtrributes{
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Person  string "json:\"person\" binding:\"required\""
+					Amount  int    "json:\"amount\" binding:\"required\""
+					Details string "json:\"details\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "debt",
+				Attributes: struct {
+					Person  string "json:\"person\" binding:\"required\""
+					Amount  int    "json:\"amount\" binding:\"required\""
+					Details string "json:\"details\""
+				}{
 					Person:  "", // invalid person
 					Amount:  5000,
 					Details: "some details",
@@ -245,8 +281,20 @@ func TestHandleUpdateDebt(t *testing.T) {
 		ctx.Set("dbtid", dummyDebt.Id)
 
 		newDebt := casheerapi.UpdateDebtRequest{
-			Data: casheerapi.UpdateDebtData{
-				Attributes: casheerapi.UpdateDebtAttributes{
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Person  *string "json:\"person,omitempty\""
+					Amount  *int    "json:\"amount,omitempty\""
+					Details *string "json:\"details,omitempty\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "debt",
+				Attributes: struct {
+					Person  *string "json:\"person,omitempty\""
+					Amount  *int    "json:\"amount,omitempty\""
+					Details *string "json:\"details,omitempty\""
+				}{
 					Person:  func() *string { p := "new person"; return &p }(),
 					Amount:  func() *int { a := 10000; return &a }(),
 					Details: func() *string { d := "new details"; return &d }(),
@@ -284,8 +332,20 @@ func TestHandleUpdateDebt(t *testing.T) {
 		ctx.Set("dbtid", dummyDebt.Id)
 
 		newDebt := casheerapi.UpdateDebtRequest{
-			Data: casheerapi.UpdateDebtData{
-				Attributes: casheerapi.UpdateDebtAttributes{
+			Data: struct {
+				Type       string "json:\"type\" binding:\"required\""
+				Attributes struct {
+					Person  *string "json:\"person,omitempty\""
+					Amount  *int    "json:\"amount,omitempty\""
+					Details *string "json:\"details,omitempty\""
+				} "json:\"attributes\" binding:\"required\""
+			}{
+				Type: "debt",
+				Attributes: struct {
+					Person  *string "json:\"person,omitempty\""
+					Amount  *int    "json:\"amount,omitempty\""
+					Details *string "json:\"details,omitempty\""
+				}{
 					Person:  func() *string { p := ""; return &p }(),
 					Amount:  func() *int { a := 10000; return &a }(),
 					Details: func() *string { d := "new details"; return &d }(),

@@ -30,8 +30,14 @@ type DebtListItemLinks struct {
 }
 
 type CreateDebtRequest struct {
-	// Note that ResourceID and Links are ignored.
-	Data DebtData
+	Data struct {
+		Type       string `json:"type" binding:"required"`
+		Attributes struct {
+			Person  string `json:"person" binding:"required"`
+			Amount  int    `json:"amount" binding:"required"`
+			Details string `json:"details"`
+		} `json:"attributes" binding:"required"`
+	} `json:"data" binding:"required"`
 }
 
 type CreateDebtResponse struct {
@@ -39,18 +45,15 @@ type CreateDebtResponse struct {
 	Links DefaultLinks `json:"links"`
 }
 
-type UpdateDebtData struct {
-	Attributes UpdateDebtAttributes `json:"attributes"`
-}
-
-type UpdateDebtAttributes struct {
-	Person  *string `json:"person,omitempty"`
-	Amount  *int    `json:"amount,omitempty"`
-	Details *string `json:"details,omitempty"`
-}
-
 type UpdateDebtRequest struct {
-	Data UpdateDebtData `json:"data"`
+	Data struct {
+		Type       string `json:"type" binding:"required"`
+		Attributes struct {
+			Person  *string `json:"person,omitempty"`
+			Amount  *int    `json:"amount,omitempty"`
+			Details *string `json:"details,omitempty"`
+		} `json:"attributes" binding:"required"`
+	} `json:"data" binding:"required"`
 }
 
 type UpdateDebtResponse struct {
