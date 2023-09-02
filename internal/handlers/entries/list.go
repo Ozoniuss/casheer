@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
+	"github.com/Ozoniuss/casheer/internal/handlers/home"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
@@ -44,8 +45,11 @@ func (h *handler) HandleListEntry(ctx *gin.Context) {
 	}
 
 	resp := casheerapi.ListEntryResponse{
-		Data:  make([]casheerapi.EntryListItemData, 0, len(entries)),
-		Links: common.NewDefaultLinks(h.entriesURL),
+		Data: make([]casheerapi.EntryListItemData, 0, len(entries)),
+		Links: casheerapi.ListEntryLinks{
+			Self: h.entriesURL.String(),
+			Home: home.NewHomeLink(h.entriesURL.JoinPath("..")),
+		},
 	}
 	for _, e := range entries {
 		publicEntry := EntryToPublicList(e, h.entriesURL, computeRunningTotal(e.Expenses))

@@ -33,7 +33,7 @@ func ExpenseToPublic(expense model.Expense, entriesURL *url.URL) public.ExpenseD
 		Relationships: public.ExpenseRelationships{
 			Entries: public.ExpenseEntryRelationship{
 				Links: public.ExpenseEntryRelationshipLinks{
-					Related: entriesURL.JoinPath(strconv.Itoa(expense.EntryId), "expenses").String(),
+					Related: entriesURL.JoinPath(strconv.Itoa(expense.EntryId)).String(),
 				},
 			},
 		},

@@ -42,6 +42,13 @@ func EntryToPublic(entry model.Entry, entriesURL *url.URL, runningTotal int) pub
 		Links: public.EntryLinks{
 			Self: entriesURL.JoinPath(strconv.Itoa(entry.Id)).String(),
 		},
+		Relationships: public.EntryRelationships{
+			Expenses: public.EntryExpenseRelationship{
+				Links: public.EntryExpenseRelationshipLinks{
+					Related: entriesURL.JoinPath(strconv.Itoa(entry.Id), "expenses/").String(),
+				},
+			},
+		},
 	}
 }
 
@@ -68,6 +75,13 @@ func EntryToPublicList(entry model.Entry, entriesURL *url.URL, runningTotal int)
 		},
 		Links: public.EntryListItemLinks{
 			Self: entriesURL.JoinPath(strconv.Itoa(entry.Id)).String(),
+		},
+		Relationships: public.EntryRelationships{
+			Expenses: public.EntryExpenseRelationship{
+				Links: public.EntryExpenseRelationshipLinks{
+					Related: entriesURL.JoinPath(strconv.Itoa(entry.Id), "expenses/").String(),
+				},
+			},
 		},
 	}
 }

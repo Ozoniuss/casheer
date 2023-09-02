@@ -5,16 +5,18 @@ const EntryType = "entry"
 // Data returned about an entry when a single one is returned.
 type EntryData struct {
 	ResourceID
-	Attributes EntryAtrributes `json:"attributes"`
-	Meta       EntryMeta       `json:"meta"`
-	Links      EntryLinks      `json:"links"`
+	Attributes    EntryAtrributes    `json:"attributes"`
+	Meta          EntryMeta          `json:"meta"`
+	Links         EntryLinks         `json:"links"`
+	Relationships EntryRelationships `json:"relationships"`
 }
 
 type EntryListItemData struct {
 	ResourceID
-	Attributes EntryAtrributes    `json:"attributes"`
-	Meta       EntryMeta          `json:"meta"`
-	Links      EntryListItemLinks `json:"links"`
+	Attributes    EntryAtrributes    `json:"attributes"`
+	Meta          EntryMeta          `json:"meta"`
+	Links         EntryListItemLinks `json:"links"`
+	Relationships EntryRelationships `json:"relationships"`
 }
 
 type EntryMeta struct {
@@ -32,6 +34,18 @@ type EntryAtrributes struct {
 
 type EntryLinks struct {
 	Self string `json:"self"`
+}
+
+type EntryRelationships struct {
+	Expenses EntryExpenseRelationship `json:"expenses"`
+}
+
+type EntryExpenseRelationship struct {
+	Links EntryExpenseRelationshipLinks `json:"links"`
+}
+
+type EntryExpenseRelationshipLinks struct {
+	Related string `json:"related"`
 }
 
 // No need to return the collection, not the total, as it is returned as a link
@@ -80,26 +94,14 @@ type ListEntryParams struct {
 	Subcategory *string `form:"subcategory,omitempty"`
 }
 
-// Represents the "total" resource the items listed contribute to. The first
-// version of the backend will force a period filter on the listing, meaning
-// that only one total can be associated with all elements of an entry
-// listing.
-//
-// Alternatively, a total may be associated with each individual entry, which
-// makes sense if entries can be from multiple periods. However, the main use
-// case of the application is planning and viewing for a single period (at
-// least yet), so this feature doesn't make sense.
-//
-// A debts link reveals other possible state transitions.
 type ListEntryLinks struct {
-	Self  string `json:"self"`
-	Total string `json:"total"`
-	Debts string `json:"debts"`
+	Self string   `json:"self"`
+	Home HomeLink `json:"home"`
 }
 
 type ListEntryResponse struct {
 	Data  []EntryListItemData `json:"data"`
-	Links DefaultLinks        `json:"links"`
+	Links ListEntryLinks      `json:"links"`
 }
 
 type GetEntryRequest struct {
