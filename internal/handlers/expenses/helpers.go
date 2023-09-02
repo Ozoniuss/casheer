@@ -28,8 +28,7 @@ func ExpenseToPublic(expense model.Expense, entriesURL *url.URL) public.ExpenseD
 			},
 		},
 		Links: public.ExpenseLinks{
-			Self:       entriesURL.JoinPath(strconv.Itoa(expense.EntryId), "expenses", strconv.Itoa(expense.Id)).String(),
-			Collection: entriesURL.JoinPath(strconv.Itoa(expense.EntryId), "expenses/").String(),
+			Self: entriesURL.JoinPath(strconv.Itoa(expense.EntryId), "expenses", strconv.Itoa(expense.Id)).String(),
 		},
 	}
 }

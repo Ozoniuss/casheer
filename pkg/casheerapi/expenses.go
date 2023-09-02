@@ -25,8 +25,7 @@ type ExpenseAttributes struct {
 }
 
 type ExpenseLinks struct {
-	Self       string `json:"self"`
-	Collection string `json:"collection"`
+	Self string `json:"self"`
 }
 
 type ExpenseListItemLinks struct {
