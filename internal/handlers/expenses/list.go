@@ -2,8 +2,10 @@ package expenses
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
+	"github.com/Ozoniuss/casheer/internal/handlers/home"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
@@ -31,6 +33,10 @@ func (h *handler) HandleListExpense(ctx *gin.Context) {
 
 	resp := casheerapi.ListExpenseResponse{
 		Data: make([]casheerapi.ExpenseListItemData, 0, len(expenses)),
+		Links: casheerapi.ListExpenseLinks{
+			Self: h.entriesURL.JoinPath(strconv.Itoa(entid), "expenses").String(),
+			Home: home.NewHomeLink(h.entriesURL.JoinPath("..")),
+		},
 	}
 	for _, e := range expenses {
 		resp.Data = append(resp.Data, ExpenseToPublicList(e, h.entriesURL))

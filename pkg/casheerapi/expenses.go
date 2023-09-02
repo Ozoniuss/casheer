@@ -4,8 +4,9 @@ const ExpenseType = "expense"
 
 type ExpenseData struct {
 	ResourceID
-	Attributes ExpenseAttributes `json:"attributes"`
-	Links      ExpenseLinks      `json:"links"`
+	Attributes    ExpenseAttributes    `json:"attributes"`
+	Links         ExpenseLinks         `json:"links"`
+	Relationships ExpenseRelationships `json:"relationships"`
 }
 
 type ExpenseListItemData struct {
@@ -74,10 +75,32 @@ type ListExpenseParams struct {
 	PaymentMethod *string `json:"payment_method,omitempty"`
 }
 
+type ListExpenseItemLinks struct {
+	Self string `json:"self"`
+}
+
 type ListExpenseLinks struct {
-	Self    string `json:"self"`
-	Entries string `json:"entries"`
-	Debts   string `json:"debts"`
+	Self string   `json:"self"`
+	Home HomeLink `json:"home"`
+}
+
+type ExpenseRelationships struct {
+	Entries ExpenseEntryRelationship `json:"entries"`
+}
+
+type ExpenseEntryRelationship struct {
+	Links ExpenseEntryRelationshipLinks `json:"links"`
+}
+
+type ExpenseEntryRelationshipLinks struct {
+	// Since in this case technically the relationship link is the same as the
+	// resource collection link, I've decided to not provide a relationship
+	// link at all in order to avoid confusion and be compliant to json:api.
+	//
+	// The related link simply points to the related expense, and not to a link
+	// resource.
+
+	Related string `json:"related"`
 }
 
 type ListExpenseResponse struct {
