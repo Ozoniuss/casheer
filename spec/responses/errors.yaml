@@ -1,0 +1,9 @@
+unexpectedError:
+  description: "An unexpected error occured."
+  content:
+    application/json:
+      schema:
+        type: object
+        properties:
+          data:
+            $ref: "../components/schemas/errors.yaml#/unknownError"

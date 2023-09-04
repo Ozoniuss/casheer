@@ -1,0 +1,73 @@
+Debt:
+  type: object
+  required: ["id", "type", "attributes", "links"]
+  properties:
+    id:
+      type: integer
+      format: int64
+      example: 100
+    type:
+      type: string
+      enum: ["debt"]
+    attributes:
+      type: object
+      required: ["person", "total", "details", "timestamp"]
+      properties:
+        person:
+          type: string
+          example: Machi Tsutomu
+        total:
+          $ref: "./common.yaml#/monetaryValue"
+        details:
+          type: string
+          example: For the sexy times
+        timestamps:
+          $ref: "./common.yaml#/timestamps"
+DebtWithLink:
+  allOf:
+    - $ref: "#/Debt"
+  type: object
+  properties:
+    links:
+      example: "http://dumblinks.com/debts/100"
+      type: object
+      required: true
+      $ref: "./jsonapi.yaml#/jsonapiSelfLink"
+
+CreateDebt:
+  type: object
+  required: ["type", "attributes"]
+  properties:
+    type:
+      type: string
+      enum: ["debt"]
+    attributes:
+      type: object
+      required: ["person", "total"]
+      properties:
+        person:
+          type: string
+          example: Machi Tsutomu
+        total:
+          $ref: "./common.yaml#/monetaryValue"
+        details:
+          type: string
+          example: For the sexy times
+UpdateDebt:
+  type: object
+  required: ["type", "attributes"]
+  properties:
+    type:
+      type: string
+      enum: ["debt"]
+    attributes:
+      type: object
+      properties:
+        person:
+          type: string
+          example: Machi Tsutomu
+        total:
+          $ref: "#/components/schemas/monetaryValue"
+        details:
+          type: string
+          example: For the sexy times

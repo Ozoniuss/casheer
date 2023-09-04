@@ -1,0 +1,20 @@
+monetaryValue:
+  type: object
+  properties:
+    currency:
+      type: string
+      example: "USD"
+    amount:
+      type: number
+      example: 100
+    exponent:
+      type: number
+      example: -2
+timestamps:
+  type: object
+  properties:
+    createdAt:
+      type: string
+      format: date-time
+      example:
+        $ref: "../examples/examples.yaml#/kobainTime"

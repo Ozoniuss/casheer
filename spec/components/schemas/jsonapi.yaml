@@ -1,0 +1,8 @@
+jsonapiSelfLink:
+  type: object
+  required: ["self"]
+  properties:
+    self:
+      type: string
+      example: "http://dumblinks.com/debts/100"
+      description: "A URI reference pointing to the link's target."

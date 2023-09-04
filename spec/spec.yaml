@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Casheer
   description: |-
-    This is a money transactions manager based on the OpenAPI 3.0 specification.
+    This is a money transactions manager.
   termsOfService: http://swagger.io/terms/
   contact:
     email: qscxzsewqazxcde@gmail.com
@@ -14,7 +14,7 @@ externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
 paths:
-  /debts:
+  /debts/:
     get:
       summary: List all existing debts
       description: This operation will list all existing debts.
@@ -38,7 +38,23 @@ paths:
                   data:
                     type: array
                     items:
-                      $ref: "#/components/schemas/DebtWithLink"
+                      $ref: "./components/schemas/debts.yaml#/Debt"
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: "http://dumblinks.com/debts/"
+                      home:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                            example: "http://dumblinks.com/home"
+                          title:
+                            type: string
+                            example: Home page of casheer API.
+
         "400":
           description: Invalid debt request.
           content:
@@ -48,166 +64,172 @@ paths:
                 properties:
                   error:
                     oneOf:
-                      - $ref: "#/components/schemas/invalidQueryParamsError"
-                      - $ref: "#/components/schemas/invalidURLError"
+                      - $ref: "./components/schemas/errors.yaml#/invalidQueryParamsError"
+                      - $ref: "./components/schemas/errors.yaml#/invalidURLError"
         "500":
-          $ref: "#/components/responses/unexpectedError"
-components:
-  examples:
-    kobainTime:
-      value: "1967-02-20T19:38:00Z"
-    boringTime:
-      value: "2000-01-10T10:00:00Z"
-
-  responses:
-    unexpectedError:
-      description: "An unexpected error occured."
-      content:
-        application/json:
-          schema:
-            type: object
-            properties:
-              data:
-                $ref: "#/components/schemas/unknownError"
-
-  schemas:
-    unknownError:
-      allOf:
-        - $ref: "#/components/schemas/jsonapiError"
-        - type: object
-          properties:
-            title:
-              type: string
-              example: "Unknown Error"
-              enum:
-                - "Unknown Error"
-            status:
-              type: number
-              example: 500
-              enum:
-                - 500
-    resourceAlreadyExistsError:
-      allOf:
-        - $ref: "#/components/schemas/jsonapiError"
-        - type: object
-          properties:
-            title:
-              type: string
-              enum:
-                - "Resource Already Exists"
-            status:
-              type: number
-              enum:
-                - 404
-    invalidURLError:
-      allOf:
-        - $ref: "#/components/schemas/jsonapiError"
-        - type: object
-          properties:
-            title:
-              type: string
-              enum:
-                - "Invalid URL"
-            status:
-              type: number
-              enum:
-                - 400
-    invalidRequestBodyError:
-      allOf:
-        - $ref: "#/components/schemas/jsonapiError"
-        - type: object
-          properties:
-            title:
-              type: string
-              enum:
-                - "Invalid JSON Body"
-            status:
-              type: number
-              enum:
-                - 400
-    invalidQueryParamsError:
-      allOf:
-        - $ref: "#/components/schemas/jsonapiError"
-        - type: object
-          properties:
-            title:
-              type: string
-              enum:
-                - "Invalid Query Params"
-            status:
-              type: number
-              enum:
-                - 400
-    jsonapiError:
-      type: object
-      required: ["title", "status", "details"]
-      properties:
-        title:
-          type: string
-          example: Missing URL parameters
-        status:
-          type: number
-          example: 400
-        details:
-          type: string
-          example: "Please add URL param"
-    jsonapiSelfLink:
-      type: object
-      required: ["self"]
-      properties:
-        self:
-          type: string
-          example: "http://dumblinks.com/debts/100"
-          description: "A URI reference pointing to the link's target."
-    monetaryValue:
-      type: object
-      properties:
-        currency:
-          type: string
-          example: "USD"
-        amount:
-          type: number
-          example: 100
-        exponent:
-          type: number
-          example: -2
-    timestamps:
-      type: object
-      properties:
-        createdAt:
-          type: string
-          format: date-time
-          example:
-            $ref: "#/components/examples/kobainTime"
-    DebtWithLink:
-      allOf:
-        - $ref: "#/components/schemas/Debt"
-        - type: object
-          properties:
-            links:
+          $ref: "./responses/errors.yaml#/unexpectedError"
+    post:
+      summary: Create a new debt
+      description: This operation will create a new debt, given the provided debt information is valid.
+      operationId: createDebts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
               type: object
-              $ref: "#/components/schemas/jsonapiSelfLink"
-    Debt:
-      type: object
-      required: ["id", "type", "attributes"]
-      properties:
-        id:
-          type: integer
-          format: int64
-          example: 100
-        type:
-          type: string
-          enum: ["debt"]
-        attributes:
-          type: object
-          properties:
-            person:
-              type: string
-              example: Machi Tsutomu
-            total:
-              $ref: "#/components/schemas/monetaryValue"
-            details:
-              type: string
-              example: For the sexy times
-            timestamps:
-              $ref: "#/components/schemas/timestamps"
+              properties:
+                data:
+                  $ref: "./components/schemas/debts.yaml#/CreateDebt"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/debts.yaml#/DebtWithLink"
+        "400":
+          description: Invalid debt request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidRequestBodyError"
+        "422":
+          description: Invalid debt sent in request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: "./components/schemas/errors.yaml#/invalidResourceError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+  /debts/{dbtid}:
+    get:
+      summary: Retrieve the data of an existing debt.
+      description: This operation will return the data of an existing debt, given the provided debt id exists.
+      operationId: getDebt
+      parameters:
+        - in: path
+          name: dbtid
+          description: The ID of the debt to be retrieved.
+          required: true
+          schema:
+            type: number
+            example: 500
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/debts.yaml#/DebtWithLink"
+        "404":
+          description: Debt was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceNotFoundError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+    patch:
+      summary: Update the data of an existing debt.
+      description: This operation will update the data of an existing debt, given the provided debt exists.
+      operationId: updateDebt
+      parameters:
+        - in: path
+          name: dbtid
+          description: The ID of the debt to be retrieved.
+          required: true
+          schema:
+            type: number
+            example: 500
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "./components/schemas/debts.yaml#/CreateDebt"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/debts.yaml#/DebtWithLink"
+        "404":
+          description: Debt was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceNotFoundError"
+        "422":
+          description: Invalid debt sent in request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: "./components/schemas/errors.yaml#/invalidResourceError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+    delete:
+      summary: Delete an existing debt.
+      description: This operation will remove an existing debt, given the provided debt exists.
+      operationId: updateDebt
+      parameters:
+        - in: path
+          name: dbtid
+          description: The ID of the debt to be retrieved.
+          required: true
+          schema:
+            type: number
+            example: 500
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/debts.yaml#/Debt"
+        "404":
+          description: Debt was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceNotFoundError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"

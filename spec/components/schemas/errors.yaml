@@ -1,0 +1,123 @@
+resourceNotFoundError:
+  allOf:
+    - $ref: "#/jsonapiError"
+    - type: object
+      properties:
+        title:
+          type: string
+          enum:
+            - "Resource Not Found"
+        status:
+          type: number
+          enum:
+            - 404
+resourceAlreadyExistsError:
+  allOf:
+    - $ref: "#/jsonapiError"
+    - type: object
+      properties:
+        title:
+          type: string
+          enum:
+            - "Resource Already Exists"
+        status:
+          type: number
+          enum:
+            - 400
+invalidURLError:
+  allOf:
+    - $ref: "#/jsonapiError"
+    - type: object
+      properties:
+        title:
+          type: string
+          enum:
+            - "Invalid URL"
+        status:
+          type: number
+          enum:
+            - 400
+invalidURLNoTrailingSlashError:
+  allOf:
+    - $ref: "#/jsonapiError"
+    - type: object
+      properties:
+        title:
+          type: string
+          enum:
+            - "Invalid URL"
+        status:
+          type: number
+          enum:
+            - 400
+        details:
+          type: string
+          enum:
+            - "Please add a trailing slash."
+invalidResourceError:
+  allOf:
+    - $ref: "#/jsonapiError"
+    - type: object
+      properties:
+        title:
+          type: string
+          enum:
+            - "Invalid Resource"
+        status:
+          type: number
+          enum:
+            - 422
+invalidRequestBodyError:
+  allOf:
+    - $ref: "#/jsonapiError"
+    - type: object
+      properties:
+        title:
+          type: string
+          enum:
+            - "Invalid JSON Body"
+        status:
+          type: number
+          enum:
+            - 400
+invalidQueryParamsError:
+  allOf:
+    - $ref: "#/jsonapiError"
+    - type: object
+      properties:
+        title:
+          type: string
+          enum:
+            - "Invalid Query Params"
+        status:
+          type: number
+          enum:
+            - 400
+jsonapiError:
+  type: object
+  required: ["title", "status", "details"]
+  properties:
+    title:
+      type: string
+      example: Missing URL parameters
+    status:
+      type: number
+      example: 400
+    details:
+      type: string
+      example: "Please add URL param"
+unknownError:
+  allOf:
+    - $ref: "#/jsonapiError"
+    - type: object
+      properties:
+        title:
+          type: string
+          example: "Unknown Error"
+          enum:
+            - "Unknown Error"
+        status:
+          type: number
+          example: 500
+          enum:
+            - 500
