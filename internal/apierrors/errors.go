@@ -82,7 +82,7 @@ func NewUnknownError(detail string) public.Error {
 
 func NewNotFoundError() public.Error {
 	return public.Error{
-		Title:  "Not Found Error",
+		Title:  "Resource Not Found",
 		Status: http.StatusNotFound,
 		Detail: "Resource was not found.",
 	}
@@ -91,7 +91,7 @@ func NewNotFoundError() public.Error {
 func NewInvalidResourceError(detail string) public.Error {
 	return public.Error{
 		Title:  "Invalid Resource",
-		Status: http.StatusBadRequest,
+		Status: http.StatusUnprocessableEntity,
 		Detail: detail,
 	}
 }
