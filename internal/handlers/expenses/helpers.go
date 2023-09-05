@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/Ozoniuss/casheer/internal/model"
+	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
 
@@ -16,9 +17,11 @@ func ExpenseToPublic(expense model.Expense, entriesURL *url.URL) public.ExpenseD
 			Type: public.EntryType,
 		},
 		Attributes: public.ExpenseAttributes{
-			Amount:        expense.Amount,
-			Currency:      expense.Currency,
-			Exponent:      expense.Exponent,
+			MonetaryValueAttributes: casheerapi.MonetaryValueAttributes{
+				Amount:   expense.Amount,
+				Currency: expense.Currency,
+				Exponent: expense.Exponent,
+			},
 			Name:          expense.Name,
 			Description:   expense.Description,
 			PaymentMethod: expense.PaymentMethod,
@@ -49,9 +52,11 @@ func ExpenseToPublicList(expense model.Expense, entriesURL *url.URL) public.Expe
 			Type: public.EntryType,
 		},
 		Attributes: public.ExpenseAttributes{
-			Amount:        expense.Amount,
-			Currency:      expense.Currency,
-			Exponent:      expense.Exponent,
+			MonetaryValueAttributes: casheerapi.MonetaryValueAttributes{
+				Amount:   expense.Amount,
+				Currency: expense.Currency,
+				Exponent: expense.Exponent,
+			},
 			Name:          expense.Name,
 			Description:   expense.Description,
 			PaymentMethod: expense.PaymentMethod,

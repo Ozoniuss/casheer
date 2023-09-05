@@ -16,9 +16,7 @@ type ExpenseListItemData struct {
 }
 
 type ExpenseAttributes struct {
-	Amount        int    `json:"amount"`
-	Currency      string `json:"currency"`
-	Exponent      int    `json:"exponent"`
+	MonetaryValueAttributes
 	Name          string `json:"name"`
 	Description   string `json:"description"`
 	PaymentMethod string `json:"payment_method"`
@@ -37,9 +35,7 @@ type CreateExpenseRequest struct {
 	Data struct {
 		Type       string `json:"type" binding:"required"`
 		Attributes struct {
-			Amount        int    `json:"amount" binding:"required"`
-			Currency      string `json:"currency" binding:"required"`
-			Exponent      *int   `json:"exponent,omitempty"`
+			MonetaryValueCreationAttributes
 			Name          string `json:"name" binding:"required"`
 			Description   string `json:"description"`
 			PaymentMethod string `json:"payment_method" binding:"required"`
@@ -55,9 +51,7 @@ type UpdateExpenseRequest struct {
 	Data struct {
 		Type       string `json:"type" binding:"required"`
 		Attributes struct {
-			Amount        *int    `json:"amount,omitempty"`
-			Currency      *string `json:"currency,omitempty"`
-			Exponent      *int    `json:"exponent,omitempty"`
+			MonetaryMutableValueAttributes
 			Name          *string `json:"name,omitempty"`
 			Description   *string `json:"description,omitempty"`
 			PaymentMethod *string `json:"payment_method,omitempty"`
