@@ -64,7 +64,8 @@ func ErrorHandler() gin.HandlerFunc {
 			if sqlite3err.Code == sqlite3.ErrConstraint && sqlite3err.ExtendedCode == sqlite3.ErrConstraintUnique {
 				common.EmitError(ctx, apierrors.NewAlreadyExistsError(sqlite3err.Error()))
 			} else {
-				fmt.Println("UNHANDLED")
+				common.EmitError(ctx, apierrors.NewUnknownError(err.Error()))
+				return
 			}
 			return
 
