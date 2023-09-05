@@ -3,6 +3,7 @@ package debts
 import (
 	"net/http"
 
+	"github.com/Ozoniuss/casheer/internal/currency"
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
@@ -18,9 +19,15 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 		return
 	}
 
+	value, err := currency.NewValueBasedOnCurrency(req.Data.Attributes.Amount, req.Data.Attributes.Currency, req.Data.Attributes.Exponent)
+	if err != nil {
+		common.ErrorAndAbort(ctx, err)
+		return
+	}
+
 	debt := model.Debt{
 		Person:  req.Data.Attributes.Person,
-		Amount:  req.Data.Attributes.Amount,
+		Value:   value,
 		Details: req.Data.Attributes.Details,
 	}
 

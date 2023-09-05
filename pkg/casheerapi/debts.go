@@ -15,8 +15,8 @@ type DebtListItemData struct {
 }
 
 type DebtAtrributes struct {
-	Person  string `json:"person"`
-	Amount  int    `json:"amount"`
+	Person string `json:"person"`
+	MonetaryValueAttributes
 	Details string `json:"details"`
 	Timestamps
 }
@@ -33,8 +33,8 @@ type CreateDebtRequest struct {
 	Data struct {
 		Type       string `json:"type" binding:"required"`
 		Attributes struct {
-			Person  string `json:"person" binding:"required"`
-			Amount  int    `json:"amount" binding:"required"`
+			Person string `json:"person" binding:"required"`
+			MonetaryValueCreationAttributes
 			Details string `json:"details"`
 		} `json:"attributes" binding:"required"`
 	} `json:"data" binding:"required"`
@@ -50,8 +50,8 @@ type UpdateDebtRequest struct {
 		Type       string `json:"type" binding:"required"`
 		Attributes struct {
 			Person  *string `json:"person,omitempty"`
-			Amount  *int    `json:"amount,omitempty"`
 			Details *string `json:"details,omitempty"`
+			MonetaryMutableValueAttributes
 		} `json:"attributes" binding:"required"`
 	} `json:"data" binding:"required"`
 }
