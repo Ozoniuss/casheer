@@ -9,13 +9,10 @@ import (
 )
 
 type DefaultHandler struct {
-	apiPaths config.ApiPaths
 }
 
 func NewDefault(config config.Config) DefaultHandler {
-	return DefaultHandler{
-		apiPaths: config.ApiPaths,
-	}
+	return DefaultHandler{}
 }
 
 func (d *DefaultHandler) DefaultHandler(ctx *gin.Context) {

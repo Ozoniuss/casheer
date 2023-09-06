@@ -6,13 +6,11 @@ import (
 )
 
 type handler struct {
-	db       *gorm.DB
-	apiPaths config.ApiPaths
+	db *gorm.DB
 }
 
 func NewHandler(db *gorm.DB, config config.Config) handler {
 	return handler{
-		db:       db,
-		apiPaths: config.ApiPaths,
+		db: db,
 	}
 }
