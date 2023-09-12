@@ -22,4 +22,5 @@ excel/*
 /main
 
 casheer.db
+casheer.e2e.db
 default.json
