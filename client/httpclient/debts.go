@@ -57,3 +57,8 @@ func (c *CasheerHTTPClient) GetDebt(debtId int) (public.GetDebtResponse, error) 
 	requestURL := c.debtsURL.JoinPath(strconv.Itoa(debtId)).String()
 	return calls.MakeGET[public.GetDebtResponse](c.httpClient, requestURL)
 }
+
+func (c *CasheerHTTPClient) DeleteDebt(debtId int) (public.DeleteDebtResponse, error) {
+	requestURL := c.debtsURL.JoinPath(strconv.Itoa(debtId)).String()
+	return calls.MakeDELETE[public.DeleteDebtResponse](c.httpClient, requestURL)
+}
