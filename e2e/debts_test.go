@@ -1,7 +1,6 @@
 package e2e
 
 import (
-	"net/http"
 	"strconv"
 	"testing"
 
@@ -11,7 +10,7 @@ import (
 
 var casheerDebtClient, _ = httpclient.NewCasheerHTTPClient()
 
-func TestCreateAndRetrieveDebt(t *testing.T) {
+func TestCreateRetrieveDeleteDebtFlow(t *testing.T) {
 	createResp, err := casheerDebtClient.CreateDebt("Marian", "get tf out", 100, "EUR", -2)
 	if err != nil {
 		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
@@ -42,20 +41,31 @@ func TestCreateAndRetrieveDebt(t *testing.T) {
 	if createResp.Data != getResp.Data {
 		t.Errorf("Debt returned in GET request should match debt returned from POST request. Got %+v, want %+v", createResp.Data, getResp.Data)
 	}
-}
-func TestGetDebt(t *testing.T) {
-	_, err := casheerDebtClient.GetDebt(111)
 
+	deleteResp, err := casheerClient.DeleteDebt(did)
+	if err != nil {
+		t.Error("Expected to be able to delete the newly created debt.")
+	}
+
+	if deleteResp.Data.Attributes != getResp.Data.Attributes {
+		t.Errorf("Attributes of debt returned in DELETE request should match debt returned from POST request. Got %+v, want %+v", createResp.Data, getResp.Data)
+	}
+	if deleteResp.Data.Links.Self != "" {
+		t.Errorf("Expected no self link, got %s\n", deleteResp.Data.Links.Self)
+	}
+	t.Logf("Deleted debt with id %d\n", did)
+
+	_, err = casheerClient.GetDebt(did)
 	if err == nil {
-		t.Fatal("Expected an error, got nil.")
+		t.Fatal("Expected to get an error when retrieving deleted debt, got none.")
 	}
 
 	jsonerr, ok := err.(casheerapi.ErrorResponse)
 	if !ok {
-		t.Fatalf("Expected a json error, got %s\n", err.Error())
+		t.Fatalf("Expected to get error of type jsonapi, got %v\n", err)
 	}
 
-	if jsonerr.Err.Status != http.StatusNotFound {
-		t.Errorf("Expected NOT FOUND status, got %d\n", jsonerr.Err.Status)
+	if jsonerr.Err.Status != 404 {
+		t.Errorf("Expected to get status 404, got %d\n", jsonerr.Err.Status)
 	}
 }
