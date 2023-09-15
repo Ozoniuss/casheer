@@ -1,9 +1,10 @@
+snyk:)
+
 # Expense manager
 
 The goal of the application is to manage my own expenses. It basically allows me to plan ahead for each month as well as keep track of the active expenses, either by entering them manually, automatically going through my Revolut payments etc. This is the API I will use for interacting with the expenses store.
 
-Big Picture
------------
+## Big Picture
 
 There are three main functionalities that the API, together with the client, shall fulfill:
 
@@ -13,8 +14,7 @@ There are three main functionalities that the API, together with the client, sha
 
 The planning is an orientative schedule of future expenses, and helps estimate the amount of money left at the end of each month. This is useful for planning investments, big purchases, holidays etc.
 
-Proposed API Features
------------------
+## Proposed API Features
 
 For entries, I will support:
 
@@ -64,8 +64,7 @@ Constraints:
 1. All create operations must respect data integrity constraints;
 2. All remove operations must be performed via soft deletes (including subsequent cascade operations) in order to minimize losses. A regular cleanup operation will run on the server to delete soft-deleted items from the database.
 
-Models
-------
+## Models
 
 A planning is defined for a particular month and year, and has several `entries`. Each `entry` holds the following information:
 
@@ -83,7 +82,7 @@ I don't feel there is a need to have more than a category and a subcategory, oth
 To allow for autocomplete in the CLI client, it may be a good idea to not use whitespaces as a separator. The CLI may perform a query at first to load a bunch of stuff from the database and allow for autocompletion, but the implementation remains to be determined.
 
 For each month, there is always a special category called `income`, which should be present for every month and year. There is no restriction on its subcategories, but it almost usually has `salary`. Income is special, because a positive value adds to the running total quota, whereas a positive expense value decreases the running total quota. I might consider making additional fixed categories such as `health`, `investments` `food`, but I'm not doing that at the moment. Also not sure how to automatize the creation of this special category, but likely on the client.
- 
+
 Then we have the expenses, which can be associated with entries. That means, an expense exists only in the context of an entry, and an entry can have multiple expenses (one-to-many). The expenses will contribute to the running total of an entry, either positively or negatively (an expense may have a negative value, as in "a friend paid me back 50$ from months ago"). An expense consists of the following data:
 
 - uuid
@@ -103,20 +102,19 @@ Lastly, there's debts. This holds both debts that are owed to me, but also debts
 
 Multiple debts for the same person may be issued, and the app will allow grouping these debts by person and issue a running total. Depending on what feels best for the user, they might consider updating an ongoing debt if part of it had been settled, or creating a new debt for the same person.
 
-Database
---------
+## Database
 
 The scripts for setting up the tables can be found [here.](./scripts/sqlite/)
 
-There's nothing particularly interesting to talk about here except maybe indexing. But before, let's figure out the most common operation I will use the application for, and also estimate how many records the database will hold. 
+There's nothing particularly interesting to talk about here except maybe indexing. But before, let's figure out the most common operation I will use the application for, and also estimate how many records the database will hold.
 
 Starting with the (back-off-the-envelope) estimations:
 
 - Around 5 active debts most of the time. Personally, it makes sense for me to store multiple debts of the same person individually, as it gives me a better overview of the transactions. Even considering that, I don't expect to ever have more than, say, 20 active debts as an all-time high;
-- A quick search through my revolut history shows me that I have around 100 expenses on average recorded for a month, split accross 30 entries on average. For say 50 years, that is 100 * 12 * 50 = 60000 total records for expenses. This also requires 30 * 12 * 50 = 18,000 records for entries.
+- A quick search through my revolut history shows me that I have around 100 expenses on average recorded for a month, split accross 30 entries on average. For say 50 years, that is 100 _ 12 _ 50 = 60000 total records for expenses. This also requires 30 _ 12 _ 50 = 18,000 records for entries.
 - Everything is soft-deleted for about 30 days before being hard-deleted, so it gives me some time to fix mistakes.
 
-Keep in mind that the estimation was for *50 years*. With all these considerations, I don't expect to have more than 100k total records in the database during this lifetime.
+Keep in mind that the estimation was for _50 years_. With all these considerations, I don't expect to have more than 100k total records in the database during this lifetime.
 
 It's not even worth talking about queries-per-second. Queries-per-day, maybe. I expect to check the running total from time to time and go through all expenses maybe once or twice a month. During each month, I will be adding all the Revolut expenses one by one, and at the end of the month create the categories for the new month. Thus, the read-to-write ratio isn't really that big, definitely lower than 10. But overall, I would expect somewhere around 1000-2000 queries per month, which is really a laughable load, even if all of them are done in the same day.
 
@@ -128,7 +126,7 @@ So, what are the indexes considerations? The most common operations would be:
 
 That being said, I don't think it is even worth considering any indexes at this point. At first, I thought of several strategies, such as indexing (year, month) with a hash index, since many queries will be based on a fixed year or month. Alternatively, indexing them individually with a B+Tree index would help me find expenses in a certain period. But for 100,000 records, I don't really think the additional memory required by these indexes will in the end have a benefit over simply the pages cached by the dbms. For now, the unique index I have acts much more like an additional integrity check for my data.
 
-Now, why not just store all of this in a file? Why use a fully-featured dbms? Well, I do want a relational database since I found a nice way to model my data, but this analysis actually makes me question the choice of Postgres over more lightweight databases such as SQLite, which doesn't even require running a database server. **Backups** and portability are really important feature I want for my database, and SQLite would make those features so much simpler. 
+Now, why not just store all of this in a file? Why use a fully-featured dbms? Well, I do want a relational database since I found a nice way to model my data, but this analysis actually makes me question the choice of Postgres over more lightweight databases such as SQLite, which doesn't even require running a database server. **Backups** and portability are really important feature I want for my database, and SQLite would make those features so much simpler.
 
 I'll be reading a few reviews of stress tests for SQLite and check out the datatypes and features it offers more in depth, but it's really likely that I will switch from Postgres once this thing is deployed. One of the things that it doesn't seem to support is multiple concurrent writes to the database, which is a feature I will never use.
 
@@ -136,8 +134,7 @@ UPDATE: I've decided to go with sqlite. For a small app, it's just so much simpl
 
 TODO: actual storage estimations, potential other features and models for the data.
 
-RESTful service
----------------
+## RESTful service
 
 Since I'll additionally be presenting this project for a university subject, one of the requirements was to follow the RESTful architectural styles. In short, as defined by Roy Fielding in his [dissertation](https://www.ics.uci.edu/~fielding/pubs/dissertation/fielding_dissertation.pdf), architectural constraints of the following styles should be satisfied:
 
@@ -154,7 +151,7 @@ Since I'll additionally be presenting this project for a university subject, one
 - The stateless property is satisfied by not storing any session information during the interaction between the user and the client. All communication is done via client requests and server responses.
 
 **The Cache Style**
-  
+
 - Browsers will automatically implement caching, which can be controlled by the server by specifying HTTP headers such as `Cache-Control`. However, at least in the first iteration, the server will not do any other caching operations, and thus the command-line client will not benefit from caching. But since I plan to use this application only from myself once a month, I'm perfectly fine with not bothering too much about caching.
 
 Perhaps one of the most important feature of a RESTful architecture that is implemented by this backend is providing uniform interfaces for the available resources. Their publicly available representation can be found in the external package [pkg/casheerapi](pkg/casheerapi/), which is going to be imported by the command-line client. The interfaces have been inspired from [jsonapi.org's](https://jsonapi.org/) specification, although many of the points have been dropped in favour of simplicity.
