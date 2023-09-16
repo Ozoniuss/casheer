@@ -9,8 +9,7 @@ on:
       - main
 
 jobs:
-  build:
-
+  build-and-run-unit-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -18,10 +17,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v4
         with:
-          go-version: '1.21'
-          
+          go-version: "1.21"
+
       - name: Build
         run: go build -v ./...
 
       - name: Test
-        run: go test -v ./...
+        run: go test -v ./internal/...
