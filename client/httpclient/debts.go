@@ -3,18 +3,12 @@ package httpclient
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"strconv"
 
 	"github.com/Ozoniuss/casheer/client/httpclient/calls"
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
-
-// CreateDebt(person string, details string, amount string, currency string, exponent string) public.CreateDebtResponse
-// DeleteDebt(debtId int) public.DeleteDebtResponse
-// UpdateDebt(debtId int, person *string, details *string, amount *string, currency *string, exponent *string) public.UpdateDebtResponse
-// GetDebt(debtId int) public.GetDebtResponse
-// ListDebts() public.ListDebtResponse
-// ListDebtsForPerson(person string) public.ListDebtResponse
 
 func (c *CasheerHTTPClient) CreateDebt(person string, details string, amount int, currency string, exponent int) (public.CreateDebtResponse, error) {
 	requestURL := c.debtsURL.String()
@@ -61,4 +55,20 @@ func (c *CasheerHTTPClient) GetDebt(debtId int) (public.GetDebtResponse, error) 
 func (c *CasheerHTTPClient) DeleteDebt(debtId int) (public.DeleteDebtResponse, error) {
 	requestURL := c.debtsURL.JoinPath(strconv.Itoa(debtId)).String()
 	return calls.MakeDELETE[public.DeleteDebtResponse](c.httpClient, requestURL)
+}
+
+func (c *CasheerHTTPClient) ListDebts() (public.ListDebtResponse, error) {
+	requestURL := c.debtsURL.String()
+	return calls.MakeGET[public.ListDebtResponse](c.httpClient, requestURL)
+}
+
+func (c *CasheerHTTPClient) ListDebtsForPerson(person string) (public.ListDebtResponse, error) {
+	requestURL := &url.URL{}
+	*requestURL = *c.debtsURL
+
+	query := requestURL.Query()
+	query.Add("person", person)
+
+	requestURL.RawQuery = query.Encode()
+	return calls.MakeGET[public.ListDebtResponse](c.httpClient, requestURL.String())
 }

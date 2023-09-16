@@ -49,6 +49,7 @@ func NewCasheerHTTPClient(opts ...CasheerClientOpts) (*CasheerHTTPClient, error)
 	if c.httpClient == nil {
 		c.httpClient = newHTTPClient()
 	}
+	fmt.Println("base", c.baseURL)
 	if c.baseURL == nil {
 		c.baseURL, _ = url.Parse("http://localhost:8033/api/")
 	}

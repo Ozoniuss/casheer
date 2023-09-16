@@ -7,5 +7,7 @@ type ResponseType interface {
 		casheerapi.ListDebtResponse |
 		casheerapi.UpdateDebtResponse |
 		casheerapi.DeleteDebtResponse |
-		casheerapi.GetDebtResponse
+		casheerapi.GetDebtResponse |
+		casheerapi.CreateEntryRequest |
+		casheerapi.CreateEntryResponse
 }
