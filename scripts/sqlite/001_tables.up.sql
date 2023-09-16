@@ -12,12 +12,7 @@ CREATE TABLE IF NOT EXISTS entries(
     year INTEGER NOT NULL,
     category TEXT NOT NULL COLLATE NOCASE,
     subcategory TEXT NOT NULL COLLATE NOCASE,
-    -- Even though these values are not necessarily integers, I only care about
-    -- two digits of precision, so I will use "bani" or "cents" as the lowest
-    -- unit of precis   ion. I'm still debating between dollar, euro and leu, but
-    -- will likely go with euro.
-    expected_total INTEGER NOT NULL,
-    running_total INTEGER NOT NULL,
+    expected_total INTEGER NOT NULL, -- atm in main currency
     recurring BOOLEAN NOT NULL DEFAULT FALSE, -- this may not even be needed
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, -- do I really need timestamps tho?
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,

@@ -17,7 +17,6 @@ type Entry struct {
 	Category      string `validate:"required" json:"category"`
 	Subcategory   string `validate:"required"`
 	ExpectedTotal int
-	RunningTotal  int
 	Recurring     bool
 
 	Expenses []Expense
