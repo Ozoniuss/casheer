@@ -8,8 +8,8 @@ import (
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
 
-func (c *CasheerHTTPClient) CreateEntry(month int, year int, category string, subcategory string, recurring bool) (public.CreateEntryResponse, error) {
-	requestURL := c.debtsURL.String()
+func (c *CasheerHTTPClient) CreateEntry(month int, year int, category string, subcategory string, expected_total int, recurring bool) (public.CreateEntryResponse, error) {
+	requestURL := c.entriesURL.String()
 
 	req := public.CreateEntryRequest{
 		Data: struct {
@@ -32,11 +32,12 @@ func (c *CasheerHTTPClient) CreateEntry(month int, year int, category string, su
 				ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
 				Recurring     bool   "json:\"recurring\""
 			}{
-				Month:       &month,
-				Year:        &year,
-				Category:    category,
-				Subcategory: subcategory,
-				Recurring:   recurring,
+				Month:         &month,
+				Year:          &year,
+				Category:      category,
+				Subcategory:   subcategory,
+				Recurring:     recurring,
+				ExpectedTotal: expected_total,
 			},
 		},
 	}
