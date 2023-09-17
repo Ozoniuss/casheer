@@ -55,7 +55,7 @@ func TestCreateEntryWithExpensesFlow(t *testing.T) {
 		expenseResp.Data.Attributes.Exponent != -2 {
 		t.Errorf("Received invalid debt attributes after creating the debt.")
 	}
-	_, err = casheerEntriesClient.CreateBasicExpense(entid, "second car trip", "more fuel", "card", 500, "RON")
+	_, err = casheerEntriesClient.CreateBasicExpenseWithoutId("category", "subcategory", 10, 2023, "second car trip", "more fuel", "card", 500, "RON")
 	if err != nil {
 		t.Fatalf("Did not expect error when creating expense; got %s\n", err.Error())
 	}
