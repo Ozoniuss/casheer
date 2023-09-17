@@ -9,5 +9,10 @@ type ResponseType interface {
 		casheerapi.DeleteDebtResponse |
 		casheerapi.GetDebtResponse |
 		casheerapi.CreateEntryRequest |
-		casheerapi.CreateEntryResponse
+		casheerapi.CreateEntryResponse |
+		casheerapi.CreateExpenseResponse |
+		casheerapi.ListExpenseResponse |
+		casheerapi.GetExpenseResponse |
+		casheerapi.UpdateExpenseResponse |
+		casheerapi.DeleteExpenseResponse
 }

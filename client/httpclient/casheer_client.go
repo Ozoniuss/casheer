@@ -11,6 +11,7 @@ type CasheerHTTPClient struct {
 	httpClient *http.Client
 	baseURL    *url.URL
 	debtsURL   *url.URL
+	entriesURL *url.URL
 }
 
 type CasheerClientOpts func(casheerClient *CasheerHTTPClient) error
@@ -54,5 +55,6 @@ func NewCasheerHTTPClient(opts ...CasheerClientOpts) (*CasheerHTTPClient, error)
 		c.baseURL, _ = url.Parse("http://localhost:8033/api/")
 	}
 	c.debtsURL = c.baseURL.JoinPath("debts/")
+	c.entriesURL = c.baseURL.JoinPath("entries/")
 	return c, nil
 }
