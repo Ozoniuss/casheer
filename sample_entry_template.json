@@ -1,0 +1,119 @@
+{
+    "income": {
+        "salary": {
+            "expected_total": 0
+        },
+        "scolarship": {
+            "expected_total": 0
+        }
+    },
+    "economies": {
+        "investment": {
+            "expected_total": 0
+        },
+        "donations": {
+            "expected_total": 0
+        },
+        "emergency_fund": {
+            "expected_total": 0
+        },
+        "extra_savings": {
+            "expected_total": 0
+        }
+    },
+    "food": {
+        "groceries": {
+            "expected_total": 0
+        },
+        "takeaway": {
+            "expected_total": 0
+        }
+    },
+    "house": {
+        "internet": {
+            "expected_total": 0,
+            "recurring": true
+        },
+        "electricity": {
+            "expected_total": 0,
+            "recurring": true
+        },
+        "gas": {
+            "expected_total": 0,
+            "recurring": true
+        },
+        "heat": {
+            "expected_total": 0,
+            "recurring": true
+        },
+        "water": {
+            "expected_total": 0,
+            "recurring": true
+        },
+        "bills": {
+            "expected_total": 0,
+            "recurring": false
+        }
+    },
+    "transportation": {
+        "fuel": {
+            "expected_total": 0
+        },
+        "parking": {
+            "expected_total": 0,
+            "recurring": true
+        },
+        "bolt_bus_or_taxi": {
+            "expected_total": 0
+        }
+    },
+    "memberships": {
+        "youtube": {
+            "expected_total": 0,
+            "recurring": true
+        },
+        "glovo": {
+            "expected_total": 0,
+            "recurring": true
+        },
+        "backblaze": {
+            "expected_total": 0,
+            "recurring": true
+        },
+        "google_drive": {
+            "expected_total": 0,
+            "recurring": true
+        }
+    },
+    "learning": {
+        "courses_or_books": {
+            "expected_total": 0
+        }
+    },
+    "personal": {
+        "emag": {
+            "expected_total": 0
+        },
+        "clothing": {
+            "expected_total": 0
+        }
+    },
+    "fun": {
+        "going_out": {
+            "expected_total": 0
+        }
+    },
+    "medic": {
+        "meds": {
+            "expected_total": 0
+        }
+    },
+    "misc": {
+        "idk": {
+            "expected_total": 0
+        },
+        "teapa": {
+            "expected_total": 0
+        }
+    }
+}
