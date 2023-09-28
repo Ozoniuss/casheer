@@ -4,11 +4,25 @@ While this app is still in development but the database was already in use, I
 wrote a couple of short scripts that helped me introduce the expenses in the
 database with the help of the Go client and the revolut statement.
 
-### [Add to db Go script](add_to_db.go)
+### [Create default expenses Go script](create_default_expenses.go)
 
 This script introduces the entries of this month in the database based on the
 default entries json template. I've obviously not added my personal template,
 but see how a sample similar one looks [here.](../../sample_entry_template.json)
+
+### [Add to db Go script](add_to_db.go)
+
+This script achieved an important personal milestone for me, and that is, adding
+the very first expenses in the production database! I used these scripts to go
+through my revolut statement and add the expenses interactively one by one.
+There are obviously many more improvements I could do to this, but I just wanted
+a proof of concept and also do some analysis on my expenses this month. Now that
+I know it works, I've set the building blocks of using the Go client and will
+start working on its actual use case: the CLI.
+
+Not only that, but this also helped me do a full end-to-end test by validating
+the expenses that were being continuously created by the script agains my real
+Revolut account, and I was really glad to see it didn't miss a single one.
 
 ### [Read statement Python script](read_statement.py)
 

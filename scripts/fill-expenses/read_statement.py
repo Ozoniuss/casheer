@@ -1,9 +1,55 @@
 import csv
+
 import os
+import sys
 from datetime import datetime
 
-class Expense:
+# taken from actual db via an sql query and copy paste
+CATEGORIES = [
+    "economies",
+    "food",
+    "fun",
+    "house",
+    "income",
+    "learning",
+    "medic",
+    "memberships",
+    "misc",
+    "personal",
+    "transportation",
+]
+SUBCATEGORIES = [
+    "donations",
+    "emergency_fund",
+    "extra_savings",
+    "investment",
+    "groceries",
+    "takeaway",
+    "going_out",
+    "electricity",
+    "gas",
+    "heat",
+    "internet",
+    "water",
+    "salary",
+    "scolarship",
+    "courses_or_books",
+    "meds",
+    "backblaze",
+    "glovo",
+    "google_drive",
+    "youtube",
+    "idk",
+    "teapa",
+    "clothing",
+    "emag",
+    "bolt_bus_or_taxi",
+    "fuel",
+    "parking",
+]
 
+
+class Expense:
     def __init__(
         self,
         Type: str,
@@ -26,30 +72,82 @@ class Expense:
         self.State = State
 
         self.Balance = None
-        if Balance != '':
+        if Balance != "":
             self.Balance = float(Balance)
         self.StartedDate = None
         self.CompletedDate = None
-        if StartedDate != '':
-            self.StartedDate = datetime.strptime(StartedDate, '%Y-%m-%d %H:%M:%S')
-        if CompletedDate != '':
-            self.CompletedDate = datetime.strptime(CompletedDate, '%Y-%m-%d %H:%M:%S')
+        if StartedDate != "":
+            self.StartedDate = datetime.strptime(StartedDate, "%Y-%m-%d %H:%M:%S")
+        if CompletedDate != "":
+            self.CompletedDate = datetime.strptime(CompletedDate, "%Y-%m-%d %H:%M:%S")
 
     def __str__(self):
-        return f"{self.Type} {self.Product} {self.Currency} {int(self.Amount * 100)} {int(self.Fee*100)} [{self.Description}]"
+        return f"({str(self.StartedDate.date()) :<10}) {self.Currency :<4} {int(self.Amount * 100) :<7} {int(self.Fee*100) :<2} {'[' + self.Description + ']' :<25}"
 
-filename = os.environ("EXPENSES_STATEMENT")
-card_ending_no = os.environ("CARD_ENDING_NO")
 
-with open(filename) as csvfile:
+filename = os.getenv("EXPENSES_STATEMENT")
+
+
+def askInput(amount: int, currency: str, payment_method: str, name: str):
+    keep = input("keep? >")
+    if keep == "n":
+        raise Exception("done")
+    actual_amount = input(f"amount? (default {amount}) >")
+    if actual_amount == "":
+        actual_amount = amount
+    actual_amount = int(actual_amount)
+    actual_currency = input(f"currency? (default {currency}) >")
+    if actual_currency == "":
+        actual_currency = currency
+    actual_payment_method = input(f"payment method? (default {payment_method}) >")
+    if actual_payment_method == "":
+        actual_payment_method = payment_method
+    category = input("category? >")
+    if category not in CATEGORIES:
+        category = input(f"are you sure? you typed {category}, retype if sure >")
+    subcategory = input("subcategory? >")
+    if subcategory not in SUBCATEGORIES:
+        subcategory = input(f"are you sure? you typed {subcategory}, retype if sure >")
+    actual_name = input(f"name? (default {name})>")
+    if actual_name == "":
+        actual_name = name
+    description = input("description? >")
+
+    return (
+        category,
+        subcategory,
+        actual_name,
+        description,
+        actual_amount,
+        actual_currency,
+        actual_payment_method,
+    )
+
+
+with open(filename, "r") as csvfile:
     spamreader = csv.reader(csvfile)
     expenses: list[Expense] = []
     for idx, row in enumerate(spamreader):
         if idx == 0:
             continue
-        if row[4] == 'To RON Bani de rontanele' or row[4] == 'To RON' or row[4] == f'Top-Up by *{card_ending_no}':
+        if (
+            row[4] == "To RON Bani de rontanele"
+            or row[4] == "To RON"
+            or row[4].startswith("Top-Up by *")
+        ):
             continue
         exp = Expense(*row)
         expenses.append(exp)
-        print(exp)
-    
+    expenses.sort(key=lambda expense: expense.StartedDate)
+
+with open("out.txt", "w") as f:
+    for e in expenses:
+        print(e)
+        try:
+            cat, subcat, name, desc, act_am, act_cur, act_pymt = askInput(
+                -int(e.Amount * 100), e.Currency, "card", e.Description
+            )
+            f.write(f"{cat},{subcat},{name},{desc},{act_am},{act_cur},{act_pymt}\n")
+        except Exception as e:
+            if str(e) == "done":
+                print("skipped")
