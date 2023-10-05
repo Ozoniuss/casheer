@@ -6,9 +6,21 @@ services:
       context: ./
       dockerfile: ./deployments/Dockerfile
     container_name: casheer-development
+
+    # Make sure ports from command and ports match. If desired, create a .env
+    # file for docker compose to not have to manage it manually.
     command: --server-address 0.0.0.0 --server-port 8033 --sqlite-db ./externaldeps/casheer.db
     ports:
       - 8033:8033
+
     volumes:
+      # Use (or create) the database in this directory instead of a volume
+      # mount to allow connecting to it from outside the container as well
+      # more easily for debugging.
       - ./externaldeps:/externaldeps
+
+      # These scripts are required to initialize the database if the db file
+      # doesn't exist. Note that creating the db file manually also requires 
+      # running the scripts manually since the program only checks whether the
+      # db file exists or not.
       - ./scripts/sqlite:/scripts/sqlite:ro
