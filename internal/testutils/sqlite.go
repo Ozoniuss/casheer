@@ -2,13 +2,13 @@ package testutils
 
 import (
 	"fmt"
-	"io"
 	"os"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
 
+	"github.com/Ozoniuss/casheer/internal/store"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -30,17 +30,9 @@ func Setup(sqlpath string) (*gorm.DB, string, error) {
 		return nil, "", fmt.Errorf("could not open database file: %w", err)
 	}
 
-	sqlfile, err := os.Open(sqlpath)
+	err = store.RunMigrations(db, sqlpath)
 	if err != nil {
-		return nil, "", fmt.Errorf("opening sql file: %s", err.Error())
-	}
-	query, err := io.ReadAll(sqlfile)
-	if err != nil {
-		return nil, "", fmt.Errorf("reading sql file: %s", err.Error())
-	}
-	err = db.Exec(string(query)).Error
-	if err != nil {
-		return nil, "", fmt.Errorf("executing sql query: %s", err.Error())
+		return nil, "", fmt.Errorf("initializing database: %s", err.Error())
 	}
 
 	return db, dbname, nil

@@ -32,6 +32,8 @@ func sqliteDatabaseOptions() []cfg.ConfigOption {
 	return []cfg.ConfigOption{
 		{FlagName: "sqlite-db", Shorthand: "", Value: "casheer.db", ConfigKey: "sqlite_database.file",
 			Usage: "Specifies the name of the ports database."},
+		{FlagName: "sqlite-migration", Shorthand: "", Value: "./scripts/sqlite/001_tables.up.sql", ConfigKey: "sqlite_database.migration",
+			Usage: "Specifies the name of the ports database."},
 	}
 }
 

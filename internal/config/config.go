@@ -26,7 +26,8 @@ type PostgresDatabase struct {
 }
 
 type SQLiteDatabase struct {
-	File string
+	File      string
+	Migration string
 }
 
 type Server struct {
