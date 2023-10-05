@@ -1,0 +1,14 @@
+version: '3.9'
+
+services:
+  casheer:
+    build:
+      context: ./
+      dockerfile: ./deployments/Dockerfile
+    container_name: casheer-development
+    command: --server-address 0.0.0.0 --server-port 8033 --sqlite-db ./externaldeps/casheer.db
+    ports:
+      - 8033:8033
+    volumes:
+      - ./externaldeps:/externaldeps
+      - ./scripts/sqlite:/scripts/sqlite:ro
