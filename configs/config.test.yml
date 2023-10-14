@@ -3,17 +3,10 @@ apipaths:
     entries: entries/
     expenses: expenses/
     totals: totals/
-database:
-    type: sqlite
-postgres_database:
-    host: 127.0.0.1
-    name: defaultdb
-    password: admin
-    port: 5432
-    user: postgres
 server:
     address: 127.0.0.1
     port: 6597
     scheme: http
 sqlite_database:
     file: casheer.e2e.db
+    migration: ./scripts/sqlite/001_tables.up.sql

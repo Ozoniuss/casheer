@@ -9,7 +9,6 @@ import (
 	cfg "github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/router"
 	"github.com/Ozoniuss/casheer/internal/store"
-	"gorm.io/gorm"
 )
 
 func run() error {
@@ -26,21 +25,9 @@ func run() error {
 	}
 	log.InfoContext(ctx, fmt.Sprintf("parsed config: %+v\n", config))
 
-	var conn *gorm.DB
-
-	switch config.Database.Type {
-	case cfg.SQLITE_DB:
-		conn, err = store.ConnectSqlite(config.SQLiteDatabase.File, config.SQLiteDatabase.Migration)
-		if err != nil {
-			return fmt.Errorf("could not connect to sqlite database: %w", err)
-		}
-	case cfg.POSTGRES_DB:
-		conn, err = store.ConnectPostgres(config.PostgresDatabase)
-		if err != nil {
-			return fmt.Errorf("could not connect to postgres database: %w", err)
-		}
-	default:
-		return fmt.Errorf("invalid database specified: %s", config.Database.Type)
+	conn, err := store.ConnectSqlite(config.SQLiteDatabase.File, config.SQLiteDatabase.Migration)
+	if err != nil {
+		return fmt.Errorf("could not connect to sqlite database: %w", err)
 	}
 
 	log.InfoContext(ctx, "Connected to database.")
