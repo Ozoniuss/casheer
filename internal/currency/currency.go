@@ -2,8 +2,6 @@ package currency
 
 import (
 	"fmt"
-
-	"github.com/go-playground/validator/v10"
 )
 
 // Value represents a currency value in a certain currency. The actual value
@@ -12,7 +10,7 @@ import (
 //
 // E.g. a Value of 100 with Exp = -2 and USD currency is the equivalent of 1$.
 type Value struct {
-	Currency string `validate:"required,iso4217"`
+	Currency string
 	Amount   int
 	Exponent int
 }
@@ -25,10 +23,8 @@ func NewValue(amount int, currency string, exp int) (Value, error) {
 		Exponent: exp,
 	}
 
-	validator := validator.New()
-	err := validator.Struct(value)
-	if err != nil {
-		return Value{}, fmt.Errorf("creating currency value: %s", err.Error())
+	if !isValidCurrency(currency) {
+		return Value{}, fmt.Errorf("creating currency value: %w", NewErrInvalidCurrency(currency))
 	}
 	return value, nil
 }
@@ -50,7 +46,7 @@ func NewValueBasedOnCurrency(amount int, currency string, exponent *int) (Value,
 			Exponent: actualExponent,
 		}, nil
 	}
-	return Value{}, ErrInvalidCurrency{attemptedCurrency: currency}
+	return Value{}, fmt.Errorf("creating new value based on currency: %w", NewErrInvalidCurrency(currency))
 }
 
 // ISO 4217 compliant currency codes
