@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/Ozoniuss/casheer/currency"
 	"github.com/Ozoniuss/casheer/internal/apierrors"
-	"github.com/Ozoniuss/casheer/internal/currency"
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/internal/model"

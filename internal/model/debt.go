@@ -1,7 +1,7 @@
 package model
 
 import (
-	"github.com/Ozoniuss/casheer/internal/currency"
+	"github.com/Ozoniuss/casheer/currency"
 	"gorm.io/gorm"
 )
 

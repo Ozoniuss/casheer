@@ -3,7 +3,7 @@ package model
 import (
 	"testing"
 
-	"github.com/Ozoniuss/casheer/internal/currency"
+	"github.com/Ozoniuss/casheer/currency"
 	"github.com/go-playground/validator/v10"
 )
 

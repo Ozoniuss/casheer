@@ -10,7 +10,7 @@ import (
 //
 // E.g. a Value of 100 with Exp = -2 and USD currency is the equivalent of 1$.
 type Value struct {
-	Currency string
+	Currency string `validate:"required,iso4217"`
 	Amount   int
 	Exponent int
 }
