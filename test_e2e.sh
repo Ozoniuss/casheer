@@ -1,0 +1,1 @@
+go test -v ./e2e/entries_test.go ; sqlite3 casheer.e2e.db < scripts/sqlite/001_tables.down.sql && sqlite3 casheer.e2e.db < scripts/sqlite/001_tables.up.sql
