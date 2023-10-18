@@ -27,7 +27,7 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 
 	debt := model.Debt{
 		Person:  req.Data.Attributes.Person,
-		Value:   value,
+		Value:   model.FromCurrencyValue(value),
 		Details: req.Data.Attributes.Details,
 	}
 

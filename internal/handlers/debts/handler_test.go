@@ -31,7 +31,7 @@ func newDebt(t *testing.T, db *gorm.DB) model.Debt {
 		BaseModel: model.BaseModel{
 			Id: rand.Int(),
 		},
-		Value:   currency.NewRONValue(5000),
+		Value:   model.FromCurrencyValue(currency.NewRONValue(5000)),
 		Person:  "person",
 		Details: "some details",
 	}

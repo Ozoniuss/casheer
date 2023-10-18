@@ -29,7 +29,7 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 
 	expense := model.Expense{
 		EntryId:       entid,
-		Value:         value,
+		Value:         model.FromCurrencyValue(value),
 		Description:   req.Data.Attributes.Description,
 		Name:          req.Data.Attributes.Name,
 		PaymentMethod: req.Data.Attributes.PaymentMethod,

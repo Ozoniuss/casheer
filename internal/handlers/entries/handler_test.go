@@ -224,7 +224,7 @@ func TestHandleDeleteEntry(t *testing.T) {
 			Id: rand.Int(),
 		},
 		EntryId: dummyEntryCascade.Id,
-		Value:   currency.NewUSDValue(1000),
+		Value:   model.FromCurrencyValue(currency.NewUSDValue(1000)),
 		Name:    "dummy expense",
 	}
 	err := testHandler.db.Create(&dummyExpense).Error

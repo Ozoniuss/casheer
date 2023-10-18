@@ -3,7 +3,6 @@ package model
 import (
 	"testing"
 
-	"github.com/Ozoniuss/casheer/currency"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -17,7 +16,7 @@ func TestValidExpense(t *testing.T) {
 			id: 1,
 			expense: Expense{
 				EntryId: 1,
-				Value: currency.Value{
+				Value: Value{
 					Currency: "abcd",
 					Amount:   1000,
 					Exponent: -2,
@@ -30,7 +29,7 @@ func TestValidExpense(t *testing.T) {
 			id: 2,
 			expense: Expense{
 				EntryId: 2,
-				Value: currency.Value{
+				Value: Value{
 					Currency: "EUR",
 					Amount:   1000,
 					Exponent: -2,

@@ -1,7 +1,6 @@
 package model
 
 import (
-	"github.com/Ozoniuss/casheer/currency"
 	"gorm.io/gorm"
 )
 
@@ -9,9 +8,9 @@ import (
 // mapped by gorm to their database equivalents.
 type Debt struct {
 	BaseModel
+	Value
 
-	Person string `validate:"required"`
-	currency.Value
+	Person  string `validate:"required"`
 	Details string
 }
 

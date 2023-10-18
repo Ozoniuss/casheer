@@ -51,7 +51,7 @@ func newExpense(t *testing.T, db *gorm.DB, entryId int) model.Expense {
 			Id: rand.Int(),
 		},
 		EntryId:       entryId,
-		Value:         currency.NewEURValue(100),
+		Value:         model.FromCurrencyValue(currency.NewEURValue(100)),
 		Name:          "myexpense",
 		Description:   "mydescription",
 		PaymentMethod: "card",
@@ -336,7 +336,7 @@ func TestHandleListEntry(t *testing.T) {
 			Id: rand.Int(),
 		},
 		EntryId:       entry.Id,
-		Value:         currency.NewEURValue(1000),
+		Value:         model.FromCurrencyValue(currency.NewEURValue(1000)),
 		PaymentMethod: "card",
 	}
 	expense2 := model.Expense{
@@ -344,7 +344,7 @@ func TestHandleListEntry(t *testing.T) {
 			Id: rand.Int(),
 		},
 		EntryId:       entry.Id,
-		Value:         currency.NewEURValue(500),
+		Value:         model.FromCurrencyValue(currency.NewEURValue(500)),
 		PaymentMethod: "cash",
 	}
 	expense3 := model.Expense{
@@ -352,7 +352,7 @@ func TestHandleListEntry(t *testing.T) {
 			Id: rand.Int(),
 		},
 		EntryId:       entry.Id,
-		Value:         currency.NewUSDValue(1000),
+		Value:         model.FromCurrencyValue(currency.NewUSDValue(1000)),
 		PaymentMethod: "card",
 	}
 	err := testHandler.db.Create(&[]model.Expense{expense1, expense2, expense3}).Error
