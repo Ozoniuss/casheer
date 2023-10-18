@@ -40,7 +40,7 @@ func RunMigrations(db *gorm.DB, sqlpath string) error {
 
 func ConnectSqlite(dbfile, sqlpath string) (*gorm.DB, error) {
 	shouldRunMigrations := false
-	_, err := os.Stat(dbfile)
+	fstat, err := os.Stat(dbfile)
 	if err != nil && !os.IsNotExist(err) {
 		return nil, fmt.Errorf("retrieving stats for %s: %s", dbfile, err)
 	} else if os.IsNotExist(err) {
@@ -48,6 +48,9 @@ func ConnectSqlite(dbfile, sqlpath string) (*gorm.DB, error) {
 		if err != nil {
 			return nil, fmt.Errorf("database file %s doesn't exist and could not create a new one: %s", dbfile, err.Error())
 		}
+		shouldRunMigrations = true
+	} else if err == nil && fstat.Size() == 0 {
+		// file exists, but has size 0. Should still run the migrations.
 		shouldRunMigrations = true
 	}
 

@@ -16,6 +16,9 @@ COPY ./pkg/. pkg
 # https://github.com/mattn/go-sqlite3#installation
 RUN CGO_ENABLED=1 GOOS=linux go build -o /casheer ./cmd/
 
+# hack?
+RUN mkdir -m 666 /externaldeps
+
 # Run the tests in the container (probably unnecessary if tests are run on
 # every CICD run)
 FROM build-stage AS run-test-stage
@@ -30,6 +33,7 @@ FROM gcr.io/distroless/base-debian12 AS build-release-stage
 WORKDIR /
 
 COPY --from=build-stage /casheer /casheer
+COPY --from=build-stage /externaldeps /externaldeps
 
 # These scripts are required to initialize the database if the db file
 # doesn't exist. Note that creating the db file manually also requires
