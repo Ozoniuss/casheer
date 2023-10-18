@@ -8,9 +8,12 @@ import (
 // shall be multiplied by "10eExp" to obtain the value in the base unit of the
 // currency.
 //
+// Value should only be created via the provided constructors, to prevent
+// invalid "values".
+//
 // E.g. a Value of 100 with Exp = -2 and USD currency is the equivalent of 1$.
 type Value struct {
-	Currency string `validate:"required,iso4217"`
+	Currency string
 	Amount   int
 	Exponent int
 }
