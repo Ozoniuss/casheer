@@ -18,9 +18,3 @@ services:
             # mount to allow connecting to it from outside the container as well
             # more easily for debugging.
             - ./externaldeps:/externaldeps
-
-            # These scripts are required to initialize the database if the db file
-            # doesn't exist. Note that creating the db file manually also requires
-            # running the scripts manually since the program only checks whether the
-            # db file exists or not.
-            - ./scripts/sqlite:/scripts/sqlite:ro

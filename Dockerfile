@@ -31,6 +31,17 @@ WORKDIR /
 
 COPY --from=build-stage /casheer /casheer
 
+# These scripts are required to initialize the database if the db file
+# doesn't exist. Note that creating the db file manually also requires
+# running the scripts manually since the program only checks whether the
+# db file exists or not.
+#
+# This step is included here and not in the docker-compose file since the 
+# program will crash at startup if the database doesn't exist and it can't
+# find these script files. Mounting the script files in docker-compose works,
+# but this approach ships a "complete" image of casheer.
+COPY ./scripts/sqlite /scripts/sqlite
+
 USER nonroot:nonroot
 
 ENTRYPOINT ["/casheer"]
