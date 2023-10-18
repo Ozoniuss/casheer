@@ -8,6 +8,7 @@ COPY go.mod go.sum .
 RUN go mod download
 
 COPY ./cmd/. cmd
+COPY ./currency currency
 COPY ./internal/. internal
 COPY ./pkg/. pkg
 
@@ -31,8 +32,6 @@ WORKDIR /
 COPY --from=build-stage /casheer /casheer
 
 USER nonroot:nonroot
-
-EXPOSE 8033
 
 ENTRYPOINT ["/casheer"]
 CMD ["--server-address", "0.0.0.0", "--server-port", "8033"]
