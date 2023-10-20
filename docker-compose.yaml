@@ -12,9 +12,3 @@ services:
         command: --server-address 0.0.0.0 --server-port 6597 --sqlite-db /externaldeps/casheer.db
         ports:
             - 6597:6597
-
-        # volumes:
-        # Use (or create) the database in this directory instead of a volume
-        # mount to allow connecting to it from outside the container as well
-        # more easily for debugging.
-        # - ./externaldeps:/externaldeps
