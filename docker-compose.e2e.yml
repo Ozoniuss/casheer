@@ -5,7 +5,7 @@ services:
         build:
             context: ./
             dockerfile: ./Dockerfile
-        container_name: casheer-development
+        container_name: casheer-e2e
 
         # Make sure ports from command and ports match. If desired, create a .env
         # file for docker compose to not have to manage it manually.
