@@ -12,7 +12,7 @@ var casheerEntriesClient, _ = httpclient.NewCasheerHTTPClient(
 )
 
 func TestCreateEntryWithExpensesFlow(t *testing.T) {
-	createResp, err := casheerEntriesClient.CreateEntry(10, 2023, "category", "subcategory", 1000, false)
+	createResp, err := casheerEntriesClient.CreateEntry(10, 2023, "category", "subcategory", 1000, "EUR", false)
 	if err != nil {
 		t.Fatalf("Did not expect error, but got error: %s\n", err.Error())
 	}
@@ -25,14 +25,16 @@ func TestCreateEntryWithExpensesFlow(t *testing.T) {
 
 	if createResp.Data.Attributes.Category != "category" ||
 		createResp.Data.Attributes.Subcategory != "subcategory" ||
-		createResp.Data.Attributes.ExpectedTotal != 1000 ||
+		createResp.Data.Attributes.ExpectedTotal.Amount != 1000 ||
+		createResp.Data.Attributes.ExpectedTotal.Currency != "EUR" ||
+		createResp.Data.Attributes.ExpectedTotal.Exponent != -2 ||
 		createResp.Data.Attributes.Month != 10 ||
 		createResp.Data.Attributes.Year != 2023 ||
 		createResp.Data.Attributes.Recurring != false {
 		t.Errorf("Received invalid debt attributes after creating the debt.")
 	}
 
-	_, err = casheerEntriesClient.CreateEntry(10, 2023, "category", "subcategory", 1000, false)
+	_, err = casheerEntriesClient.CreateEntry(10, 2023, "category", "subcategory", 1000, "EUR", false)
 	if err == nil {
 		t.Fatal("Idempotency criteria violated; entry with the same identifying information created again.")
 	}

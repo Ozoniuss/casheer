@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm/clause"
 
+	"github.com/Ozoniuss/casheer/currency"
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
@@ -20,13 +21,20 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		return
 	}
 
+	value, err := currency.NewValueBasedOnCurrency(req.Data.Attributes.ExpectedTotal.Amount, req.Data.Attributes.ExpectedTotal.Currency, req.Data.Attributes.ExpectedTotal.Exponent)
+	if err != nil {
+		common.ErrorAndAbort(ctx, err)
+		return
+	}
+
 	entry := model.Entry{
-		Category:      req.Data.Attributes.Category,
-		Subcategory:   req.Data.Attributes.Subcategory,
-		ExpectedTotal: req.Data.Attributes.ExpectedTotal,
-		Recurring:     req.Data.Attributes.Recurring,
-		Month:         int(time.Now().Month()),
-		Year:          time.Now().Year(),
+		Category:    req.Data.Attributes.Category,
+		Subcategory: req.Data.Attributes.Subcategory,
+		// ExpectedTotal: req.Data.Attributes.ExpectedTotal,
+		Value:     model.FromCurrencyValue(value),
+		Recurring: req.Data.Attributes.Recurring,
+		Month:     int(time.Now().Month()),
+		Year:      time.Now().Year(),
 	}
 
 	// If month or year are not null, overwrite current month / year.

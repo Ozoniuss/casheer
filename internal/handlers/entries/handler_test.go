@@ -32,11 +32,15 @@ func newEntry(t *testing.T, db *gorm.DB) model.Entry {
 	month := rand.Intn(12) + 1
 	year := rand.Intn(10) + 2023
 	entry := model.Entry{
-		Month:         month,
-		Year:          year,
-		Category:      strconv.Itoa(rand.Int()),
-		Subcategory:   strconv.Itoa(rand.Int()),
-		ExpectedTotal: 5000,
+		Month:       month,
+		Year:        year,
+		Category:    strconv.Itoa(rand.Int()),
+		Subcategory: strconv.Itoa(rand.Int()),
+		Value: model.Value{
+			Amount:   5000,
+			Exponent: -2,
+			Currency: "EUR",
+		},
 	}
 
 	err := testHandler.db.Create(&entry).Error
@@ -76,36 +80,22 @@ func TestHandleCreateEntry(t *testing.T) {
 	sharedMonth := 10
 	sharedYear := 2023
 	sharedEntry := casheerapi.CreateEntryRequest{
-		Data: struct {
-			Type       string "json:\"type\" binding:\"required\""
-			Attributes struct {
-				Month         *int   "json:\"month,omitempty\""
-				Year          *int   "json:\"year,omitempty\""
-				Category      string "json:\"category\" binding:\"required\""
-				Subcategory   string "json:\"subcategory\" binding:\"required\""
-				ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
-				Recurring     bool   "json:\"recurring\""
-			} "json:\"attributes\""
-		}{
+		Data: casheerapi.CreateEntryData{
 			Type: "entry",
-			Attributes: struct {
-				Month         *int   "json:\"month,omitempty\""
-				Year          *int   "json:\"year,omitempty\""
-				Category      string "json:\"category\" binding:\"required\""
-				Subcategory   string "json:\"subcategory\" binding:\"required\""
-				ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
-				Recurring     bool   "json:\"recurring\""
-			}{
-				Month:         &sharedMonth,
-				Year:          &sharedYear,
-				Category:      "category",
-				Subcategory:   "subcategory",
-				ExpectedTotal: 5000,
+			Attributes: casheerapi.CreateEntryAttributes{
+				Month:       &sharedMonth,
+				Year:        &sharedYear,
+				Category:    "category",
+				Subcategory: "subcategory",
+				ExpectedTotal: casheerapi.MonetaryValueCreationAttributes{
+					Amount:   5000,
+					Currency: "EUR",
+				},
 			},
 		},
 	}
 
-	t.Run("Creating a entry should save the entry", func(t *testing.T) {
+	t.Run("Creating a entry with no exponent should save the entry with default exponent", func(t *testing.T) {
 
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
@@ -131,7 +121,9 @@ func TestHandleCreateEntry(t *testing.T) {
 			savedEntry.Year != *sharedEntry.Data.Attributes.Year ||
 			savedEntry.Category != sharedEntry.Data.Attributes.Category ||
 			savedEntry.Subcategory != sharedEntry.Data.Attributes.Subcategory ||
-			savedEntry.ExpectedTotal != sharedEntry.Data.Attributes.ExpectedTotal {
+			savedEntry.Amount != sharedEntry.Data.Attributes.ExpectedTotal.Amount ||
+			savedEntry.Currency != sharedEntry.Data.Attributes.ExpectedTotal.Currency ||
+			savedEntry.Exponent != -2 {
 			t.Errorf("Inserted: %+v\nretrieved %+v\n", sharedEntry, savedEntry)
 		}
 
@@ -170,31 +162,17 @@ func TestHandleCreateEntry(t *testing.T) {
 		month := -10 // invalid month
 		year := 1900 // invalid year
 		dummyEntry := casheerapi.CreateEntryRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					Month         *int   "json:\"month,omitempty\""
-					Year          *int   "json:\"year,omitempty\""
-					Category      string "json:\"category\" binding:\"required\""
-					Subcategory   string "json:\"subcategory\" binding:\"required\""
-					ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
-					Recurring     bool   "json:\"recurring\""
-				} "json:\"attributes\""
-			}{
+			Data: casheerapi.CreateEntryData{
 				Type: "entry",
-				Attributes: struct {
-					Month         *int   "json:\"month,omitempty\""
-					Year          *int   "json:\"year,omitempty\""
-					Category      string "json:\"category\" binding:\"required\""
-					Subcategory   string "json:\"subcategory\" binding:\"required\""
-					ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
-					Recurring     bool   "json:\"recurring\""
-				}{
-					Month:         &month,
-					Year:          &year,
-					Category:      "category",
-					Subcategory:   "subcategory",
-					ExpectedTotal: 5000,
+				Attributes: casheerapi.CreateEntryAttributes{
+					Month:       &month,
+					Year:        &year,
+					Category:    "category",
+					Subcategory: "subcategory",
+					ExpectedTotal: casheerapi.MonetaryValueCreationAttributes{
+						Amount:   5000,
+						Currency: "EUR",
+					},
 				},
 			},
 		}
@@ -329,26 +307,9 @@ func TestHandleUpdateEntry(t *testing.T) {
 		ctx.Set("entid", dummyEntry.Id)
 
 		req := casheerapi.UpdateEntryRequest{
-			Data: struct {
-				Type       string "json:\"type\""
-				Attributes struct {
-					Month         *int    "json:\"month,omitempty\""
-					Year          *int    "json:\"year,omitempty\""
-					Category      *string "json:\"category,omitempty\""
-					Subcategory   *string "json:\"subcategory,omitempty\""
-					Recurring     *bool   "json:\"recurring,omitempty\""
-					ExpectedTotal *int    "json:\"expected_total,omitempty\""
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.UpdateEntryData{
 				Type: "entry",
-				Attributes: struct {
-					Month         *int    "json:\"month,omitempty\""
-					Year          *int    "json:\"year,omitempty\""
-					Category      *string "json:\"category,omitempty\""
-					Subcategory   *string "json:\"subcategory,omitempty\""
-					Recurring     *bool   "json:\"recurring,omitempty\""
-					ExpectedTotal *int    "json:\"expected_total,omitempty\""
-				}{
+				Attributes: casheerapi.UpdateEntryAttributes{
 					Month:       func() *int { m := 12; return &m }(),
 					Year:        func() *int { y := 2024; return &y }(),
 					Category:    func() *string { c := "u1"; return &c }(),
@@ -384,25 +345,9 @@ func TestHandleUpdateEntry(t *testing.T) {
 		ctx.Set("entid", dummyEntry.Id)
 
 		req := casheerapi.UpdateEntryRequest{
-			Data: struct {
-				Type       string "json:\"type\""
-				Attributes struct {
-					Month         *int    "json:\"month,omitempty\""
-					Year          *int    "json:\"year,omitempty\""
-					Category      *string "json:\"category,omitempty\""
-					Subcategory   *string "json:\"subcategory,omitempty\""
-					Recurring     *bool   "json:\"recurring,omitempty\""
-					ExpectedTotal *int    "json:\"expected_total,omitempty\""
-				} "json:\"attributes\" binding:\"required\""
-			}{
-				Attributes: struct {
-					Month         *int    "json:\"month,omitempty\""
-					Year          *int    "json:\"year,omitempty\""
-					Category      *string "json:\"category,omitempty\""
-					Subcategory   *string "json:\"subcategory,omitempty\""
-					Recurring     *bool   "json:\"recurring,omitempty\""
-					ExpectedTotal *int    "json:\"expected_total,omitempty\""
-				}{
+			Data: casheerapi.UpdateEntryData{
+				Type: "entry",
+				Attributes: casheerapi.UpdateEntryAttributes{
 					Month:       func() *int { m := 13; return &m }(),
 					Year:        func() *int { y := 2000; return &y }(),
 					Category:    func() *string { c := ""; return &c }(),

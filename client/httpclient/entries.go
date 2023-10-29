@@ -8,36 +8,23 @@ import (
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
 
-func (c *CasheerHTTPClient) CreateEntry(month int, year int, category string, subcategory string, expected_total int, recurring bool) (public.CreateEntryResponse, error) {
+func (c *CasheerHTTPClient) CreateEntry(month int, year int, category string, subcategory string, expected_total int, currency string, recurring bool) (public.CreateEntryResponse, error) {
 	requestURL := c.entriesURL.String()
 
 	req := public.CreateEntryRequest{
-		Data: struct {
-			Type       string "json:\"type\" binding:\"required\""
-			Attributes struct {
-				Month         *int   "json:\"month,omitempty\""
-				Year          *int   "json:\"year,omitempty\""
-				Category      string "json:\"category\" binding:\"required\""
-				Subcategory   string "json:\"subcategory\" binding:\"required\""
-				ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
-				Recurring     bool   "json:\"recurring\""
-			} "json:\"attributes\""
-		}{
+		Data: public.CreateEntryData{
 			Type: "entry",
-			Attributes: struct {
-				Month         *int   "json:\"month,omitempty\""
-				Year          *int   "json:\"year,omitempty\""
-				Category      string "json:\"category\" binding:\"required\""
-				Subcategory   string "json:\"subcategory\" binding:\"required\""
-				ExpectedTotal int    "json:\"expected_total\" binding:\"required\""
-				Recurring     bool   "json:\"recurring\""
-			}{
-				Month:         &month,
-				Year:          &year,
-				Category:      category,
-				Subcategory:   subcategory,
-				Recurring:     recurring,
-				ExpectedTotal: expected_total,
+			Attributes: public.CreateEntryAttributes{
+				Month:       &month,
+				Year:        &year,
+				Category:    category,
+				Subcategory: subcategory,
+				Recurring:   recurring,
+				ExpectedTotal: public.MonetaryValueCreationAttributes{
+					Amount:   expected_total,
+					Currency: currency,
+					Exponent: nil,
+				},
 			},
 		},
 	}

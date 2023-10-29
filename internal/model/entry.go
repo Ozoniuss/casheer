@@ -10,14 +10,13 @@ import (
 // TODO: custom validation message.
 type Entry struct {
 	BaseModel
+	Value
 
-	// Postgresql doesn't support unsigned int.
-	Month         int    `validate:"required,gte=1,lte=12"`
-	Year          int    `validate:"required,gte=2020"`
-	Category      string `validate:"required" json:"category"`
-	Subcategory   string `validate:"required"`
-	ExpectedTotal int
-	Recurring     bool
+	Month       int    `validate:"required,gte=1,lte=12"`
+	Year        int    `validate:"required,gte=2020"`
+	Category    string `validate:"required" json:"category"`
+	Subcategory string `validate:"required"`
+	Recurring   bool
 
 	Expenses []Expense
 }

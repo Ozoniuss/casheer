@@ -30,11 +30,15 @@ func newEntry(t *testing.T, db *gorm.DB) model.Entry {
 	month := rand.Intn(12) + 1
 	year := rand.Intn(10) + 2023
 	entry := model.Entry{
-		Month:         month,
-		Year:          year,
-		Category:      strconv.Itoa(rand.Int()),
-		Subcategory:   strconv.Itoa(rand.Int()),
-		ExpectedTotal: 5000,
+		Month:       month,
+		Year:        year,
+		Category:    strconv.Itoa(rand.Int()),
+		Subcategory: strconv.Itoa(rand.Int()),
+		Value: model.Value{
+			Amount:   5000,
+			Exponent: -2,
+			Currency: "EUR",
+		},
 	}
 
 	err := testHandler.db.Create(&entry).Error

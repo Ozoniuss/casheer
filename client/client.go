@@ -15,4 +15,6 @@ type CasheerClient interface {
 	GetDebt(debtId int) (public.GetDebtResponse, error)
 	ListDebts() (public.ListDebtResponse, error)
 	ListDebtsForPerson(person string) (public.ListDebtResponse, error)
+
+	CreateEntryWithCurrency(month int, year int, category string, subcategory string, expected_total int, currency string, recurring bool) (public.CreateEntryResponse, error)
 }

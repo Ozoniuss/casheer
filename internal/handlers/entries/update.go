@@ -62,9 +62,17 @@ func getUpdatedFields(req casheerapi.UpdateEntryRequest) (model.Entry, []string)
 		updatedFields = append(updatedFields, "recurring")
 		entry.Recurring = *req.Data.Attributes.Recurring
 	}
-	if req.Data.Attributes.ExpectedTotal != nil {
-		updatedFields = append(updatedFields, "expected_total")
-		entry.ExpectedTotal = *req.Data.Attributes.ExpectedTotal
+	if req.Data.Attributes.ExpectedTotal.Amount != nil {
+		updatedFields = append(updatedFields, "amount")
+		entry.Amount = *req.Data.Attributes.ExpectedTotal.Amount
+	}
+	if req.Data.Attributes.ExpectedTotal.Exponent != nil {
+		updatedFields = append(updatedFields, "exponent")
+		entry.Exponent = *req.Data.Attributes.ExpectedTotal.Exponent
+	}
+	if req.Data.Attributes.ExpectedTotal.Currency != nil {
+		updatedFields = append(updatedFields, "currency")
+		entry.Currency = *req.Data.Attributes.ExpectedTotal.Currency
 	}
 
 	return entry, updatedFields
