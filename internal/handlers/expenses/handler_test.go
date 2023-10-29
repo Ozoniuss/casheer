@@ -400,7 +400,7 @@ func TestHandleListEntry(t *testing.T) {
 	})
 }
 
-func TestHandleUpdateEntry(t *testing.T) {
+func TestHandleUpdateExpense(t *testing.T) {
 
 	entry := newEntry(t, testHandler.db)
 	expense := newExpense(t, testHandler.db, entry.Id)
