@@ -14,7 +14,7 @@ import (
 
 // Setup creates a temporary sqlite3 database folder, returning a database
 // connection.
-func Setup(sqlpath string) (*gorm.DB, string, error) {
+func Setup(migrationsDir string) (*gorm.DB, string, error) {
 	var err error
 	dbfile, err := os.CreateTemp(".", "*.testdb")
 	if err != nil {
@@ -30,7 +30,7 @@ func Setup(sqlpath string) (*gorm.DB, string, error) {
 		return nil, "", fmt.Errorf("could not open database file: %w", err)
 	}
 
-	err = store.RunMigrations(db, sqlpath)
+	err = store.RunMigrations(db, migrationsDir)
 	if err != nil {
 		return nil, "", fmt.Errorf("initializing database: %s", err.Error())
 	}

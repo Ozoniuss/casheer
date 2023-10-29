@@ -23,7 +23,7 @@ var dbname string
 var db *gorm.DB
 var testHandler handler
 
-const SQL_PATH = "../../../scripts/sqlite/001_tables.up.sql"
+const SQL_PATH = "../../../scripts/sqlite"
 
 var rand = testutils.NewUniqueRand()
 
