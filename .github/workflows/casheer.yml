@@ -39,7 +39,7 @@ jobs:
         run: docker compose build
 
       - name: Docker Compose Up
-        run: docker compose up -d
+        run: docker compose -f docker-compose.e2e.yml up -d
 
       - name: Run e2e tests
         run: go test -v ./e2e/...
