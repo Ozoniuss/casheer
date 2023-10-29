@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/Ozoniuss/casheer/client/httpclient/calls"
-	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
 
@@ -16,22 +15,9 @@ func (c *CasheerHTTPClient) CreateBasicExpense(entryId int, name string, descrip
 	requestURL := c.entriesURL.JoinPath(strconv.Itoa(entryId), "expenses/").String()
 
 	req := public.CreateExpenseRequest{
-		Data: struct {
-			Type       string "json:\"type\" binding:\"required\""
-			Attributes struct {
-				public.MonetaryValueCreationAttributes
-				Name          string "json:\"name\" binding:\"required\""
-				Description   string "json:\"description\""
-				PaymentMethod string "json:\"payment_method\" binding:\"required\""
-			} "json:\"attributes\" binding:\"required\""
-		}{
+		Data: public.CreateExpenseData{
 			Type: "expense",
-			Attributes: struct {
-				public.MonetaryValueCreationAttributes
-				Name          string "json:\"name\" binding:\"required\""
-				Description   string "json:\"description\""
-				PaymentMethod string "json:\"payment_method\" binding:\"required\""
-			}{
+			Attributes: public.CreateExpenseAttributes{
 				MonetaryValueCreationAttributes: public.MonetaryValueCreationAttributes{
 					Amount:   amount,
 					Currency: currency,
@@ -65,7 +51,7 @@ func (c *CasheerHTTPClient) CreateBasicExpenseWithoutId(category string, subcate
 
 	getRequestUrl.RawQuery = query.Encode()
 
-	getResp, err := calls.MakeGET[casheerapi.ListEntryResponse](c.httpClient, getRequestUrl.String())
+	getResp, err := calls.MakeGET[public.ListEntryResponse](c.httpClient, getRequestUrl.String())
 	if err != nil {
 		return public.CreateExpenseResponse{}, fmt.Errorf("retrieving entry: %w", err)
 	}

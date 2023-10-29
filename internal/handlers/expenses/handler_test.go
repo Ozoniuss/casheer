@@ -105,22 +105,9 @@ func TestHandleCreateExpense(t *testing.T) {
 		ctx.Set("entid", entry.Id)
 
 		req := casheerapi.CreateExpenseRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					casheerapi.MonetaryValueCreationAttributes
-					Name          string "json:\"name\" binding:\"required\""
-					Description   string "json:\"description\""
-					PaymentMethod string "json:\"payment_method\" binding:\"required\""
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.CreateExpenseData{
 				Type: "expense",
-				Attributes: struct {
-					casheerapi.MonetaryValueCreationAttributes
-					Name          string "json:\"name\" binding:\"required\""
-					Description   string "json:\"description\""
-					PaymentMethod string "json:\"payment_method\" binding:\"required\""
-				}{
+				Attributes: casheerapi.CreateExpenseAttributes{
 					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
 						Amount:   100,
 						Currency: "EUR",
@@ -167,22 +154,9 @@ func TestHandleCreateExpense(t *testing.T) {
 		ctx.Set("entid", entry.Id)
 
 		req := casheerapi.CreateExpenseRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					casheerapi.MonetaryValueCreationAttributes
-					Name          string "json:\"name\" binding:\"required\""
-					Description   string "json:\"description\""
-					PaymentMethod string "json:\"payment_method\" binding:\"required\""
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.CreateExpenseData{
 				Type: "expense",
-				Attributes: struct {
-					casheerapi.MonetaryValueCreationAttributes
-					Name          string "json:\"name\" binding:\"required\""
-					Description   string "json:\"description\""
-					PaymentMethod string "json:\"payment_method\" binding:\"required\""
-				}{
+				Attributes: casheerapi.CreateExpenseAttributes{
 					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
 						Amount:   100,
 						Currency: "invalid",
@@ -209,22 +183,9 @@ func TestHandleCreateExpense(t *testing.T) {
 		ctx.Set("entid", rand.Int())
 
 		req := casheerapi.CreateExpenseRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					casheerapi.MonetaryValueCreationAttributes
-					Name          string "json:\"name\" binding:\"required\""
-					Description   string "json:\"description\""
-					PaymentMethod string "json:\"payment_method\" binding:\"required\""
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.CreateExpenseData{
 				Type: "expense",
-				Attributes: struct {
-					casheerapi.MonetaryValueCreationAttributes
-					Name          string "json:\"name\" binding:\"required\""
-					Description   string "json:\"description\""
-					PaymentMethod string "json:\"payment_method\" binding:\"required\""
-				}{
+				Attributes: casheerapi.CreateExpenseAttributes{
 					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
 						Amount:   100,
 						Currency: "EUR",
@@ -413,22 +374,9 @@ func TestHandleUpdateExpense(t *testing.T) {
 		ctx.Set("expid", expense.Id)
 
 		req := casheerapi.UpdateExpenseRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					casheerapi.MonetaryMutableValueAttributes
-					Name          *string "json:\"name,omitempty\""
-					Description   *string "json:\"description,omitempty\""
-					PaymentMethod *string "json:\"payment_method,omitempty\""
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.UpdateExpenseData{
 				Type: "expense",
-				Attributes: struct {
-					casheerapi.MonetaryMutableValueAttributes
-					Name          *string "json:\"name,omitempty\""
-					Description   *string "json:\"description,omitempty\""
-					PaymentMethod *string "json:\"payment_method,omitempty\""
-				}{
+				Attributes: casheerapi.UpdateExpenseAttributes{
 					MonetaryMutableValueAttributes: casheerapi.MonetaryMutableValueAttributes{
 						Amount:   func() *int { m := 600; return &m }(),
 						Currency: func() *string { usd := currency.USD; return &usd }(),
@@ -467,22 +415,9 @@ func TestHandleUpdateExpense(t *testing.T) {
 		ctx.Set("expid", expense.Id)
 
 		req := casheerapi.UpdateExpenseRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					casheerapi.MonetaryMutableValueAttributes
-					Name          *string "json:\"name,omitempty\""
-					Description   *string "json:\"description,omitempty\""
-					PaymentMethod *string "json:\"payment_method,omitempty\""
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.UpdateExpenseData{
 				Type: "expense",
-				Attributes: struct {
-					casheerapi.MonetaryMutableValueAttributes
-					Name          *string "json:\"name,omitempty\""
-					Description   *string "json:\"description,omitempty\""
-					PaymentMethod *string "json:\"payment_method,omitempty\""
-				}{
+				Attributes: casheerapi.UpdateExpenseAttributes{
 					MonetaryMutableValueAttributes: casheerapi.MonetaryMutableValueAttributes{
 						Amount:   func() *int { m := 600; return &m }(),
 						Currency: func() *string { usd := "fakecurrency"; return &usd }(),
