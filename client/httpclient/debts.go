@@ -14,20 +14,9 @@ func (c *CasheerHTTPClient) CreateDebt(person string, details string, amount int
 	requestURL := c.debtsURL.String()
 
 	req := public.CreateDebtRequest{
-		Data: struct {
-			Type       string "json:\"type\" binding:\"required\""
-			Attributes struct {
-				Person string "json:\"person\" binding:\"required\""
-				public.MonetaryValueCreationAttributes
-				Details string "json:\"details\""
-			} "json:\"attributes\" binding:\"required\""
-		}{
+		Data: public.CreateDebtData{
 			Type: "debt",
-			Attributes: struct {
-				Person string "json:\"person\" binding:\"required\""
-				public.MonetaryValueCreationAttributes
-				Details string "json:\"details\""
-			}{
+			Attributes: public.CreateDebtAttributes{
 				Person:  person,
 				Details: details,
 				MonetaryValueCreationAttributes: public.MonetaryValueCreationAttributes{

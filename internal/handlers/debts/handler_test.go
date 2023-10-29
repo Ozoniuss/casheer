@@ -74,20 +74,9 @@ func TestHandleCreateDebt(t *testing.T) {
 		ctx, _ := gin.CreateTestContext(w)
 
 		dummyDebt := casheerapi.CreateDebtRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					Person string "json:\"person\" binding:\"required\""
-					casheerapi.MonetaryValueCreationAttributes
-					Details string "json:\"details\""
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.CreateDebtData{
 				Type: "debt",
-				Attributes: struct {
-					Person string "json:\"person\" binding:\"required\""
-					casheerapi.MonetaryValueCreationAttributes
-					Details string "json:\"details\""
-				}{
+				Attributes: casheerapi.CreateDebtAttributes{
 					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
 						Currency: "RON",
 						Amount:   5000,
@@ -128,20 +117,9 @@ func TestHandleCreateDebt(t *testing.T) {
 		ctx, _ := gin.CreateTestContext(w)
 
 		dummyDebt := casheerapi.CreateDebtRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					Person string "json:\"person\" binding:\"required\""
-					casheerapi.MonetaryValueCreationAttributes
-					Details string "json:\"details\""
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.CreateDebtData{
 				Type: "debt",
-				Attributes: struct {
-					Person string "json:\"person\" binding:\"required\""
-					casheerapi.MonetaryValueCreationAttributes
-					Details string "json:\"details\""
-				}{
+				Attributes: casheerapi.CreateDebtAttributes{
 					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
 						Currency: "RON",
 						Amount:   5000,
@@ -179,20 +157,9 @@ func TestHandleCreateDebt(t *testing.T) {
 		ctx, _ := gin.CreateTestContext(w)
 
 		dummyDebt := casheerapi.CreateDebtRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					Person string "json:\"person\" binding:\"required\""
-					casheerapi.MonetaryValueCreationAttributes
-					Details string "json:\"details\""
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.CreateDebtData{
 				Type: "debt",
-				Attributes: struct {
-					Person string "json:\"person\" binding:\"required\""
-					casheerapi.MonetaryValueCreationAttributes
-					Details string "json:\"details\""
-				}{
+				Attributes: casheerapi.CreateDebtAttributes{
 					Person: "", // invalid person
 					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
 						Currency: "RON",
@@ -294,20 +261,9 @@ func TestHandleUpdateDebt(t *testing.T) {
 		ctx.Set("dbtid", dummyDebt.Id)
 
 		newDebt := casheerapi.UpdateDebtRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					Person  *string "json:\"person,omitempty\""
-					Details *string "json:\"details,omitempty\""
-					casheerapi.MonetaryMutableValueAttributes
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.UpdateDebtData{
 				Type: "debt",
-				Attributes: struct {
-					Person  *string "json:\"person,omitempty\""
-					Details *string "json:\"details,omitempty\""
-					casheerapi.MonetaryMutableValueAttributes
-				}{
+				Attributes: casheerapi.UpdateDebtAttributes{
 					MonetaryMutableValueAttributes: casheerapi.MonetaryMutableValueAttributes{
 						Amount: func() *int { a := 10000; return &a }(),
 					},
@@ -347,20 +303,9 @@ func TestHandleUpdateDebt(t *testing.T) {
 		ctx.Set("dbtid", dummyDebt.Id)
 
 		newDebt := casheerapi.UpdateDebtRequest{
-			Data: struct {
-				Type       string "json:\"type\" binding:\"required\""
-				Attributes struct {
-					Person  *string "json:\"person,omitempty\""
-					Details *string "json:\"details,omitempty\""
-					casheerapi.MonetaryMutableValueAttributes
-				} "json:\"attributes\" binding:\"required\""
-			}{
+			Data: casheerapi.UpdateDebtData{
 				Type: "debt",
-				Attributes: struct {
-					Person  *string "json:\"person,omitempty\""
-					Details *string "json:\"details,omitempty\""
-					casheerapi.MonetaryMutableValueAttributes
-				}{
+				Attributes: casheerapi.UpdateDebtAttributes{
 					MonetaryMutableValueAttributes: casheerapi.MonetaryMutableValueAttributes{
 						Amount: func() *int { a := 10000; return &a }(),
 					},

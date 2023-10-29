@@ -30,14 +30,18 @@ type DebtListItemLinks struct {
 }
 
 type CreateDebtRequest struct {
-	Data struct {
-		Type       string `json:"type" binding:"required"`
-		Attributes struct {
-			Person string `json:"person" binding:"required"`
-			MonetaryValueCreationAttributes
-			Details string `json:"details"`
-		} `json:"attributes" binding:"required"`
-	} `json:"data" binding:"required"`
+	Data CreateDebtData `json:"data" binding:"required"`
+}
+
+type CreateDebtData struct {
+	Type       string               `json:"type" binding:"required"`
+	Attributes CreateDebtAttributes `json:"attributes" binding:"required"`
+}
+
+type CreateDebtAttributes struct {
+	MonetaryValueCreationAttributes
+	Person  string `json:"person" binding:"required"`
+	Details string `json:"details"`
 }
 
 type CreateDebtResponse struct {
@@ -46,14 +50,18 @@ type CreateDebtResponse struct {
 }
 
 type UpdateDebtRequest struct {
-	Data struct {
-		Type       string `json:"type" binding:"required"`
-		Attributes struct {
-			Person  *string `json:"person,omitempty"`
-			Details *string `json:"details,omitempty"`
-			MonetaryMutableValueAttributes
-		} `json:"attributes" binding:"required"`
-	} `json:"data" binding:"required"`
+	Data UpdateDebtData `json:"data" binding:"required"`
+}
+
+type UpdateDebtData struct {
+	Type       string               `json:"type" binding:"required"`
+	Attributes UpdateDebtAttributes `json:"attributes" binding:"required"`
+}
+
+type UpdateDebtAttributes struct {
+	MonetaryMutableValueAttributes
+	Person  *string `json:"person,omitempty"`
+	Details *string `json:"details,omitempty"`
 }
 
 type UpdateDebtResponse struct {
