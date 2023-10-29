@@ -12,7 +12,7 @@ import (
 	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/internal/testutils"
-	"github.com/Ozoniuss/casheer/pkg/casheerapi"
+	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 
@@ -79,15 +79,15 @@ func TestHandleCreateEntry(t *testing.T) {
 
 	sharedMonth := 10
 	sharedYear := 2023
-	sharedEntry := casheerapi.CreateEntryRequest{
-		Data: casheerapi.CreateEntryData{
+	sharedEntry := public.CreateEntryRequest{
+		Data: public.CreateEntryData{
 			Type: "entry",
-			Attributes: casheerapi.CreateEntryAttributes{
+			Attributes: public.CreateEntryAttributes{
 				Month:       &sharedMonth,
 				Year:        &sharedYear,
 				Category:    "category",
 				Subcategory: "subcategory",
-				ExpectedTotal: casheerapi.MonetaryValueCreationAttributes{
+				ExpectedTotal: public.MonetaryValueCreationAttributes{
 					Amount:   5000,
 					Currency: "EUR",
 				},
@@ -161,15 +161,15 @@ func TestHandleCreateEntry(t *testing.T) {
 
 		month := -10 // invalid month
 		year := 1900 // invalid year
-		dummyEntry := casheerapi.CreateEntryRequest{
-			Data: casheerapi.CreateEntryData{
+		dummyEntry := public.CreateEntryRequest{
+			Data: public.CreateEntryData{
 				Type: "entry",
-				Attributes: casheerapi.CreateEntryAttributes{
+				Attributes: public.CreateEntryAttributes{
 					Month:       &month,
 					Year:        &year,
 					Category:    "category",
 					Subcategory: "subcategory",
-					ExpectedTotal: casheerapi.MonetaryValueCreationAttributes{
+					ExpectedTotal: public.MonetaryValueCreationAttributes{
 						Amount:   5000,
 						Currency: "EUR",
 					},
@@ -288,7 +288,7 @@ func TestHandleListEntry(t *testing.T) {
 	t.Run("Retrieving all entries should not give an error", func(t *testing.T) {
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
-		ctx.Set("queryparams", casheerapi.ListEntryParams{})
+		ctx.Set("queryparams", public.ListEntryParams{})
 
 		testHandler.HandleListEntry(ctx)
 		testutils.CheckNoContextErrors(t, ctx)
@@ -306,10 +306,10 @@ func TestHandleUpdateEntry(t *testing.T) {
 
 		ctx.Set("entid", dummyEntry.Id)
 
-		req := casheerapi.UpdateEntryRequest{
-			Data: casheerapi.UpdateEntryData{
+		req := public.UpdateEntryRequest{
+			Data: public.UpdateEntryData{
 				Type: "entry",
-				Attributes: casheerapi.UpdateEntryAttributes{
+				Attributes: public.UpdateEntryAttributes{
 					Month:       func() *int { m := 12; return &m }(),
 					Year:        func() *int { y := 2024; return &y }(),
 					Category:    func() *string { c := "u1"; return &c }(),
@@ -344,10 +344,10 @@ func TestHandleUpdateEntry(t *testing.T) {
 
 		ctx.Set("entid", dummyEntry.Id)
 
-		req := casheerapi.UpdateEntryRequest{
-			Data: casheerapi.UpdateEntryData{
+		req := public.UpdateEntryRequest{
+			Data: public.UpdateEntryData{
 				Type: "entry",
-				Attributes: casheerapi.UpdateEntryAttributes{
+				Attributes: public.UpdateEntryAttributes{
 					Month:       func() *int { m := 13; return &m }(),
 					Year:        func() *int { y := 2000; return &y }(),
 					Category:    func() *string { c := ""; return &c }(),

@@ -5,7 +5,6 @@ import (
 	"strconv"
 
 	"github.com/Ozoniuss/casheer/internal/model"
-	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
 
@@ -16,7 +15,7 @@ func DebtToPublic(debt model.Debt, debtsURL *url.URL) public.DebtData {
 			Type: public.DebtType,
 		},
 		Attributes: public.DebtAtrributes{
-			MonetaryValueAttributes: casheerapi.MonetaryValueAttributes{
+			MonetaryValueAttributes: public.MonetaryValueAttributes{
 				Amount:   debt.Amount,
 				Exponent: debt.Exponent,
 				Currency: debt.Currency,
@@ -41,7 +40,7 @@ func DebtToPublicList(debt model.Debt, debtsURL *url.URL) public.DebtListItemDat
 			Type: public.DebtType,
 		},
 		Attributes: public.DebtAtrributes{
-			MonetaryValueAttributes: casheerapi.MonetaryValueAttributes{
+			MonetaryValueAttributes: public.MonetaryValueAttributes{
 				Amount:   debt.Amount,
 				Exponent: debt.Exponent,
 				Currency: debt.Currency,

@@ -60,24 +60,3 @@ func updateDebtFields(req casheerapi.UpdateDebtRequest, debt *model.Debt) {
 		debt.Details = *req.Data.Attributes.Details
 	}
 }
-
-func getUpdatedFields(req casheerapi.UpdateDebtRequest) (model.Debt, []string) {
-
-	debt := model.Debt{}
-	var updatedFields = make([]string, 0, 3)
-
-	if req.Data.Attributes.Person != nil {
-		updatedFields = append(updatedFields, "person")
-		debt.Person = *req.Data.Attributes.Person
-	}
-	if req.Data.Attributes.Amount != nil {
-		updatedFields = append(updatedFields, "amount")
-		debt.Amount = *req.Data.Attributes.Amount
-	}
-	if req.Data.Attributes.Details != nil {
-		updatedFields = append(updatedFields, "details")
-		debt.Details = *req.Data.Attributes.Details
-	}
-
-	return debt, updatedFields
-}
