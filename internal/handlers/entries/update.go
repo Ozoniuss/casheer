@@ -19,20 +19,53 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 		return
 	}
 
-	entry, updatedFields := getUpdatedFields(req)
-	err = h.db.WithContext(ctx).Preload("Expenses").Select(updatedFields).Clauses(clause.Returning{}).
-		Scopes(model.ValidateModelScope[model.Entry](entry)).
-		Where("id = ?", id).Updates(&entry).Error
+	var oldEntry model.Entry
+	err = h.db.WithContext(ctx).Where("id = ?", id).Take(&oldEntry).Error
+	if err != nil {
+		common.ErrorAndAbort(ctx, err)
+		return
+	}
+	updateEntryFields(req, &oldEntry)
+
+	err = h.db.WithContext(ctx).Preload("Expenses").Clauses(clause.Returning{}).
+		Scopes(model.ValidateModelScope[model.Entry](oldEntry)).Save(&oldEntry).Error
 
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
 	}
 
 	resp := casheerapi.UpdateEntryResponse{
-		Data: EntryToPublic(entry, h.entriesURL, computeRunningTotal(entry.Expenses)),
+		Data: EntryToPublic(oldEntry, h.entriesURL, computeRunningTotal(oldEntry.Expenses)),
 	}
 
 	ctx.JSON(http.StatusOK, &resp)
+}
+
+func updateEntryFields(req casheerapi.UpdateEntryRequest, entry *model.Entry) {
+	if req.Data.Attributes.Month != nil {
+		entry.Month = *req.Data.Attributes.Month
+	}
+	if req.Data.Attributes.Year != nil {
+		entry.Year = *req.Data.Attributes.Year
+	}
+	if req.Data.Attributes.Category != nil {
+		entry.Category = *req.Data.Attributes.Category
+	}
+	if req.Data.Attributes.Subcategory != nil {
+		entry.Subcategory = *req.Data.Attributes.Subcategory
+	}
+	if req.Data.Attributes.Recurring != nil {
+		entry.Recurring = *req.Data.Attributes.Recurring
+	}
+	if req.Data.Attributes.ExpectedTotal.Amount != nil {
+		entry.Amount = *req.Data.Attributes.ExpectedTotal.Amount
+	}
+	if req.Data.Attributes.ExpectedTotal.Exponent != nil {
+		entry.Exponent = *req.Data.Attributes.ExpectedTotal.Exponent
+	}
+	if req.Data.Attributes.ExpectedTotal.Currency != nil {
+		entry.Currency = *req.Data.Attributes.ExpectedTotal.Currency
+	}
 }
 
 func getUpdatedFields(req casheerapi.UpdateEntryRequest) (model.Entry, []string) {
