@@ -1,6 +1,8 @@
 package model
 
 import (
+	"strings"
+
 	"gorm.io/gorm"
 )
 
@@ -21,11 +23,46 @@ type Entry struct {
 	Expenses []Expense
 }
 
+func ValidateEntry(e Entry) error {
+	reasons := []string{}
+	if e.Month < 2020 {
+		reasons = append(reasons, "year must be after 2020")
+	}
+	if e.Month < 1 || e.Month > 12 {
+		reasons = append(reasons, "month must be between 1 and 12")
+	}
+	if e.Category == "" {
+		reasons = append(reasons, "category must not be empty")
+	}
+	if e.Subcategory == "" {
+		reasons = append(reasons, "subcategory must not be empty")
+	}
+	return NewInvalidEntryErr(reasons)
+}
+
 type InvalidEntryErr struct {
+	reasons []string
+}
+
+func NewInvalidEntryErr(reasons []string) error {
+	if len(reasons) == 0 {
+		return nil
+	}
+	return InvalidEntryErr{
+		reasons: reasons,
+	}
 }
 
 func (e InvalidEntryErr) Error() string {
-	return "invalid entry"
+	b := &strings.Builder{}
+	b.WriteString("invalid entry: ")
+	for idx, reason := range e.reasons {
+		b.WriteString(reason)
+		if idx != len(e.reasons)-1 {
+			b.WriteString(", ")
+		}
+	}
+	return b.String()
 }
 
 // AfterUpdate is a gorm hook that adds an error if the entry was not found
