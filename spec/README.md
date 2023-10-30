@@ -8,3 +8,10 @@ recommend using my own [SDK](../client/) and
 In production setups APIs are usually versioned, but investing effort to
 implement a versioning strategy for this API seemed useless. Adhering to jsonapi
 for this personal project was a pain in the ass already.
+
+The full API spec is split over multiple files. To compile it into a single file,
+run:
+
+```sh
+./build.sh
+```

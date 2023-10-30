@@ -1,0 +1,1 @@
+swagger-cli bundle spec.yaml --outfile index.yaml --type yaml
