@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
+	"github.com/gin-contrib/cors"
 
 	"github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/endpoints"
@@ -24,6 +25,7 @@ func NewRouter(db *gorm.DB, config config.Config) (*gin.Engine, error) {
 		Host:   fmt.Sprintf("%s:%d", config.Server.Address, config.Server.Port),
 	}
 	r := gin.Default()
+	r.Use(cors.Default())
 	r.Use(middlewares.ErrorHandler())
 	r.Use(middlewares.JSONApiContentType())
 	{
