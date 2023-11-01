@@ -1,0 +1,9 @@
+# Use this docker compose file during your deployment to bind the database
+# folder from inside the image to a local database folder, which will
+# allow inspecting the database in various cases like failing e2e tests
+# etc...
+
+services:
+    casheer:
+        volumes:
+            - ./externaldeps:/externaldeps
