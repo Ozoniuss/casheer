@@ -27,11 +27,11 @@ DebtWithLink:
   allOf:
     - $ref: "#/Debt"
   type: object
+  required: ["links"]
   properties:
     links:
-      example: "http://dumblinks.com/debts/100"
+      example: "http://casheer.com/debts/100"
       type: object
-      required: true
       $ref: "./jsonapi.yaml#/jsonapiSelfLink"
 
 CreateDebt:
@@ -53,6 +53,7 @@ CreateDebt:
         details:
           type: string
           example: For the sexy times
+
 UpdateDebt:
   type: object
   required: ["type", "attributes"]

@@ -1,0 +1,102 @@
+Entry:
+  type: object
+  required: ["id", "type", "attributes", "links"]
+  properties:
+    id:
+      type: string
+      format: int64
+      example: 100
+    type:
+      type: string
+      enum: ["entry"]
+    attributes:
+      type: object
+      required: [year, month, category, subcategory, expected_total, recurring, timestamps]
+      properties:
+        year:
+          type: number
+          example: 2023
+        month:
+          type: number
+          example: 6
+          enum: [1,2,3,4,5,6,7,8,9,10,11,12]
+        category:
+          type: string
+          example: food
+        subcategory:
+          type: string
+          example: groceries
+        expected_total:
+          $ref: "./common.yaml#/monetaryValue"
+        recurring:
+          type: boolean
+        timestamps:
+          $ref: "./common.yaml#/timestamps"
+DeleteEntry:
+  allOf:
+    - $ref: "#/Entry"
+CreateEntry:
+  type: object
+  required: ["id", "type", "attributes", "links"]
+  properties:
+    id:
+      type: string
+      format: int64
+      example: 100
+    type:
+      type: string
+      enum: ["entry"]
+    attributes:
+      type: object
+      required: ["person", "total", "details", "timestamp"]
+      properties:
+        year:
+          type: number
+          example: 2023
+        month:
+          type: number
+          example: 6
+          enum: [1,2,3,4,5,6,7,8,9,10,11,12]
+        category:
+          type: string
+          example: food
+        subcategory:
+          type: string
+          example: groceries
+        expected_total:
+          $ref: "./common.yaml#/createMonetaryValue"
+        recurring:
+          type: boolean
+        timestamps:
+          $ref: "./common.yaml#/timestamps"
+  
+EntryWithLinksAndRelationships:
+  allOf:
+    - $ref: "#/Entry"
+  type: object
+  required: [properties, links, relationships]
+  properties:
+    links:
+      allOf: 
+      - $ref: "./jsonapi.yaml#/jsonapiSelfLink"
+      example: "https:/casheer.com/api/entries/100"
+    relationships:
+      $ref: "#/ExpenseListRelationship"
+      
+ExpenseListRelationship:
+  type: object
+  required: ["expenses"]
+  description: |
+    "An object containing data associated with the current entry's expenses."
+  properties:
+    expenses:
+      type: object
+      required: ["links"]
+      properties:
+        links:
+          allOf:
+          - $ref: "./jsonapi.yaml#/jsonapiRelatedLink"
+          description: |
+            "A link that can be used to fetch all expenses of the current entry."
+          example: "https:/casheer.com/api/entries/100/expenses/"
+  

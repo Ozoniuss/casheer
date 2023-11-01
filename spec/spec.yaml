@@ -9,7 +9,7 @@ info:
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
-  version: 1.0.0
+  version: 0.1.0
 externalDocs:
   description: Find out more about Swagger
   url: http://swagger.io
@@ -63,9 +63,7 @@ paths:
                 type: object
                 properties:
                   error:
-                    oneOf:
-                      - $ref: "./components/schemas/errors.yaml#/invalidQueryParamsError"
-                      - $ref: "./components/schemas/errors.yaml#/invalidURLError"
+                    $ref: "./components/schemas/errors.yaml#/invalidQueryParamsError"
         "500":
           $ref: "./responses/errors.yaml#/unexpectedError"
     post:
@@ -233,3 +231,62 @@ paths:
                       - $ref: "./components/schemas/errors.yaml#/resourceNotFoundError"
         "500":
           $ref: "./responses/errors.yaml#/unexpectedError"
+  /entries/:
+    post:
+      summary: Create a new entry
+      description: | 
+        This operation will create a new entry, given the provided entry information
+        is valid. An entry represents a prediction that is uniquely associated with
+        a month, year, category and subcategory.
+      operationId: createEntry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "./components/schemas/entries.yaml#/CreateEntry"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/entries.yaml#/EntryWithLinksAndRelationships"
+        "400":
+          description: Invalid create entry request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidRequestBodyError"
+        "409":
+          description: An entry already exists for the same year, month, category and subcategory.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceAlreadyExistsError"
+        "422":
+          description: Invalid debt sent in request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: "./components/schemas/errors.yaml#/invalidResourceError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+  

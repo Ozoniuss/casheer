@@ -1,0 +1,644 @@
+openapi: 3.0.3
+info:
+  title: Casheer
+  description: This is a money transactions manager.
+  termsOfService: 'http://swagger.io/terms/'
+  contact:
+    email: qscxzsewqazxcde@gmail.com
+  license:
+    name: Apache 2.0
+    url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
+  version: 0.1.0
+externalDocs:
+  description: Find out more about Swagger
+  url: 'http://swagger.io'
+paths:
+  /debts/:
+    get:
+      summary: List all existing debts
+      description: This operation will list all existing debts.
+      operationId: listDebts
+      parameters:
+        - in: query
+          name: person
+          description: The person in the returned debts must match the parameter.
+          required: false
+          schema:
+            type: string
+            example: John Cena
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1debts~1%7Bdbtid%7D/delete/responses/200/content/application~1json/schema/properties/data'
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: 'http://dumblinks.com/debts/'
+                      home:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                            example: 'http://dumblinks.com/home'
+                          title:
+                            type: string
+                            example: Home page of casheer API.
+        '400':
+          description: Invalid debt request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    required:
+                      - title
+                      - status
+                      - details
+                    properties:
+                      title:
+                        type: string
+                        enum:
+                          - Invalid Query Params
+                      status:
+                        type: number
+                        enum:
+                          - 400
+                      details:
+                        type: string
+                        example: to be filled
+        '500':
+          description: An unexpected error occured.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - title
+                      - status
+                      - details
+                    properties:
+                      title:
+                        type: string
+                        example: Unknown Error
+                        enum:
+                          - Unknown Error
+                      status:
+                        type: number
+                        example: 500
+                        enum:
+                          - 500
+                      details:
+                        type: string
+                        example: You've encountered an unexpected error.
+    post:
+      summary: Create a new debt
+      description: 'This operation will create a new debt, given the provided debt information is valid.'
+      operationId: createDebts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - type
+                    - attributes
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - debt
+                    attributes:
+                      type: object
+                      required:
+                        - person
+                        - total
+                      properties:
+                        person:
+                          type: string
+                          example: Machi Tsutomu
+                        total:
+                          type: object
+                          required:
+                            - currency
+                            - amount
+                            - exponent
+                          properties:
+                            currency:
+                              type: string
+                              example: USD
+                            amount:
+                              type: number
+                              example: 100
+                            exponent:
+                              type: number
+                              example: -2
+                        details:
+                          type: string
+                          example: For the sexy times
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/paths/~1debts~1%7Bdbtid%7D/delete/responses/200/content/application~1json/schema/properties/data'
+                    type: object
+                    required:
+                      - links
+                    properties:
+                      links:
+                        example: 'http://casheer.com/debts/100'
+                        type: object
+                        $ref: '#/paths/~1entries~1/post/responses/200/content/application~1json/schema/properties/data/properties/links/allOf/0'
+        '400':
+          description: Invalid debt request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - type: object
+                        required:
+                          - title
+                          - status
+                          - details
+                        properties:
+                          title:
+                            type: string
+                            enum:
+                              - Invalid JSON Body
+                          status:
+                            type: number
+                            enum:
+                              - 400
+                          details:
+                            type: string
+                            example: To be filled
+        '422':
+          description: Invalid debt sent in request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: object
+                    required:
+                      - title
+                      - status
+                      - details
+                    properties:
+                      title:
+                        type: string
+                        enum:
+                          - Invalid Resource
+                      status:
+                        type: number
+                        enum:
+                          - 422
+                      details:
+                        type: string
+                        example: To be filled
+        '500':
+          $ref: '#/paths/~1debts~1/get/responses/500'
+  '/debts/{dbtid}':
+    get:
+      summary: Retrieve the data of an existing debt.
+      description: 'This operation will return the data of an existing debt, given the provided debt id exists.'
+      operationId: getDebt
+      parameters:
+        - in: path
+          name: dbtid
+          description: The ID of the debt to be retrieved.
+          required: true
+          schema:
+            type: number
+            example: 500
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1debts~1/post/responses/200/content/application~1json/schema/properties/data'
+        '404':
+          description: Debt was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - type: object
+                        required:
+                          - title
+                          - status
+                          - details
+                        properties:
+                          title:
+                            type: string
+                            enum:
+                              - Resource Not Found
+                          status:
+                            type: number
+                            enum:
+                              - 404
+                          details:
+                            type: string
+                            example: To be filled
+        '500':
+          $ref: '#/paths/~1debts~1/get/responses/500'
+    patch:
+      summary: Update the data of an existing debt.
+      description: 'This operation will update the data of an existing debt, given the provided debt exists.'
+      operationId: updateDebt
+      parameters:
+        - in: path
+          name: dbtid
+          description: The ID of the debt to be retrieved.
+          required: true
+          schema:
+            type: number
+            example: 500
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: '#/paths/~1debts~1/post/requestBody/content/application~1json/schema/properties/data'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1debts~1/post/responses/200/content/application~1json/schema/properties/data'
+        '404':
+          description: Debt was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: '#/paths/~1debts~1%7Bdbtid%7D/get/responses/404/content/application~1json/schema/properties/error/oneOf/0'
+        '422':
+          description: Invalid debt sent in request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/paths/~1debts~1/post/responses/422/content/application~1json/schema/properties/error'
+        '500':
+          $ref: '#/paths/~1debts~1/get/responses/500'
+    delete:
+      summary: Delete an existing debt.
+      description: 'This operation will remove an existing debt, given the provided debt exists.'
+      operationId: updateDebt
+      parameters:
+        - in: path
+          name: dbtid
+          description: The ID of the debt to be retrieved.
+          required: true
+          schema:
+            type: number
+            example: 500
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    required:
+                      - id
+                      - type
+                      - attributes
+                      - links
+                    properties:
+                      id:
+                        type: integer
+                        format: int64
+                        example: 100
+                      type:
+                        type: string
+                        enum:
+                          - debt
+                      attributes:
+                        type: object
+                        required:
+                          - person
+                          - total
+                          - details
+                          - timestamp
+                        properties:
+                          person:
+                            type: string
+                            example: Machi Tsutomu
+                          total:
+                            $ref: '#/paths/~1debts~1/post/requestBody/content/application~1json/schema/properties/data/properties/attributes/properties/total'
+                          details:
+                            type: string
+                            example: For the sexy times
+                          timestamps:
+                            $ref: '#/paths/~1entries~1/post/requestBody/content/application~1json/schema/properties/data/properties/attributes/properties/timestamps'
+        '404':
+          description: Debt was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: '#/paths/~1debts~1%7Bdbtid%7D/get/responses/404/content/application~1json/schema/properties/error/oneOf/0'
+        '500':
+          $ref: '#/paths/~1debts~1/get/responses/500'
+  /entries/:
+    post:
+      summary: Create a new entry
+      description: |
+        This operation will create a new entry, given the provided entry information
+        is valid. An entry represents a prediction that is uniquely associated with
+        a month, year, category and subcategory.
+      operationId: createEntry
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - id
+                    - type
+                    - attributes
+                    - links
+                  properties:
+                    id:
+                      type: string
+                      format: int64
+                      example: 100
+                    type:
+                      type: string
+                      enum:
+                        - entry
+                    attributes:
+                      type: object
+                      required:
+                        - person
+                        - total
+                        - details
+                        - timestamp
+                      properties:
+                        year:
+                          type: number
+                          example: 2023
+                        month:
+                          type: number
+                          example: 6
+                          enum:
+                            - 1
+                            - 2
+                            - 3
+                            - 4
+                            - 5
+                            - 6
+                            - 7
+                            - 8
+                            - 9
+                            - 10
+                            - 11
+                            - 12
+                        category:
+                          type: string
+                          example: food
+                        subcategory:
+                          type: string
+                          example: groceries
+                        expected_total:
+                          type: object
+                          required:
+                            - currency
+                            - amount
+                          properties:
+                            currency:
+                              type: string
+                              example: USD
+                            amount:
+                              type: number
+                              example: 100
+                            exponent:
+                              type: number
+                              example: -2
+                        recurring:
+                          type: boolean
+                        timestamps:
+                          type: object
+                          properties:
+                            createdAt:
+                              type: string
+                              format: date-time
+                              example:
+                                value: '1967-02-20T19:38:00Z'
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - type: object
+                        required:
+                          - id
+                          - type
+                          - attributes
+                          - links
+                        properties:
+                          id:
+                            type: string
+                            format: int64
+                            example: 100
+                          type:
+                            type: string
+                            enum:
+                              - entry
+                          attributes:
+                            type: object
+                            required:
+                              - year
+                              - month
+                              - category
+                              - subcategory
+                              - expected_total
+                              - recurring
+                              - timestamps
+                            properties:
+                              year:
+                                type: number
+                                example: 2023
+                              month:
+                                type: number
+                                example: 6
+                                enum:
+                                  - 1
+                                  - 2
+                                  - 3
+                                  - 4
+                                  - 5
+                                  - 6
+                                  - 7
+                                  - 8
+                                  - 9
+                                  - 10
+                                  - 11
+                                  - 12
+                              category:
+                                type: string
+                                example: food
+                              subcategory:
+                                type: string
+                                example: groceries
+                              expected_total:
+                                $ref: '#/paths/~1debts~1/post/requestBody/content/application~1json/schema/properties/data/properties/attributes/properties/total'
+                              recurring:
+                                type: boolean
+                              timestamps:
+                                $ref: '#/paths/~1entries~1/post/requestBody/content/application~1json/schema/properties/data/properties/attributes/properties/timestamps'
+                    type: object
+                    required:
+                      - properties
+                      - links
+                      - relationships
+                    properties:
+                      links:
+                        allOf:
+                          - type: object
+                            required:
+                              - self
+                            properties:
+                              self:
+                                type: string
+                                example: 'http://dumblinks.com/authors/100'
+                                description: The link that generated the current response document.
+                        example: 'https:/casheer.com/api/entries/100'
+                      relationships:
+                        type: object
+                        required:
+                          - expenses
+                        description: |
+                          "An object containing data associated with the current entry's expenses."
+                        properties:
+                          expenses:
+                            type: object
+                            required:
+                              - links
+                            properties:
+                              links:
+                                allOf:
+                                  - type: object
+                                    required:
+                                      - related
+                                    properties:
+                                      related:
+                                        type: string
+                                        example: 'http://dumblinks.com/authors/100/articles/'
+                                        description: |
+                                          "A link which can be used to fetch the resource objects part of the 
+                                          current relationship."
+                                description: |
+                                  "A link that can be used to fetch all expenses of the current entry."
+                                example: 'https:/casheer.com/api/entries/100/expenses/'
+        '400':
+          description: Invalid create entry request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: '#/paths/~1debts~1/post/responses/400/content/application~1json/schema/properties/error/oneOf/0'
+        '409':
+          description: 'An entry already exists for the same year, month, category and subcategory.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - type: object
+                        required:
+                          - title
+                          - status
+                          - details
+                        properties:
+                          title:
+                            type: string
+                            enum:
+                              - Resource Already Exists
+                          status:
+                            type: number
+                            enum:
+                              - 409
+                          description:
+                            type: string
+                            example: To be filled
+        '422':
+          description: Invalid debt sent in request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/paths/~1debts~1/post/responses/422/content/application~1json/schema/properties/error'
+        '500':
+          $ref: '#/paths/~1debts~1/get/responses/500'

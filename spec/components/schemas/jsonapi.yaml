@@ -4,5 +4,15 @@ jsonapiSelfLink:
   properties:
     self:
       type: string
-      example: "http://dumblinks.com/debts/100"
-      description: "A URI reference pointing to the link's target."
+      example: "http://dumblinks.com/authors/100"
+      description: "The link that generated the current response document."
+jsonapiRelatedLink:
+  type: object
+  required: ["related"]
+  properties:
+    related:
+      type: string
+      example: "http://dumblinks.com/authors/100/articles/"
+      description: |
+        "A link which can be used to fetch the resource objects part of the 
+        current relationship."

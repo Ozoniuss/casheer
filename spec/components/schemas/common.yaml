@@ -1,5 +1,31 @@
 monetaryValue:
   type: object
+  required: ["currency", "amount", "exponent"]
+  properties:
+    currency:
+      type: string
+      example: "USD"
+    amount:
+      type: number
+      example: 100
+    exponent:
+      type: number
+      example: -2
+createMonetaryValue:
+  type: object
+  required: ["currency", "amount"]
+  properties:
+    currency:
+      type: string
+      example: "USD"
+    amount:
+      type: number
+      example: 100
+    exponent:
+      type: number
+      example: -2
+updateMonetaryValue:
+  type: object
   properties:
     currency:
       type: string
