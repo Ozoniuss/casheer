@@ -77,7 +77,7 @@ func TestHandleCreateDebt(t *testing.T) {
 			Data: casheerapi.CreateDebtData{
 				Type: "debt",
 				Attributes: casheerapi.CreateDebtAttributes{
-					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
+					Value: casheerapi.MonetaryValueCreationAttributes{
 						Currency: "RON",
 						Amount:   5000,
 						Exponent: func() *int { e := -2; return &e }(),
@@ -103,7 +103,7 @@ func TestHandleCreateDebt(t *testing.T) {
 		}
 
 		savedDebt := debts[0]
-		if savedDebt.Amount != dummyDebt.Data.Attributes.Amount ||
+		if savedDebt.Amount != dummyDebt.Data.Attributes.Value.Amount ||
 			savedDebt.Details != dummyDebt.Data.Attributes.Details ||
 			savedDebt.Person != dummyDebt.Data.Attributes.Person {
 			t.Errorf("Inserted: %+v\nretrieved %+v", dummyDebt, savedDebt)
@@ -120,7 +120,7 @@ func TestHandleCreateDebt(t *testing.T) {
 			Data: casheerapi.CreateDebtData{
 				Type: "debt",
 				Attributes: casheerapi.CreateDebtAttributes{
-					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
+					Value: casheerapi.MonetaryValueCreationAttributes{
 						Currency: "RON",
 						Amount:   5000,
 						Exponent: func() *int { e := -2; return &e }(),
@@ -161,7 +161,7 @@ func TestHandleCreateDebt(t *testing.T) {
 				Type: "debt",
 				Attributes: casheerapi.CreateDebtAttributes{
 					Person: "", // invalid person
-					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
+					Value: casheerapi.MonetaryValueCreationAttributes{
 						Currency: "RON",
 						Amount:   5000,
 						Exponent: func() *int { e := -2; return &e }(),

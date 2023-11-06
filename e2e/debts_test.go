@@ -28,9 +28,9 @@ func TestCreateRetrieveDeleteDebtFlow(t *testing.T) {
 	}
 
 	if createResp.Data.Attributes.Person != "Marian" ||
-		createResp.Data.Attributes.Currency != "EUR" ||
-		createResp.Data.Attributes.Amount != 100 ||
-		createResp.Data.Attributes.Exponent != -2 ||
+		createResp.Data.Attributes.Value.Currency != "EUR" ||
+		createResp.Data.Attributes.Value.Amount != 100 ||
+		createResp.Data.Attributes.Value.Exponent != -2 ||
 		createResp.Data.Attributes.Details != "get tf out" {
 		t.Errorf("Received invalid debt attributes after creating the debt.")
 	}

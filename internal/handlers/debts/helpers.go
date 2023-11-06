@@ -15,7 +15,7 @@ func DebtToPublic(debt model.Debt, debtsURL *url.URL) public.DebtData {
 			Type: public.DebtType,
 		},
 		Attributes: public.DebtAtrributes{
-			MonetaryValueAttributes: public.MonetaryValueAttributes{
+			Value: public.MonetaryValueAttributes{
 				Amount:   debt.Amount,
 				Exponent: debt.Exponent,
 				Currency: debt.Currency,
@@ -40,7 +40,7 @@ func DebtToPublicList(debt model.Debt, debtsURL *url.URL) public.DebtListItemDat
 			Type: public.DebtType,
 		},
 		Attributes: public.DebtAtrributes{
-			MonetaryValueAttributes: public.MonetaryValueAttributes{
+			Value: public.MonetaryValueAttributes{
 				Amount:   debt.Amount,
 				Exponent: debt.Exponent,
 				Currency: debt.Currency,

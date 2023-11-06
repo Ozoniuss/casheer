@@ -19,7 +19,7 @@ func (c *CasheerHTTPClient) CreateDebt(person string, details string, amount int
 			Attributes: public.CreateDebtAttributes{
 				Person:  person,
 				Details: details,
-				MonetaryValueCreationAttributes: public.MonetaryValueCreationAttributes{
+				Value: public.MonetaryValueCreationAttributes{
 					Currency: currency,
 					Amount:   amount,
 					Exponent: &exponent,
