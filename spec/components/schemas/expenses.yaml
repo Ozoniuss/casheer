@@ -1,0 +1,106 @@
+Expense:
+  type: object
+  required: ["id", "type", "attributes", "links"]
+  properties:
+    id:
+      type: string
+      format: int64
+      example: "100"
+    type:
+      type: string
+      enum: ["expense"]
+    attributes:
+      type: object
+      required: [name, description, payment_method, value, timestamps]
+      properties:
+        name:
+          type: string
+          example: "Auchan"
+        description:
+          type: string
+          example: "Bought water and whiskey."
+        payment_method:
+          type: string
+          example: card
+        value:
+          $ref: "./common.yaml#/monetaryValue"
+        timestamps:
+          $ref: "./common.yaml#/timestamps"
+DeleteExpense:
+  allOf:
+    - $ref: "#/Expense"
+CreateExpense:
+  type: object
+  required: ["type", "attributes"]
+  properties:
+    type:
+      type: string
+      enum: ["expense"]
+    attributes:
+      type: object
+      required: [name, value]
+      properties:
+        name:
+          type: string
+          example: "Auchan"
+        description:
+          type: string
+          example: "Bought water and whiskey."
+        payment_method:
+          type: string
+          example: card
+        value:
+          $ref: "./common.yaml#/createMonetaryValue"
+UpdateExpense:
+  type: object
+  required: ["type", "attributes"]
+  properties:
+    type:
+      type: string
+      enum: ["expense"]
+    attributes:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "Auchan"
+        description:
+          type: string
+          example: "Bought water and whiskey."
+        payment_method:
+          type: string
+          example: card
+        value:
+          $ref: "./common.yaml#/updateMonetaryValue"
+  
+ExpenseWithLinksAndRelationships:
+  allOf:
+    - $ref: "#/Expense"
+  type: object
+  required: [properties, links, relationships]
+  properties:
+    links:
+      allOf: 
+      - $ref: "./jsonapi.yaml#/jsonapiSelfLink"
+      example: "https:/casheer.com/api/entries/100/expenses/100"
+    relationships:
+      $ref: "#/ParentEntryRelationship"
+      
+ParentEntryRelationship:
+  type: object
+  required: ["entries"]
+  description: |
+    "An object containing the entry that the current expense contributes to.
+  properties:
+    entries:
+      type: object
+      required: ["links"]
+      properties:
+        links:
+          allOf:
+          - $ref: "./jsonapi.yaml#/jsonapiRelatedLink"
+          description: |
+            "A link that can be used to fetch the entry that this expense
+            contributes to."
+          example: "https:/casheer.com/api/entries/100"
+  
