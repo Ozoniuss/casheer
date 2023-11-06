@@ -34,7 +34,7 @@ func (h *handler) HandleListExpense(ctx *gin.Context) {
 	resp := casheerapi.ListExpenseResponse{
 		Data: make([]casheerapi.ExpenseListItemData, 0, len(expenses)),
 		Links: casheerapi.ListExpenseLinks{
-			Self: h.entriesURL.JoinPath(strconv.Itoa(entid), "expenses").String(),
+			Self: h.entriesURL.JoinPath(strconv.Itoa(entid), "expenses/").String(),
 			Home: home.NewHomeLink(h.entriesURL.JoinPath("..")),
 		},
 	}
