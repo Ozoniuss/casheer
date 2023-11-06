@@ -43,17 +43,17 @@ func (h *handler) HandleUpdateExpense(ctx *gin.Context) {
 }
 
 func updateExpenseFields(req casheerapi.UpdateExpenseRequest, expense *model.Expense) {
-	if req.Data.Attributes.Amount != nil {
-		expense.Amount = *req.Data.Attributes.Amount
+	if req.Data.Attributes.Value.Amount != nil {
+		expense.Amount = *req.Data.Attributes.Value.Amount
 	}
-	if req.Data.Attributes.Currency != nil {
-		expense.Currency = *req.Data.Attributes.Currency
+	if req.Data.Attributes.Value.Currency != nil {
+		expense.Currency = *req.Data.Attributes.Value.Currency
 	}
 	if req.Data.Attributes.Description != nil {
 		expense.Description = *req.Data.Attributes.Description
 	}
-	if req.Data.Attributes.Exponent != nil {
-		expense.Exponent = *req.Data.Attributes.Exponent
+	if req.Data.Attributes.Value.Exponent != nil {
+		expense.Exponent = *req.Data.Attributes.Value.Exponent
 	}
 	if req.Data.Attributes.Name != nil {
 		expense.Name = *req.Data.Attributes.Name

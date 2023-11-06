@@ -21,7 +21,7 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 		return
 	}
 
-	value, err := currency.NewValueBasedOnCurrency(req.Data.Attributes.Amount, req.Data.Attributes.Currency, req.Data.Attributes.Exponent)
+	value, err := currency.NewValueBasedOnCurrency(req.Data.Attributes.Value.Amount, req.Data.Attributes.Value.Currency, req.Data.Attributes.Value.Exponent)
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
 		return

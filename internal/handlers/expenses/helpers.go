@@ -16,7 +16,7 @@ func ExpenseToPublic(expense model.Expense, entriesURL *url.URL) public.ExpenseD
 			Type: public.ExpenseType,
 		},
 		Attributes: public.ExpenseAttributes{
-			MonetaryValueAttributes: public.MonetaryValueAttributes{
+			Value: public.MonetaryValueAttributes{
 				Amount:   expense.Amount,
 				Currency: expense.Currency,
 				Exponent: expense.Exponent,
@@ -51,7 +51,7 @@ func ExpenseToPublicList(expense model.Expense, entriesURL *url.URL) public.Expe
 			Type: public.ExpenseType,
 		},
 		Attributes: public.ExpenseAttributes{
-			MonetaryValueAttributes: public.MonetaryValueAttributes{
+			Value: public.MonetaryValueAttributes{
 				Amount:   expense.Amount,
 				Currency: expense.Currency,
 				Exponent: expense.Exponent,

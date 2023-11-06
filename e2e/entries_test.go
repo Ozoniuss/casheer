@@ -52,9 +52,9 @@ func TestCreateEntryWithExpensesFlow(t *testing.T) {
 	if expenseResp.Data.Attributes.Name != "car trip" ||
 		expenseResp.Data.Attributes.Description != "big fuel" ||
 		expenseResp.Data.Attributes.PaymentMethod != "card" ||
-		expenseResp.Data.Attributes.Amount != 1000 ||
-		expenseResp.Data.Attributes.Currency != "RON" ||
-		expenseResp.Data.Attributes.Exponent != -2 {
+		expenseResp.Data.Attributes.Value.Amount != 1000 ||
+		expenseResp.Data.Attributes.Value.Currency != "RON" ||
+		expenseResp.Data.Attributes.Value.Exponent != -2 {
 		t.Errorf("Received invalid debt attributes after creating the debt.")
 	}
 	_, err = casheerEntriesClient.CreateBasicExpenseWithoutId("category", "subcategory", 10, 2023, "second car trip", "more fuel", "card", 500, "RON")

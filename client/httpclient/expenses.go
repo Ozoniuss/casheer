@@ -18,7 +18,7 @@ func (c *CasheerHTTPClient) CreateBasicExpense(entryId int, name string, descrip
 		Data: public.CreateExpenseData{
 			Type: "expense",
 			Attributes: public.CreateExpenseAttributes{
-				MonetaryValueCreationAttributes: public.MonetaryValueCreationAttributes{
+				Value: public.MonetaryValueCreationAttributes{
 					Amount:   amount,
 					Currency: currency,
 					Exponent: nil,

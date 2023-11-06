@@ -16,10 +16,10 @@ type ExpenseListItemData struct {
 }
 
 type ExpenseAttributes struct {
-	MonetaryValueAttributes
-	Name          string `json:"name"`
-	Description   string `json:"description"`
-	PaymentMethod string `json:"payment_method"`
+	Value         MonetaryValueAttributes `json:"value"`
+	Name          string                  `json:"name"`
+	Description   string                  `json:"description"`
+	PaymentMethod string                  `json:"payment_method"`
 	Timestamps
 }
 
@@ -41,10 +41,10 @@ type CreateExpenseData struct {
 }
 
 type CreateExpenseAttributes struct {
-	MonetaryValueCreationAttributes
-	Name          string `json:"name" binding:"required"`
-	Description   string `json:"description"`
-	PaymentMethod string `json:"payment_method" binding:"required"`
+	Value         MonetaryValueCreationAttributes `json:"value"`
+	Name          string                          `json:"name" binding:"required"`
+	Description   string                          `json:"description"`
+	PaymentMethod string                          `json:"payment_method" binding:"required"`
 }
 
 type CreateExpenseResponse struct {
@@ -60,10 +60,10 @@ type UpdateExpenseData struct {
 	Attributes UpdateExpenseAttributes `json:"attributes" binding:"required"`
 }
 type UpdateExpenseAttributes struct {
-	MonetaryMutableValueAttributes
-	Name          *string `json:"name,omitempty"`
-	Description   *string `json:"description,omitempty"`
-	PaymentMethod *string `json:"payment_method,omitempty"`
+	Value         MonetaryMutableValueAttributes `json:"value"`
+	Name          *string                        `json:"name,omitempty"`
+	Description   *string                        `json:"description,omitempty"`
+	PaymentMethod *string                        `json:"payment_method,omitempty"`
 }
 
 type UpdateExpenseResponse struct {

@@ -108,7 +108,7 @@ func TestHandleCreateExpense(t *testing.T) {
 			Data: casheerapi.CreateExpenseData{
 				Type: "expense",
 				Attributes: casheerapi.CreateExpenseAttributes{
-					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
+					Value: casheerapi.MonetaryValueCreationAttributes{
 						Amount:   100,
 						Currency: "EUR",
 					},
@@ -135,8 +135,8 @@ func TestHandleCreateExpense(t *testing.T) {
 		}
 
 		savedExpense := expenses[0]
-		if savedExpense.Amount != req.Data.Attributes.Amount ||
-			savedExpense.Currency != req.Data.Attributes.Currency ||
+		if savedExpense.Amount != req.Data.Attributes.Value.Amount ||
+			savedExpense.Currency != req.Data.Attributes.Value.Currency ||
 			savedExpense.Exponent != -2 ||
 			savedExpense.Name != req.Data.Attributes.Name ||
 			savedExpense.Description != req.Data.Attributes.Description ||
@@ -157,7 +157,7 @@ func TestHandleCreateExpense(t *testing.T) {
 			Data: casheerapi.CreateExpenseData{
 				Type: "expense",
 				Attributes: casheerapi.CreateExpenseAttributes{
-					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
+					Value: casheerapi.MonetaryValueCreationAttributes{
 						Amount:   100,
 						Currency: "invalid",
 					},
@@ -186,7 +186,7 @@ func TestHandleCreateExpense(t *testing.T) {
 			Data: casheerapi.CreateExpenseData{
 				Type: "expense",
 				Attributes: casheerapi.CreateExpenseAttributes{
-					MonetaryValueCreationAttributes: casheerapi.MonetaryValueCreationAttributes{
+					Value: casheerapi.MonetaryValueCreationAttributes{
 						Amount:   100,
 						Currency: "EUR",
 					},
@@ -377,7 +377,7 @@ func TestHandleUpdateExpense(t *testing.T) {
 			Data: casheerapi.UpdateExpenseData{
 				Type: "expense",
 				Attributes: casheerapi.UpdateExpenseAttributes{
-					MonetaryMutableValueAttributes: casheerapi.MonetaryMutableValueAttributes{
+					Value: casheerapi.MonetaryMutableValueAttributes{
 						Amount:   func() *int { m := 600; return &m }(),
 						Currency: func() *string { usd := currency.USD; return &usd }(),
 						Exponent: func() *int { e := 0; return &e }(),
@@ -398,9 +398,9 @@ func TestHandleUpdateExpense(t *testing.T) {
 		}
 
 		testutils.CheckNoContextErrors(t, ctx)
-		if savedExpense.Amount != *req.Data.Attributes.Amount ||
-			savedExpense.Currency != *req.Data.Attributes.Currency ||
-			savedExpense.Exponent != *req.Data.Attributes.Exponent ||
+		if savedExpense.Amount != *req.Data.Attributes.Value.Amount ||
+			savedExpense.Currency != *req.Data.Attributes.Value.Currency ||
+			savedExpense.Exponent != *req.Data.Attributes.Value.Exponent ||
 			savedExpense.Name != *req.Data.Attributes.Name ||
 			savedExpense.Description != *req.Data.Attributes.Description ||
 			savedExpense.PaymentMethod != *req.Data.Attributes.PaymentMethod {
@@ -418,7 +418,7 @@ func TestHandleUpdateExpense(t *testing.T) {
 			Data: casheerapi.UpdateExpenseData{
 				Type: "expense",
 				Attributes: casheerapi.UpdateExpenseAttributes{
-					MonetaryMutableValueAttributes: casheerapi.MonetaryMutableValueAttributes{
+					Value: casheerapi.MonetaryMutableValueAttributes{
 						Amount:   func() *int { m := 600; return &m }(),
 						Currency: func() *string { usd := "fakecurrency"; return &usd }(),
 						Exponent: func() *int { e := 0; return &e }(),
