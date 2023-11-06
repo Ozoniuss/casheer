@@ -172,7 +172,7 @@ paths:
                       links:
                         example: 'http://casheer.com/debts/100'
                         type: object
-                        $ref: '#/paths/~1entries~1/post/responses/200/content/application~1json/schema/properties/data/properties/links/allOf/0'
+                        $ref: '#/paths/~1entries~1/get/responses/200/content/application~1json/schema/properties/links/allOf/0'
         '400':
           description: Invalid debt request.
           content:
@@ -297,7 +297,26 @@ paths:
               type: object
               properties:
                 data:
-                  $ref: '#/paths/~1debts~1/post/requestBody/content/application~1json/schema/properties/data'
+                  type: object
+                  required:
+                    - type
+                    - attributes
+                  properties:
+                    type:
+                      type: string
+                      enum:
+                        - debt
+                    attributes:
+                      type: object
+                      properties:
+                        person:
+                          type: string
+                          example: Machi Tsutomu
+                        total:
+                          $ref: '#/paths/~1debts~1/post/requestBody/content/application~1json/schema/properties/data/properties/attributes/properties/total'
+                        details:
+                          type: string
+                          example: For the sexy times
       responses:
         '200':
           description: Successful operation
@@ -382,7 +401,13 @@ paths:
                             type: string
                             example: For the sexy times
                           timestamps:
-                            $ref: '#/paths/~1entries~1/post/requestBody/content/application~1json/schema/properties/data/properties/attributes/properties/timestamps'
+                            type: object
+                            properties:
+                              createdAt:
+                                type: string
+                                format: date-time
+                                example:
+                                  value: '1967-02-20T19:38:00Z'
         '404':
           description: Debt was not found.
           content:
@@ -476,14 +501,6 @@ paths:
                               example: -2
                         recurring:
                           type: boolean
-                        timestamps:
-                          type: object
-                          properties:
-                            createdAt:
-                              type: string
-                              format: date-time
-                              example:
-                                value: '1967-02-20T19:38:00Z'
       responses:
         '200':
           description: Successful operation
@@ -550,7 +567,7 @@ paths:
                               recurring:
                                 type: boolean
                               timestamps:
-                                $ref: '#/paths/~1entries~1/post/requestBody/content/application~1json/schema/properties/data/properties/attributes/properties/timestamps'
+                                $ref: '#/paths/~1debts~1%7Bdbtid%7D/delete/responses/200/content/application~1json/schema/properties/data/properties/attributes/properties/timestamps'
                     type: object
                     required:
                       - properties
@@ -559,14 +576,7 @@ paths:
                     properties:
                       links:
                         allOf:
-                          - type: object
-                            required:
-                              - self
-                            properties:
-                              self:
-                                type: string
-                                example: 'http://dumblinks.com/authors/100'
-                                description: The link that generated the current response document.
+                          - $ref: '#/paths/~1entries~1/get/responses/200/content/application~1json/schema/properties/links/allOf/0'
                         example: 'https:/casheer.com/api/entries/100'
                       relationships:
                         type: object
@@ -631,6 +641,333 @@ paths:
                           description:
                             type: string
                             example: To be filled
+        '422':
+          description: Invalid debt sent in request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: '#/paths/~1debts~1/post/responses/422/content/application~1json/schema/properties/error'
+        '500':
+          $ref: '#/paths/~1debts~1/get/responses/500'
+    get:
+      summary: List all entries
+      description: |
+        This operation will list all entries, based on the provided filters. It
+        is strongly encouraged to specify a month and year filter, in order to
+        get only the data required for the current sheet. Those query parameters
+        might be required in newer versions of the API.
+      operationId: listEntries
+      parameters:
+        - in: query
+          name: year
+          description: Filter by year. It is strongly encouraged to specify a value.
+          required: false
+          schema:
+            type: integer
+            minimum: 2020
+            example: 2023
+        - in: query
+          name: month
+          description: Filter by month. It is strongly encouraged to specify a value.
+          required: false
+          schema:
+            type: integer
+            example: 6
+            minimum: 1
+            maximum: 12
+        - in: query
+          name: category
+          description: Filter by category.
+          required: false
+          schema:
+            type: string
+            example: Food
+        - in: query
+          name: subcategory
+          description: Filter by subcategory.
+          required: false
+          schema:
+            type: string
+            example: Eating out
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/paths/~1entries~1/post/responses/200/content/application~1json/schema/properties/data'
+                  links:
+                    allOf:
+                      - type: object
+                        required:
+                          - self
+                        properties:
+                          self:
+                            type: string
+                            example: 'http://dumblinks.com/authors/100'
+                            description: The link that generated the current response document.
+                    type: object
+                    properties:
+                      self:
+                        example: 'http://casheer.com/entries/'
+                      home:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                            example: 'http://casheer.com/entries/'
+                          title:
+                            type: string
+                            example: Home page of casheer API.
+        '400':
+          description: Invalid create entry request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: '#/paths/~1debts~1/post/responses/400/content/application~1json/schema/properties/error/oneOf/0'
+        '500':
+          $ref: '#/paths/~1debts~1/get/responses/500'
+  '/entries/{entid}':
+    get:
+      summary: Retrieve the data of an existing entry.
+      description: |
+        This operation will return the data of an existing entry, given the
+        provided entry id exists.
+      operationId: getEntry
+      parameters:
+        - in: path
+          name: entid
+          description: The ID of the entry to be retrieved.
+          required: true
+          schema:
+            type: integer
+            example: 500
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1entries~1/post/responses/200/content/application~1json/schema/properties/data'
+        '400':
+          description: Entry id does not have correct format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    allOf:
+                      - type: object
+                        required:
+                          - title
+                          - status
+                          - details
+                        properties:
+                          title:
+                            type: string
+                            enum:
+                              - Invalid URL Parameter
+                          status:
+                            type: number
+                            enum:
+                              - 400
+                          details:
+                            type: string
+                            example: URL parameter "whatever" is not an integer.
+                    type: object
+                    properties:
+                      details:
+                        example: URL parameter "myentry" is not an integer.
+        '404':
+          description: Entry was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: '#/paths/~1debts~1%7Bdbtid%7D/get/responses/404/content/application~1json/schema/properties/error/oneOf/0'
+        '500':
+          $ref: '#/paths/~1debts~1/get/responses/500'
+    delete:
+      summary: 'Removes an existing debt, given the provided debt exists.'
+      description: |
+        This operation deletes an existing entry together with all its expenses. 
+        Be careful when using this operation! In this version, it does not
+        provide a way to view the deleted expenses without peeking into the database.
+      operationId: deleteEntry
+      parameters:
+        - in: path
+          name: entid
+          description: The ID of the entry to be deleted.
+          required: true
+          schema:
+            type: integer
+            example: 500
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    allOf:
+                      - $ref: '#/paths/~1entries~1/post/responses/200/content/application~1json/schema/properties/data/allOf/0'
+        '400':
+          description: Entry id does not have correct format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    allOf:
+                      - $ref: '#/paths/~1entries~1%7Bentid%7D/get/responses/400/content/application~1json/schema/properties/error/allOf/0'
+                    type: object
+                    properties:
+                      details:
+                        example: URL parameter "myentry" is not an integer.
+        '404':
+          description: Entry was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: '#/paths/~1debts~1%7Bdbtid%7D/get/responses/404/content/application~1json/schema/properties/error/oneOf/0'
+        '500':
+          $ref: '#/paths/~1debts~1/get/responses/500'
+    patch:
+      summary: Update the data of an existing entry.
+      description: |
+        This operation will update the data of an existing entry, given the
+        provided entry exists and the new data is valid and doesn't violate any
+        constraints.
+      operationId: updateEntry
+      parameters:
+        - in: path
+          name: entid
+          description: The ID of the entry to be retrieved.
+          required: true
+          schema:
+            type: integer
+            example: 500
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  type: object
+                  required:
+                    - id
+                    - type
+                    - attributes
+                    - links
+                  properties:
+                    id:
+                      type: string
+                      format: int64
+                      example: 100
+                    type:
+                      type: string
+                      enum:
+                        - entry
+                    attributes:
+                      type: object
+                      properties:
+                        year:
+                          type: number
+                          example: 2023
+                        month:
+                          type: number
+                          example: 6
+                          enum:
+                            - 1
+                            - 2
+                            - 3
+                            - 4
+                            - 5
+                            - 6
+                            - 7
+                            - 8
+                            - 9
+                            - 10
+                            - 11
+                            - 12
+                        category:
+                          type: string
+                          example: food
+                        subcategory:
+                          type: string
+                          example: groceries
+                        expected_total:
+                          type: object
+                          properties:
+                            currency:
+                              type: string
+                              example: USD
+                            amount:
+                              type: number
+                              example: 100
+                            exponent:
+                              type: number
+                              example: -2
+                        recurring:
+                          type: boolean
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/paths/~1entries~1/post/responses/200/content/application~1json/schema/properties/data'
+        '400':
+          description: Invalid create entry request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: '#/paths/~1debts~1/post/responses/400/content/application~1json/schema/properties/error/oneOf/0'
+        '409':
+          description: 'An entry already exists for the same year, month, category and subcategory.'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: '#/paths/~1entries~1/post/responses/409/content/application~1json/schema/properties/error/oneOf/0'
         '422':
           description: Invalid debt sent in request.
           content:

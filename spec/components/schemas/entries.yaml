@@ -67,8 +67,37 @@ CreateEntry:
           $ref: "./common.yaml#/createMonetaryValue"
         recurring:
           type: boolean
-        timestamps:
-          $ref: "./common.yaml#/timestamps"
+UpdateEntry:
+  type: object
+  required: ["id", "type", "attributes", "links"]
+  properties:
+    id:
+      type: string
+      format: int64
+      example: 100
+    type:
+      type: string
+      enum: ["entry"]
+    attributes:
+      type: object
+      properties:
+        year:
+          type: number
+          example: 2023
+        month:
+          type: number
+          example: 6
+          enum: [1,2,3,4,5,6,7,8,9,10,11,12]
+        category:
+          type: string
+          example: food
+        subcategory:
+          type: string
+          example: groceries
+        expected_total:
+          $ref: "./common.yaml#/updateMonetaryValue"
+        recurring:
+          type: boolean
   
 EntryWithLinksAndRelationships:
   allOf:

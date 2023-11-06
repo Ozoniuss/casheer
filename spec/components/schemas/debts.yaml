@@ -68,7 +68,7 @@ UpdateDebt:
           type: string
           example: Machi Tsutomu
         total:
-          $ref: "#/components/schemas/monetaryValue"
+          $ref: "./common.yaml#/monetaryValue"
         details:
           type: string
           example: For the sexy times

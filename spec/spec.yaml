@@ -165,7 +165,7 @@ paths:
               type: object
               properties:
                 data:
-                  $ref: "./components/schemas/debts.yaml#/CreateDebt"
+                  $ref: "./components/schemas/debts.yaml#/UpdateDebt"
       responses:
         "200":
           description: Successful operation
@@ -289,4 +289,251 @@ paths:
                     $ref: "./components/schemas/errors.yaml#/invalidResourceError"
         "500":
           $ref: "./responses/errors.yaml#/unexpectedError"
-  
+    get:
+      summary: List all entries
+      description: | 
+        This operation will list all entries, based on the provided filters. It
+        is strongly encouraged to specify a month and year filter, in order to
+        get only the data required for the current sheet. Those query parameters
+        might be required in newer versions of the API.
+      operationId: listEntries
+      parameters:
+        - in: query
+          name: year
+          description: Filter by year. It is strongly encouraged to specify a value.
+          required: false
+          schema:
+            type: integer
+            minimum: 2020
+            example: 2023
+        - in: query
+          name: month
+          description: Filter by month. It is strongly encouraged to specify a value.
+          required: false
+          schema:
+            type: integer
+            example: 6
+            minimum: 1
+            maximum: 12
+        - in: query
+          name: category
+          description: Filter by category.
+          required: false
+          schema:
+            type: string
+            example: Food
+        - in: query
+          name: subcategory
+          description: Filter by subcategory.
+          required: false
+          schema:
+            type: string
+            example: Eating out
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "./components/schemas/entries.yaml#/EntryWithLinksAndRelationships"
+                  links:
+                    allOf:
+                      - $ref: "./components/schemas/jsonapi.yaml#/jsonapiSelfLink"
+                    type: object
+                    properties:
+                      self:
+                        example: "http://casheer.com/entries/"
+                      home:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                            example: "http://casheer.com/entries/"
+                          title:
+                            type: string
+                            example: Home page of casheer API.
+        "400":
+          description: Invalid create entry request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidRequestBodyError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+  /entries/{entid}:
+    get:
+      summary: Retrieve the data of an existing entry.
+      description: |
+        This operation will return the data of an existing entry, given the
+        provided entry id exists.
+      operationId: getEntry
+      parameters:
+        - in: path
+          name: entid
+          description: The ID of the entry to be retrieved.
+          required: true
+          schema:
+            type: integer
+            example: 500
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/entries.yaml#/EntryWithLinksAndRelationships"
+        "400":
+          description: Entry id does not have correct format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    allOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidURLParamError"
+                    type: object
+                    properties:
+                      details:
+                        example: URL parameter "myentry" is not an integer.  
+        "404":
+          description: Entry was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceNotFoundError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+    delete:
+      summary: Removes an existing debt, given the provided debt exists.
+      description: | 
+        This operation deletes an existing entry together with all its expenses. 
+        Be careful when using this operation! In this version, it does not
+        provide a way to view the deleted expenses without peeking into the database.
+      operationId: deleteEntry
+      parameters:
+        - in: path
+          name: entid
+          description: The ID of the entry to be deleted.
+          required: true
+          schema:
+            type: integer
+            example: 500
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/entries.yaml#/DeleteEntry"
+        "400":
+          description: Entry id does not have correct format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    allOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidURLParamError"
+                    type: object
+                    properties:
+                      details:
+                        example: URL parameter "myentry" is not an integer.  
+        "404":
+          description: Entry was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceNotFoundError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+    patch:
+      summary: Update the data of an existing entry.
+      description: |
+        This operation will update the data of an existing entry, given the
+        provided entry exists and the new data is valid and doesn't violate any
+        constraints.
+      operationId: updateEntry
+      parameters:
+        - in: path
+          name: entid
+          description: The ID of the entry to be retrieved.
+          required: true
+          schema:
+            type: integer
+            example: 500
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "./components/schemas/entries.yaml#/UpdateEntry"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/entries.yaml#/EntryWithLinksAndRelationships"
+        "400":
+          description: Invalid create entry request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidRequestBodyError"
+        "409":
+          description: An entry already exists for the same year, month, category and subcategory.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceAlreadyExistsError"
+        "422":
+          description: Invalid debt sent in request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: "./components/schemas/errors.yaml#/invalidResourceError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+    

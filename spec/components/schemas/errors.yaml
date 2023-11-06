@@ -95,6 +95,22 @@ invalidQueryParamsError:
       type: string
       example: to be filled
 
+invalidURLParamError:
+  type: object
+  required: [title, status, details]
+  properties:
+    title:
+      type: string
+      enum:
+        - Invalid URL Parameter
+    status:
+      type: number
+      enum:
+        - 400
+    details:
+      type: string
+      example: URL parameter "whatever" is not an integer.
+
 unknownError:
   type: object
   required: [title, status, details]
