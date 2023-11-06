@@ -13,7 +13,7 @@ func ExpenseToPublic(expense model.Expense, entriesURL *url.URL) public.ExpenseD
 	return public.ExpenseData{
 		ResourceID: public.ResourceID{
 			Id:   strconv.Itoa(expense.Id),
-			Type: public.EntryType,
+			Type: public.ExpenseType,
 		},
 		Attributes: public.ExpenseAttributes{
 			MonetaryValueAttributes: public.MonetaryValueAttributes{
@@ -48,7 +48,7 @@ func ExpenseToPublicList(expense model.Expense, entriesURL *url.URL) public.Expe
 	return public.ExpenseListItemData{
 		ResourceID: public.ResourceID{
 			Id:   strconv.Itoa(expense.Id),
-			Type: public.EntryType,
+			Type: public.ExpenseType,
 		},
 		Attributes: public.ExpenseAttributes{
 			MonetaryValueAttributes: public.MonetaryValueAttributes{
