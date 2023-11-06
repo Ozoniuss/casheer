@@ -28,11 +28,16 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 	}
 
 	expense := model.Expense{
-		EntryId:       entid,
-		Value:         model.FromCurrencyValue(value),
-		Description:   req.Data.Attributes.Description,
-		Name:          req.Data.Attributes.Name,
-		PaymentMethod: req.Data.Attributes.PaymentMethod,
+		EntryId: entid,
+		Value:   model.FromCurrencyValue(value),
+		Name:    req.Data.Attributes.Name,
+	}
+
+	if req.Data.Attributes.Description != nil {
+		expense.Description = *req.Data.Attributes.Description
+	}
+	if req.Data.Attributes.PaymentMethod != nil {
+		expense.PaymentMethod = *req.Data.Attributes.PaymentMethod
 	}
 
 	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(expense.EntryId)).Clauses(clause.Returning{}).Create(&expense).Error

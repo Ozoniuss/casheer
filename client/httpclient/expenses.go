@@ -24,8 +24,8 @@ func (c *CasheerHTTPClient) CreateBasicExpense(entryId int, name string, descrip
 					Exponent: nil,
 				},
 				Name:          name,
-				Description:   description,
-				PaymentMethod: paymentMethod,
+				Description:   &description,
+				PaymentMethod: &paymentMethod,
 			},
 		},
 	}

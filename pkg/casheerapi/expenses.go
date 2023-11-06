@@ -43,8 +43,8 @@ type CreateExpenseData struct {
 type CreateExpenseAttributes struct {
 	Value         MonetaryValueCreationAttributes `json:"value"`
 	Name          string                          `json:"name" binding:"required"`
-	Description   string                          `json:"description"`
-	PaymentMethod string                          `json:"payment_method" binding:"required"`
+	Description   *string                         `json:"description"`
+	PaymentMethod *string                         `json:"payment_method"`
 }
 
 type CreateExpenseResponse struct {

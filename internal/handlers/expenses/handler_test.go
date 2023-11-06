@@ -113,8 +113,8 @@ func TestHandleCreateExpense(t *testing.T) {
 						Currency: "EUR",
 					},
 					Name:          "test",
-					Description:   "test",
-					PaymentMethod: "card",
+					Description:   func() *string { d := "test"; return &d }(),
+					PaymentMethod: func() *string { pm := "card"; return &pm }(),
 				},
 			},
 		}
@@ -139,8 +139,8 @@ func TestHandleCreateExpense(t *testing.T) {
 			savedExpense.Currency != req.Data.Attributes.Value.Currency ||
 			savedExpense.Exponent != -2 ||
 			savedExpense.Name != req.Data.Attributes.Name ||
-			savedExpense.Description != req.Data.Attributes.Description ||
-			savedExpense.PaymentMethod != req.Data.Attributes.PaymentMethod {
+			savedExpense.Description != *req.Data.Attributes.Description ||
+			savedExpense.PaymentMethod != *req.Data.Attributes.PaymentMethod {
 			t.Errorf("Inserted: %+v\nretrieved %+v\n", req, savedExpense)
 		}
 
@@ -162,8 +162,8 @@ func TestHandleCreateExpense(t *testing.T) {
 						Currency: "invalid",
 					},
 					Name:          "test",
-					Description:   "test",
-					PaymentMethod: "card",
+					Description:   func() *string { d := "test"; return &d }(),
+					PaymentMethod: func() *string { pm := "card"; return &pm }(),
 				},
 			},
 		}
@@ -191,8 +191,8 @@ func TestHandleCreateExpense(t *testing.T) {
 						Currency: "EUR",
 					},
 					Name:          "test",
-					Description:   "test",
-					PaymentMethod: "card",
+					Description:   func() *string { d := "test"; return &d }(),
+					PaymentMethod: func() *string { pm := "card"; return &pm }(),
 				},
 			},
 		}
