@@ -44,7 +44,7 @@ func insertLine(client *httpclient.CasheerHTTPClient, line string) {
 	_, err = client.CreateBasicExpenseWithoutId(
 		expdata.category,
 		expdata.subcategory,
-		9,
+		10,
 		2023,
 		expdata.name,
 		expdata.description,
@@ -56,15 +56,15 @@ func insertLine(client *httpclient.CasheerHTTPClient, line string) {
 		// probably entry doesnt exist, will add a method to automatically
 		// create it
 		fmt.Printf("could not create expense: %s\n", err.Error())
-		_, err := client.CreateEntry(9, 2023, expdata.category, expdata.subcategory, expdata.amount, false)
+		_, err := client.CreateEntry(10, 2023, expdata.category, expdata.subcategory, expdata.amount, "RON", false)
 		if err != nil {
-			fmt.Println("not good")
+			fmt.Println("eroare", err)
 			panic(err)
 		}
 		_, err = client.CreateBasicExpenseWithoutId(
 			expdata.category,
 			expdata.subcategory,
-			9,
+			10,
 			2023,
 			expdata.name,
 			expdata.description,
@@ -73,18 +73,18 @@ func insertLine(client *httpclient.CasheerHTTPClient, line string) {
 			expdata.currency,
 		)
 		if err != nil {
-			fmt.Println("not good again")
+			fmt.Println("not good again", err)
 			panic(err)
 		}
 	}
 }
 
 func main() {
-	f, _ := os.Open("out_final.txt")
+	f, _ := os.Open("out.txt")
 	defer f.Close()
 
 	cclient, err := httpclient.NewCasheerHTTPClient(
-		httpclient.WithCustomAuthority("localhost:8033"),
+		httpclient.WithCustomAuthority("127.0.0.1:8033"),
 	)
 	if err != nil {
 		panic(err)

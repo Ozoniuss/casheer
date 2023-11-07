@@ -4,7 +4,8 @@ import os
 import sys
 from datetime import datetime
 
-# taken from actual db via an sql query and copy paste
+# taken from actual db via an sql query and copy paste, those are just default
+# entries. The script doesn't necessarily use one of those.
 CATEGORIES = [
     "economies",
     "food",
@@ -47,6 +48,14 @@ SUBCATEGORIES = [
     "fuel",
     "parking",
 ]
+
+
+def getMatchesThatStartWith(current: str, wordlist: [str]) -> str:
+    matches = []
+    for word in wordlist:
+        if word.startswith(current):
+            matches.append(word)
+    return matches
 
 
 class Expense:
@@ -104,10 +113,20 @@ def askInput(amount: int, currency: str, payment_method: str, name: str):
         actual_payment_method = payment_method
     category = input("category? >")
     if category not in CATEGORIES:
-        category = input(f"are you sure? you typed {category}, retype if sure >")
+        category = input(
+            f"are you sure? you typed {category}, possible matches {getMatchesThatStartWith(category, CATEGORIES)}\nretype if sure >"
+        )
+        if category not in CATEGORIES:
+            print("no match, adding category")
+            CATEGORIES.append(category)
     subcategory = input("subcategory? >")
     if subcategory not in SUBCATEGORIES:
-        subcategory = input(f"are you sure? you typed {subcategory}, retype if sure >")
+        subcategory = input(
+            f"are you sure? you typed possible matches {getMatchesThatStartWith(subcategory, SUBCATEGORIES)}\nretype if sure >"
+        )
+        if subcategory not in SUBCATEGORIES:
+            print("no match, adding subcategory")
+            SUBCATEGORIES.append(subcategory)
     actual_name = input(f"name? (default {name})>")
     if actual_name == "":
         actual_name = name
@@ -128,8 +147,10 @@ with open(filename, "r") as csvfile:
     spamreader = csv.reader(csvfile)
     expenses: list[Expense] = []
     for idx, row in enumerate(spamreader):
+        # ignore header
         if idx == 0:
             continue
+        # vault transfers or card topups, ignore those
         if (
             row[4] == "To RON Bani de rontanele"
             or row[4] == "To RON"
