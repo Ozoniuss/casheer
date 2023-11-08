@@ -1,5 +1,7 @@
 # Expense manager
 
+> Note: this README is outdated and I still haven't gone through it to decide what to keep. In the meantine, I made a [design document](./DESIGN.md) that explains the design I put into casheer.
+
 The goal of the application is to manage my own expenses. It basically allows me to plan ahead for each month as well as keep track of the active expenses, either by entering them manually, automatically going through my Revolut payments etc. This is the API I will use for interacting with the expenses store.
 
 Big Picture
