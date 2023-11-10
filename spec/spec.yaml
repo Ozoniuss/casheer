@@ -536,4 +536,321 @@ paths:
                     $ref: "./components/schemas/errors.yaml#/invalidResourceError"
         "500":
           $ref: "./responses/errors.yaml#/unexpectedError"
-    
+  /entries/{entid}/expenses/:
+    post:
+      summary: Create a new expense
+      description: | 
+        This operation will create a new expense that contributes to an existing
+        entry, given the provided entry id and expense information is valid. The
+        value of all expenses associated with an entry represent that entry's
+        running total for the month and should ideally be close to the entry's
+        expected total.
+      operationId: createExpenses
+      parameters:
+        - in: path
+          name: entid
+          description: The entry to which this expense contributes to.
+          required: true
+          schema:
+            type: integer
+            example: 100
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "./components/schemas/expenses.yaml#/CreateExpense"
+      responses:
+        "200":
+          description: Expense successfully created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/expenses.yaml#/ExpenseWithLinksAndRelationships"
+        "400":
+          description: Invalid create expense request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidRequestBodyError"
+        "404":
+          description: |
+            The expense collection does not exist, likely because the entry id
+            is incorrect.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceNotFoundError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+    get:
+      summary: List all expenses
+      description: | 
+        This operation will list all expenses of a given entry, based on the provided filters. It
+        is strongly encouraged to specify a month and year filter, in order to
+        get only the data required for the current sheet. Those query parameters
+        might be required in newer versions of the API.
+      operationId: listExpenses
+      parameters:
+        - in: path
+          name: entid
+          description: The entry to which this expense contributes to.
+          required: true
+          schema:
+            type: integer
+            example: 100
+        - in: query
+          name: currency
+          description: Filter by currency.
+          required: false
+          schema:
+            type: string
+            example: EUR
+            enum: [EUR, RON, USD]
+        - in: query
+          name: payment_method
+          description: Filter by payment method.
+          required: false
+          schema:
+            type: string
+            example: card
+      responses:
+        "200":
+          description: Expenses listed successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: "./components/schemas/expenses.yaml#/ExpenseWithLinksAndRelationships"
+                  links:
+                    allOf:
+                      - $ref: "./components/schemas/jsonapi.yaml#/jsonapiSelfLink"
+                    type: object
+                    properties:
+                      self:
+                        example: "http://casheer.com/entries/1/expenses/"
+                      home:
+                        type: object
+                        properties:
+                          href:
+                            type: string
+                            example: "http://casheer.com/home"
+                          title:
+                            type: string
+                            example: Home page of casheer API.
+        "400":
+          description: Invalid list expenses request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidRequestBodyError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+  /entries/{entid}/expenses/{expid}:
+    get:
+      summary: Retrieve the data of an expense.
+      description: |
+        This operation will return the data of an expense, given both the
+        expense id and entry id are valid.
+      operationId: getExpense
+      parameters:
+        - in: path
+          name: entid
+          description: The entry to which this expense contributes to.
+          required: true
+          schema:
+            type: integer
+            example: 100
+        - in: path
+          name: expid
+          description: The expense id.
+          required: true
+          schema:
+            type: integer
+            example: 100
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/expenses.yaml#/ExpenseWithLinksAndRelationships"
+        "400":
+          description: Entry id does not have correct format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    allOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidURLParamError"
+                    type: object
+                    properties:
+                      details:
+                        example: URL parameter "myentry" is not an integer.  
+        "404":
+          description: Entry or expense was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceNotFoundError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+    delete:
+      summary: Removes an existing expense.
+      description: | 
+        This operation deletes an existing expense, given that the entry and
+        expense ids are valid.
+      operationId: deleteEntry
+      parameters:
+        - in: path
+          name: entid
+          description: The entry to which this expense contributes to.
+          required: true
+          schema:
+            type: integer
+            example: 100
+        - in: path
+          name: expid
+          description: The expense id.
+          required: true
+          schema:
+            type: integer
+            example: 100
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/expenses.yaml#/DeleteExpense"
+        "400":
+          description: Entry id does not have correct format.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    allOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidURLParamError"
+                    type: object
+                    properties:
+                      details:
+                        example: URL parameter "myentry" is not an integer.  
+        "404":
+          description: Entry was not found.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceNotFoundError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
+    patch:
+      summary: Update an expense.
+      description: |
+        This operation will update the data of an existing expense, given the
+        entry and expense ids are valid.
+      operationId: updateExpense
+      parameters:
+        - in: path
+          name: entid
+          description: The entry to which this expense contributes to.
+          required: true
+          schema:
+            type: integer
+            example: 100
+        - in: path
+          name: expid
+          description: The expense id.
+          required: true
+          schema:
+            type: integer
+            example: 100
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                data:
+                  $ref: "./components/schemas/expenses.yaml#/UpdateExpense"
+      responses:
+        "200":
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: "./components/schemas/expenses.yaml#/ExpenseWithLinksAndRelationships"
+        "400":
+          description: Invalid create entry request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidRequestBodyError"
+        "409":
+          description: An entry already exists for the same year, month, category and subcategory.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    oneOf:
+                      - $ref: "./components/schemas/errors.yaml#/resourceAlreadyExistsError"
+        "422":
+          description: Invalid debt sent in request.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    $ref: "./components/schemas/errors.yaml#/invalidResourceError"
+        "500":
+          $ref: "./responses/errors.yaml#/unexpectedError"
