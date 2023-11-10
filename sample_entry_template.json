@@ -1,15 +1,22 @@
 {
     "income": {
         "salary": {
-            "expected_total": 0
+            "expected_total": 0,
+            "recurring": true
         },
         "scolarship": {
-            "expected_total": 0
+            "expected_total": 0,
+            "recurring": true
         }
     },
-    "economies": {
-        "investment": {
-            "expected_total": 0
+    "economy": {
+        "etfs": {
+            "expected_total": 0,
+            "recurring": true
+        },
+        "bitcoins": {
+            "expected_total": 0,
+            "recurring": true
         },
         "donations": {
             "expected_total": 0
@@ -21,11 +28,28 @@
             "expected_total": 0
         }
     },
+    "shopping": {
+        "mixed_groceries": {
+            "expected_total": 0
+        },
+        "clothing": {
+            "expected_total": 0
+        }
+    },
     "food": {
-        "groceries": {
+        "home": {
+            "expected_total": 0
+        },
+        "snacks_juice": {
             "expected_total": 0
         },
         "takeaway": {
+            "expected_total": 0
+        },
+        "restaurants": {
+            "expected_total": 0
+        },
+        "coffee": {
             "expected_total": 0
         }
     },
@@ -50,12 +74,12 @@
             "expected_total": 0,
             "recurring": true
         },
-        "bills": {
+        "mixed_bills": {
             "expected_total": 0,
             "recurring": false
         }
     },
-    "transportation": {
+    "transport": {
         "fuel": {
             "expected_total": 0
         },
@@ -63,7 +87,7 @@
             "expected_total": 0,
             "recurring": true
         },
-        "bolt_bus_or_taxi": {
+        "rides": {
             "expected_total": 0
         }
     },
@@ -83,18 +107,21 @@
         "google_drive": {
             "expected_total": 0,
             "recurring": true
+        },
+        "medium": {
+            "expected_total": 0
         }
     },
     "learning": {
-        "courses_or_books": {
+        "courses": {
+            "expected_total": 0
+        },
+        "books": {
             "expected_total": 0
         }
     },
-    "personal": {
-        "emag": {
-            "expected_total": 0
-        },
-        "clothing": {
+    "online": {
+        "general": {
             "expected_total": 0
         }
     },
@@ -103,8 +130,13 @@
             "expected_total": 0
         }
     },
-    "medic": {
+    "medical": {
         "meds": {
+            "expected_total": 0
+        }
+    },
+    "music": {
+        "guitar_lessons": {
             "expected_total": 0
         }
     },
