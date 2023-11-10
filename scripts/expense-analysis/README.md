@@ -1,0 +1,3 @@
+# Expense Analysis
+
+Queries that I wrote in order to interact with the database directly. Because SQLite [does not offer support for stored procedures](https://sqlite.org/forum/info/78a60bdeec7c1ee9) by default, it's hard to parameterise these queries so unfortunately I'll have to copy and paste these and change the values manually. I don't mind it that much, cause it gives me a bit more flexibility when writing the queries though.
