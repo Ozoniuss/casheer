@@ -30,17 +30,17 @@ type DebtListItemLinks struct {
 }
 
 type CreateDebtRequest struct {
-	Data CreateDebtData `json:"data" binding:"required"`
+	Data CreateDebtData `json:"data"`
 }
 
 type CreateDebtData struct {
-	Type       string               `json:"type" binding:"required"`
-	Attributes CreateDebtAttributes `json:"attributes" binding:"required"`
+	Type       string               `json:"type"`
+	Attributes CreateDebtAttributes `json:"attributes"`
 }
 
 type CreateDebtAttributes struct {
 	Value   MonetaryValueCreationAttributes `json:"value"`
-	Person  string                          `json:"person" binding:"required"`
+	Person  string                          `json:"person"`
 	Details string                          `json:"details"`
 }
 
@@ -50,12 +50,12 @@ type CreateDebtResponse struct {
 }
 
 type UpdateDebtRequest struct {
-	Data UpdateDebtData `json:"data" binding:"required"`
+	Data UpdateDebtData `json:"data"  `
 }
 
 type UpdateDebtData struct {
-	Type       string               `json:"type" binding:"required"`
-	Attributes UpdateDebtAttributes `json:"attributes" binding:"required"`
+	Type       string               `json:"type"`
+	Attributes UpdateDebtAttributes `json:"attributes"`
 }
 
 type UpdateDebtAttributes struct {

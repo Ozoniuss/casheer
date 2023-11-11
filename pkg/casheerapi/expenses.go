@@ -32,19 +32,19 @@ type ExpenseListItemLinks struct {
 }
 
 type CreateExpenseRequest struct {
-	Data CreateExpenseData `json:"data" binding:"required"`
+	Data CreateExpenseData `json:"data"`
 }
 
 type CreateExpenseData struct {
-	Type       string                  `json:"type" binding:"required"`
-	Attributes CreateExpenseAttributes `json:"attributes" binding:"required"`
+	Type       string                  `json:"type"`
+	Attributes CreateExpenseAttributes `json:"attributes"`
 }
 
 type CreateExpenseAttributes struct {
 	Value         MonetaryValueCreationAttributes `json:"value"`
-	Name          string                          `json:"name" binding:"required"`
-	Description   *string                         `json:"description"`
-	PaymentMethod *string                         `json:"payment_method"`
+	Name          string                          `json:"name"`
+	Description   *string                         `json:"description,omitempty"`
+	PaymentMethod *string                         `json:"payment_method,omitempty"`
 }
 
 type CreateExpenseResponse struct {
@@ -52,12 +52,12 @@ type CreateExpenseResponse struct {
 }
 
 type UpdateExpenseRequest struct {
-	Data UpdateExpenseData `json:"data" binding:"required"`
+	Data UpdateExpenseData `json:"data"  `
 }
 
 type UpdateExpenseData struct {
-	Type       string                  `json:"type" binding:"required"`
-	Attributes UpdateExpenseAttributes `json:"attributes" binding:"required"`
+	Type       string                  `json:"type"`
+	Attributes UpdateExpenseAttributes `json:"attributes"`
 }
 type UpdateExpenseAttributes struct {
 	Value         MonetaryMutableValueAttributes `json:"value"`

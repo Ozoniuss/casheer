@@ -59,16 +59,16 @@ type CreateEntryRequest struct {
 }
 
 type CreateEntryData struct {
-	Type       string                `json:"type" binding:"required"`
+	Type       string                `json:"type"  `
 	Attributes CreateEntryAttributes `json:"attributes"`
 }
 
 type CreateEntryAttributes struct {
 	Month         *int                            `json:"month,omitempty"`
 	Year          *int                            `json:"year,omitempty"`
-	Category      string                          `json:"category" binding:"required"`
-	Subcategory   string                          `json:"subcategory" binding:"required"`
-	ExpectedTotal MonetaryValueCreationAttributes `json:"expected_total" binding:"required"`
+	Category      string                          `json:"category"  `
+	Subcategory   string                          `json:"subcategory"  `
+	ExpectedTotal MonetaryValueCreationAttributes `json:"expected_total"  `
 	Recurring     bool                            `json:"recurring"`
 }
 
@@ -77,11 +77,11 @@ type CreateEntryResponse struct {
 }
 
 type UpdateEntryRequest struct {
-	Data UpdateEntryData `json:"data" binding:"required"`
+	Data UpdateEntryData `json:"data"`
 }
 
 type UpdateEntryData struct {
-	Type       string                `json:"type" binding:"required"`
+	Type       string                `json:"type"`
 	Attributes UpdateEntryAttributes `json:"attributes"`
 }
 

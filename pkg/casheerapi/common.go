@@ -38,7 +38,7 @@ type MonetaryMutableValueAttributes struct {
 // MonetaryValueCreationAttributes is the same as MonetaryValueAttributes,
 // but it is used when creating such an object to highlight the optional fields.
 type MonetaryValueCreationAttributes struct {
-	Amount   int    `json:"amount" binding:"required"`
-	Currency string `json:"currency" binding:"required"`
+	Amount   int    `json:"amount"`
+	Currency string `json:"currency"`
 	Exponent *int   `json:"exponent,omitempty"`
 }
