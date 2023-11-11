@@ -28,16 +28,3 @@ func ValidateModelScope[T Entry | Expense | Debt](obj T) func(db *gorm.DB) *gorm
 		return db
 	}
 }
-
-// ValidateModelFields does the same as ValidateModel, except it only validates
-// the provided entity fields. Note that the provided fields should be
-// uppercase.
-func ValidateModelFields[T Entry](obj T, fields []string, adderr error) func(db *gorm.DB) *gorm.DB {
-	return func(db *gorm.DB) *gorm.DB {
-		v := validator.New()
-		if err := v.StructPartial(obj, fields...); err != nil {
-			db.AddError(InvalidEntryErr{})
-		}
-		return db
-	}
-}
