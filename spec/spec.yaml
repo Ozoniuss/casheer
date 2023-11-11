@@ -100,14 +100,18 @@ paths:
                     oneOf:
                       - $ref: "./components/schemas/errors.yaml#/invalidRequestBodyError"
         "422":
-          description: Invalid debt sent in request.
+          description: Debt data is invalid.
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   error:
-                    $ref: "./components/schemas/errors.yaml#/invalidResourceError"
+                    allOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidResourceError"
+                    properties:
+                      details:
+                        example: "invalid debt: person cannot be empty"
         "500":
           $ref: "./responses/errors.yaml#/unexpectedError"
   /debts/{dbtid}:
@@ -187,14 +191,18 @@ paths:
                     oneOf:
                       - $ref: "./components/schemas/errors.yaml#/resourceNotFoundError"
         "422":
-          description: Invalid debt sent in request.
+          description: Debt data is invalid.
           content:
             application/json:
               schema:
                 type: object
                 properties:
                   error:
-                    $ref: "./components/schemas/errors.yaml#/invalidResourceError"
+                    allOf:
+                      - $ref: "./components/schemas/errors.yaml#/invalidResourceError"
+                    properties:
+                      details:
+                        example: "invalid debt: person cannot be empty"
         "500":
           $ref: "./responses/errors.yaml#/unexpectedError"
     delete:

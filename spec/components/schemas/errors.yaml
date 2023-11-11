@@ -56,12 +56,12 @@ invalidResourceError:
       enum:
         - Invalid Resource
     status:
-      type: number
+      type: integer
       enum:
         - 422
     details:
       type: string
-      example: To be filled
+      example: "invalid model: reasons"
 
 invalidRequestBodyError:
   type: object
