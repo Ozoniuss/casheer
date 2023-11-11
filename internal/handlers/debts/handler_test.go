@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/Ozoniuss/casheer/currency"
-	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/internal/testutils"
@@ -180,7 +179,7 @@ func TestHandleCreateDebt(t *testing.T) {
 		if len(debts) != 2 {
 			t.Errorf("Expected to have 2 debt, but found %d", len(debts))
 		}
-		testutils.CheckCanBeContextError(t, ctx, &ierrors.InvalidModel{})
+		testutils.CheckCanBeContextError(t, ctx, &model.ErrInvalidModel{})
 	})
 
 }
@@ -318,8 +317,7 @@ func TestHandleUpdateDebt(t *testing.T) {
 		ctx.Set("req", newDebt)
 		testHandler.HandleUpdateDebt(ctx)
 
-		var target ierrors.InvalidModel
-		testutils.CheckCanBeContextError(t, ctx, &target)
+		testutils.CheckCanBeContextError(t, ctx, &model.ErrInvalidModel{})
 
 	})
 }

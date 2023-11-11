@@ -2,6 +2,11 @@ package model
 
 import "strings"
 
+// ModelValidator is the interface all models implement to throws
+type ModelValidator interface {
+	Validate() error
+}
+
 // ErrInvalidModel stores the data of a model validation error. The reasons
 // are included to provide all issues that occured during validation.
 type ErrInvalidModel struct {

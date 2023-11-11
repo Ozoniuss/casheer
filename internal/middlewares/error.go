@@ -39,6 +39,8 @@ func ErrorHandler() gin.HandlerFunc {
 
 		var invalidCurrencyError currency.ErrInvalidCurrency
 
+		var invalidModelError model.ErrInvalidModel
+
 		switch {
 
 		case errors.As(err, &invalidQueryParamsError):
@@ -80,6 +82,9 @@ func ErrorHandler() gin.HandlerFunc {
 		case errors.Is(err, gorm.ErrRecordNotFound):
 			common.EmitError(ctx, apierrors.NewNotFoundError())
 			return
+
+		case errors.As(err, &invalidModelError):
+			common.EmitError(ctx, apierrors.NewInvalidResourceError(err.Error()))
 
 		default:
 			common.EmitError(ctx, apierrors.NewUnknownError(err.Error()))

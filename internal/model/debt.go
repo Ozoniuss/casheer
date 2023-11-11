@@ -14,11 +14,12 @@ type Debt struct {
 	Details string
 }
 
-type InvalidDebtErr struct {
-}
-
-func (e InvalidDebtErr) Error() string {
-	return "invalid debt"
+func (d Debt) Validate() error {
+	b := NewBaseModelErrorBuilder("debt")
+	if len(d.Person) == 0 {
+		b.AddError("person cannot be empty")
+	}
+	return b.Error()
 }
 
 // AfterUpdate is a gorm hook that adds an error if the debt was not found
