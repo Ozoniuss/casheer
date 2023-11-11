@@ -4,15 +4,6 @@ import (
 	"testing"
 )
 
-var base = BaseModel{
-	Id: 1,
-}
-var value = Value{
-	Currency: "RON",
-	Amount:   100,
-	Exponent: -2,
-}
-
 func TestVadidDebt(t *testing.T) {
 	tests := []struct {
 		name  string
@@ -22,20 +13,16 @@ func TestVadidDebt(t *testing.T) {
 		{
 			name: "valid debt",
 			debt: Debt{
-				BaseModel: base,
-				Value:     value,
-				Person:    "Andrei",
-				Details:   "pay me back",
+				Person:  "Andrei",
+				Details: "pay me back",
 			},
 			valid: true,
 		},
 		{
 			name: "empty person",
 			debt: Debt{
-				BaseModel: base,
-				Value:     value,
-				Person:    "",
-				Details:   "pay me back",
+				Person:  "",
+				Details: "pay me back",
 			},
 			valid: false,
 		},
