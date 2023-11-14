@@ -10,7 +10,7 @@ type Debt struct {
 	BaseModel
 	Value
 
-	Person  string `validate:"required"`
+	Person  string
 	Details string
 }
 

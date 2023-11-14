@@ -28,13 +28,12 @@ func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 	}
 	updateDebtFields(req, &oldDebt)
 
-	err = h.db.WithContext(ctx).Scopes(model.ValidateModelScope[model.Debt](oldDebt)).Clauses(clause.Returning{}).Save(&oldDebt).Error
+	err = h.db.WithContext(ctx).Scopes(model.ValidateModel(oldDebt)).Clauses(clause.Returning{}).Save(&oldDebt).Error
 	if err != nil {
 		fmt.Printf("%v %T", err, err)
 		common.ErrorAndAbort(ctx, err)
 		return
 	}
-	fmt.Println("jhere")
 
 	resp := casheerapi.UpdateDebtResponse{
 		Data: DebtToPublic(oldDebt, h.debtsURL),
