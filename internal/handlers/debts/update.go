@@ -1,7 +1,6 @@
 package debts
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/Ozoniuss/casheer/internal/handlers/common"
@@ -30,7 +29,6 @@ func (h *handler) HandleUpdateDebt(ctx *gin.Context) {
 
 	err = h.db.WithContext(ctx).Scopes(model.ValidateModel(oldDebt)).Clauses(clause.Returning{}).Save(&oldDebt).Error
 	if err != nil {
-		fmt.Printf("%v %T", err, err)
 		common.ErrorAndAbort(ctx, err)
 		return
 	}
