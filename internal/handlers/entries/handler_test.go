@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/Ozoniuss/casheer/currency"
-	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/internal/testutils"
 	public "github.com/Ozoniuss/casheer/pkg/casheerapi"
@@ -186,8 +185,7 @@ func TestHandleCreateEntry(t *testing.T) {
 		if len(entries) != 1 {
 			t.Errorf("Expected to have 1 entry, but found %d", len(entries))
 		}
-		var target ierrors.InvalidModel
-		testutils.CheckCanBeContextError(t, ctx, &target)
+		testutils.CheckCanBeContextError(t, ctx, &model.ErrInvalidModel{})
 	})
 
 }
@@ -357,9 +355,7 @@ func TestHandleUpdateEntry(t *testing.T) {
 		}
 		ctx.Set("req", req)
 		testHandler.HandleUpdateEntry(ctx)
-
-		var target ierrors.InvalidModel
-		testutils.CheckCanBeContextError(t, ctx, &target)
+		testutils.CheckCanBeContextError(t, ctx, &model.ErrInvalidModel{})
 	})
 
 }

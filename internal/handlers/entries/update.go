@@ -28,10 +28,10 @@ func (h *handler) HandleUpdateEntry(ctx *gin.Context) {
 	updateEntryFields(req, &oldEntry)
 
 	err = h.db.WithContext(ctx).Preload("Expenses").Clauses(clause.Returning{}).
-		Scopes(model.ValidateModelScope[model.Entry](oldEntry)).Save(&oldEntry).Error
-
+		Scopes(model.ValidateModel(oldEntry)).Save(&oldEntry).Error
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
+		return
 	}
 
 	resp := casheerapi.UpdateEntryResponse{

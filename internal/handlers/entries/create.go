@@ -45,7 +45,7 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		entry.Year = *req.Data.Attributes.Year
 	}
 
-	err = h.db.WithContext(ctx).Scopes(model.ValidateModelScope[model.Entry](entry)).Clauses(clause.Returning{}).Create(&entry).Error
+	err = h.db.WithContext(ctx).Scopes(model.ValidateModel(entry)).Clauses(clause.Returning{}).Create(&entry).Error
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
 		return
