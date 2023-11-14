@@ -2,7 +2,6 @@ package casheerapi
 
 const EntryType = "entry"
 
-// Data returned about an entry when a single one is returned.
 type EntryData struct {
 	ResourceID
 	Attributes    EntryAtrributes    `json:"attributes"`
@@ -48,8 +47,6 @@ type EntryExpenseRelationshipLinks struct {
 	Related string `json:"related"`
 }
 
-// No need to return the collection, not the total, as it is returned as a link
-// in the listing.
 type EntryListItemLinks struct {
 	Self string `json:"self"`
 }

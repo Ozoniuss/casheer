@@ -10,10 +10,10 @@ type Entry struct {
 	BaseModel
 	Value
 
-	Month       int    `validate:"required,gte=1,lte=12"`
-	Year        int    `validate:"required,gte=2020"`
-	Category    string `validate:"required" json:"category"`
-	Subcategory string `validate:"required"`
+	Month       int
+	Year        int
+	Category    string
+	Subcategory string
 	Recurring   bool
 
 	Expenses []Expense
@@ -34,13 +34,6 @@ func (e Entry) Validate() error {
 		b.AddError("subcategory cannot be empty")
 	}
 	return b.Error()
-}
-
-type InvalidEntryErr struct {
-}
-
-func (e InvalidEntryErr) Error() string {
-	return "invalid entry"
 }
 
 // AfterUpdate is a gorm hook that adds an error if the entry was not found
