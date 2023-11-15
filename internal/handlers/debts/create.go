@@ -19,7 +19,7 @@ func (h *handler) HandleCreateDebt(ctx *gin.Context) {
 		return
 	}
 
-	value, err := currency.NewValueBasedOnCurrency(req.Data.Attributes.Value.Amount, req.Data.Attributes.Value.Currency, req.Data.Attributes.Value.Exponent)
+	value, err := currency.NewValueBasedOnMinorCurrency(req.Data.Attributes.Value.Amount, req.Data.Attributes.Value.Currency, req.Data.Attributes.Value.Exponent)
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
 		return

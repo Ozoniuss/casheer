@@ -21,7 +21,7 @@ func (h *handler) HandleCreateEntry(ctx *gin.Context) {
 		return
 	}
 
-	value, err := currency.NewValueBasedOnCurrency(req.Data.Attributes.ExpectedTotal.Amount, req.Data.Attributes.ExpectedTotal.Currency, req.Data.Attributes.ExpectedTotal.Exponent)
+	value, err := currency.NewValueBasedOnMinorCurrency(req.Data.Attributes.ExpectedTotal.Amount, req.Data.Attributes.ExpectedTotal.Currency, req.Data.Attributes.ExpectedTotal.Exponent)
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
 		return

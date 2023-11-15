@@ -7,7 +7,7 @@ type ErrInvalidCurrency struct {
 }
 
 func (e ErrInvalidCurrency) Error() string {
-	return fmt.Sprintf("currency %s does not exist or is not supported", e.attemptedCurrency)
+	return fmt.Sprintf("currency %s does not exist, must be one of %s", e.attemptedCurrency, validCurrenciesString)
 }
 
 func NewErrInvalidCurrency(attemptedCurrency string) ErrInvalidCurrency {

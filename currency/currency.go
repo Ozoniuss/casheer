@@ -26,13 +26,13 @@ func NewValue(amount int, currency string, exp int) (Value, error) {
 		Exponent: exp,
 	}
 
-	if !isValidCurrency(currency) {
-		return Value{}, fmt.Errorf("creating currency value: %w", NewErrInvalidCurrency(currency))
+	if err := ValidateCurrency(currency); err != nil {
+		return Value{}, fmt.Errorf("creating value: %w", err)
 	}
 	return value, nil
 }
 
-func NewValueBasedOnCurrency(amount int, currency string, exponent *int) (Value, error) {
+func NewValueBasedOnMinorCurrency(amount int, currency string, exponent *int) (Value, error) {
 
 	// May change in the future, but at the moment the only currencies that
 	// are allowed have the least valuable unit two orders of magnitude smaller
@@ -42,25 +42,24 @@ func NewValueBasedOnCurrency(amount int, currency string, exponent *int) (Value,
 		actualExponent = *exponent
 	}
 
-	if isValidCurrency(currency) {
-		return Value{
-			Amount:   amount,
-			Currency: currency,
-			Exponent: actualExponent,
-		}, nil
+	if err := ValidateCurrency(currency); err != nil {
+		return Value{}, fmt.Errorf("creating value: %w", NewErrInvalidCurrency(currency))
 	}
-	return Value{}, fmt.Errorf("creating new value based on currency: %w", NewErrInvalidCurrency(currency))
+
+	return Value{
+		Amount:   amount,
+		Currency: currency,
+		Exponent: actualExponent,
+	}, nil
 }
 
-// ISO 4217 compliant currency codes
-const (
-	EUR = "EUR"
-	RON = "RON"
-	USD = "USD"
-)
-
-func isValidCurrency(currency string) bool {
-	return currency == EUR ||
-		currency == RON ||
-		currency == USD
+// ValidateCurrency provides a way to test whether or not a string can represent
+// a valid currency.
+func ValidateCurrency(currency string) error {
+	for _, c := range validCurrencies {
+		if currency == c {
+			return nil
+		}
+	}
+	return NewErrInvalidCurrency(currency)
 }
