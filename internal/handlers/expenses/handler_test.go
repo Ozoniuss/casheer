@@ -9,7 +9,6 @@ import (
 	"testing"
 
 	"github.com/Ozoniuss/casheer/currency"
-	ierrors "github.com/Ozoniuss/casheer/internal/errors"
 	"github.com/Ozoniuss/casheer/internal/model"
 	"github.com/Ozoniuss/casheer/internal/testutils"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
@@ -407,7 +406,7 @@ func TestHandleUpdateExpense(t *testing.T) {
 			t.Errorf("Inserted: %+v\nretrieved %+v\n", req, savedExpense)
 		}
 	})
-	t.Run("Updating an entry with invalid fields should raise an error", func(t *testing.T) {
+	t.Run("Updating an expense with invalid fields should raise an error", func(t *testing.T) {
 
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
@@ -420,10 +419,10 @@ func TestHandleUpdateExpense(t *testing.T) {
 				Attributes: casheerapi.UpdateExpenseAttributes{
 					Value: casheerapi.MonetaryMutableValueAttributes{
 						Amount:   func() *int { m := 600; return &m }(),
-						Currency: func() *string { usd := "fakecurrency"; return &usd }(),
+						Currency: func() *string { usd := "usd"; return &usd }(),
 						Exponent: func() *int { e := 0; return &e }(),
 					},
-					Name:          func() *string { s := "newname"; return &s }(),
+					Name:          func() *string { s := ""; return &s }(),
 					Description:   func() *string { s := "newdesc"; return &s }(),
 					PaymentMethod: func() *string { s := "newpm"; return &s }(),
 				},
@@ -431,9 +430,7 @@ func TestHandleUpdateExpense(t *testing.T) {
 		}
 		ctx.Set("req", req)
 		testHandler.HandleUpdateExpense(ctx)
-
-		var target ierrors.InvalidModel
-		testutils.CheckCanBeContextError(t, ctx, &target)
+		testutils.CheckCanBeContextError(t, ctx, &model.ErrInvalidModel{})
 	})
 
 }

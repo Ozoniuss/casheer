@@ -19,7 +19,7 @@ type Expense struct {
 }
 
 func (e Expense) Validate() error {
-	b := NewBaseModelErrorBuilder("entry")
+	b := NewBaseModelErrorBuilder("expense")
 	if len(e.Name) == 0 {
 		b.AddError("name cannot be empty")
 	}

@@ -29,7 +29,7 @@ func (h *handler) HandleUpdateExpense(ctx *gin.Context) {
 	}
 	updateExpenseFields(req, &oldExpense)
 
-	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Scopes(model.ValidateModelScope[model.Expense](oldExpense)).
+	err = h.db.WithContext(ctx).Clauses(clause.Returning{}).Scopes(model.ValidateModel(oldExpense)).
 		Save(&oldExpense).Error
 
 	if err != nil {

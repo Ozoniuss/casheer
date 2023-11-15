@@ -40,7 +40,7 @@ func (h *handler) HandleCreateExpense(ctx *gin.Context) {
 		expense.PaymentMethod = *req.Data.Attributes.PaymentMethod
 	}
 
-	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(expense.EntryId)).Clauses(clause.Returning{}).Create(&expense).Error
+	err = h.db.WithContext(ctx).Scopes(model.RequiredEntry(expense.EntryId), model.ValidateModel(expense)).Clauses(clause.Returning{}).Create(&expense).Error
 	if err != nil {
 		common.ErrorAndAbort(ctx, err)
 		return
