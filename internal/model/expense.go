@@ -18,6 +18,14 @@ type Expense struct {
 	PaymentMethod string
 }
 
+func (e Expense) Validate() error {
+	b := NewBaseModelErrorBuilder("entry")
+	if len(e.Name) == 0 {
+		b.AddError("name cannot be empty")
+	}
+	return b.Error()
+}
+
 type ErrExpenseInvalidEntryKey struct {
 	entryKey int
 }

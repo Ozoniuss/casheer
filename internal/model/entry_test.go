@@ -4,7 +4,7 @@ import (
 	"testing"
 )
 
-func TestValidEntryNewValidation(t *testing.T) {
+func TestValidEntry(t *testing.T) {
 	tests := []struct {
 		name  string
 		entry Entry
