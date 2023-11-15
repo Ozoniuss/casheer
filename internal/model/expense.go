@@ -12,8 +12,8 @@ type Expense struct {
 	BaseModel
 	Value
 
-	EntryId       int    `validate:"required"`
-	Name          string `validate:"required"`
+	EntryId       int
+	Name          string
 	Description   string
 	PaymentMethod string
 }
