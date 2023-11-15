@@ -3,7 +3,7 @@ package model
 import "github.com/Ozoniuss/casheer/currency"
 
 type Value struct {
-	Currency string `validate:"required,iso4217"`
+	Currency string
 	Amount   int
 	Exponent int
 }

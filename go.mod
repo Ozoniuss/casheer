@@ -6,7 +6,6 @@ require (
 	github.com/Ozoniuss/configer v0.3.1
 	github.com/gin-contrib/cors v1.4.0
 	github.com/gin-gonic/gin v1.9.1
-	github.com/go-playground/validator/v10 v10.15.5
 	github.com/google/go-cmp v0.6.0
 	github.com/mattn/go-sqlite3 v1.14.17
 	gorm.io/driver/sqlite v1.5.4
@@ -22,6 +21,7 @@ require (
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-playground/locales v0.14.1 // indirect
 	github.com/go-playground/universal-translator v0.18.1 // indirect
+	github.com/go-playground/validator/v10 v10.15.5 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
