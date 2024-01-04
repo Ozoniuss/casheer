@@ -35,14 +35,6 @@ jobs:
         with:
           go-version: "1.21"
 
-      - name: Docker Compose Build
-        run: docker compose build
-
-      - name: Docker Compose Up
-        run: docker compose -f docker-compose.e2e.yml up -d
-
-      - name: Run e2e tests
-        run: go test -v ./e2e/...
-
-      - name: Docker Compose Down
-        run: docker compose down
+      - name: Run end to end tests
+        working-directory: .
+        run: bash test_e2e.sh
