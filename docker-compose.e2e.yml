@@ -12,3 +12,6 @@ services:
         command: --server-address 0.0.0.0 --server-port 6597 --sqlite-db /externaldeps/casheer.db
         ports:
             - 6597:6597
+
+        volumes:
+            - ./${DBNAME:-casheer.e2e.db}:/externaldeps/casheer.db
