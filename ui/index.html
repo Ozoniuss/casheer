@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://unpkg.com/htmx.org@1.9.10"
+        integrity="sha384-D1Kt99CQMDuVetoL1lrYwg5t+9QdHe7NLX/SoJYkXDFfX37iInKRy5xLSi8nO7UC"
+        crossorigin="anonymous"></script>
+    <title>Document</title>
+</head>
+
+<body>
+    <h3>Available debts</h3>
+    <ul hx-confirm="Are you sure?" hx-target="closest li" hx-swap="outerHTML" id="debt-list">
+        {{ range . }}
+        {{ block "debt-list-element" . }}
+        <li>
+            <button hx-vals='{"debtid":"{{ .Id }}"}' hx-post="/deleteDebt">Resolve
+                debt</button> Id: {{ .Id }}, Person: {{ .Person }},
+            Money: {{
+            .TotalMoney }} {{ .Currency }} Details {{ .Details }}
+        </li>
+        {{ end }}
+        {{ end }}
+    </ul>
+    <h4>Insert new debt</h4>
+    <form hx-confirm="Are you sure?" hx-post="/createDebt" hx-target="#debt-list" hx-swap="beforeend">
+        <button type="submit">Create</button>
+        <label for="debt-person">Person</label>
+        <input type="text" name="person" id="debt-person">
+        <label for="debt-total-money">TotalMoney</label>
+        <input type="number" name="total-money" id="debt-total-money">
+        <label for="debt-currency">Currency</label>
+        <input type="text" name="currency" id="debt-currency">
+        <label for="debt-details">Details</label>
+        <input type="text" name="details" id="debt-details">
+    </form>
+</body>
+
+</html>
