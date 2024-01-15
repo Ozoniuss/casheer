@@ -41,6 +41,14 @@ func runSql(tx *gorm.DB, path string) error {
 	return nil
 }
 
+// DeleteAllData is a useful test helper that prunes the entire database. Use
+// with caution.
+func DeleteAllData(db *gorm.DB) {
+	db.Exec("DELETE FROM debts")
+	db.Exec("DELETE FROM expenses")
+	db.Exec("DELETE FROM entries")
+}
+
 // RunMigrations executes the content of the sql file into the database
 // instance.
 func RunMigrations(db *gorm.DB, migrationDir string) error {
