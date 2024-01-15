@@ -36,3 +36,8 @@ func (c *CasheerHTTPClient) CreateEntry(month int, year int, category string, su
 
 	return calls.MakePOST[public.CreateEntryResponse](c.httpClient, requestURL, reqJson)
 }
+
+func (c *CasheerHTTPClient) ListEntries() (public.ListEntryResponse, error) {
+	requestURL := c.entriesURL.String()
+	return calls.MakeGET[public.ListEntryResponse](c.httpClient, requestURL)
+}

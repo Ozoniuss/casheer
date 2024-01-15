@@ -4,15 +4,16 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/Ozoniuss/casheer/client/httpclient"
-)
-
-var casheerEntriesClient, _ = httpclient.NewCasheerHTTPClient(
-	httpclient.WithCustomAuthority("localhost:6597"),
+	"github.com/Ozoniuss/casheer/internal/store"
 )
 
 func TestCreateEntryWithExpensesFlow(t *testing.T) {
-	createResp, err := casheerEntriesClient.CreateEntry(10, 2023, "category", "subcategory", 1000, "EUR", false)
+
+	t.Cleanup(func() {
+		store.DeleteAllData(conn)
+	})
+
+	createResp, err := casheerClient.CreateEntry(10, 2023, "category", "subcategory", 1000, "EUR", false)
 	if err != nil {
 		t.Fatalf("Did not expect error, but got error: %s\n", err.Error())
 	}
@@ -34,12 +35,12 @@ func TestCreateEntryWithExpensesFlow(t *testing.T) {
 		t.Errorf("Received invalid debt attributes after creating the debt.")
 	}
 
-	_, err = casheerEntriesClient.CreateEntry(10, 2023, "category", "subcategory", 1000, "EUR", false)
+	_, err = casheerClient.CreateEntry(10, 2023, "category", "subcategory", 1000, "EUR", false)
 	if err == nil {
 		t.Fatal("Idempotency criteria violated; entry with the same identifying information created again.")
 	}
 
-	expenseResp, err := casheerEntriesClient.CreateBasicExpense(entid, "car trip", "big fuel", "card", 1000, "RON")
+	expenseResp, err := casheerClient.CreateBasicExpense(entid, "car trip", "big fuel", "card", 1000, "RON")
 	if err != nil {
 		t.Fatalf("Did not expect error when creating expense; got %s\n", err.Error())
 	}
@@ -57,7 +58,7 @@ func TestCreateEntryWithExpensesFlow(t *testing.T) {
 		expenseResp.Data.Attributes.Value.Exponent != -2 {
 		t.Errorf("Received invalid debt attributes after creating the debt.")
 	}
-	_, err = casheerEntriesClient.CreateBasicExpenseWithoutId("category", "subcategory", 10, 2023, "second car trip", "more fuel", "card", 500, "RON")
+	_, err = casheerClient.CreateBasicExpenseWithoutId("category", "subcategory", 10, 2023, "second car trip", "more fuel", "card", 500, "RON")
 	if err != nil {
 		t.Fatalf("Did not expect error when creating expense; got %s\n", err.Error())
 	}
@@ -99,42 +100,35 @@ func TestCreateEntryWithExpensesFlow(t *testing.T) {
 	// }
 }
 
-// func TestCreateListFilterFlow(t *testing.T) {
-// 	createRespMarian1, err := casheerDebtClient.CreateDebt("Marian", "get tf out", 100, "EUR", -2)
-// 	if err != nil {
-// 		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
-// 	}
-// 	t.Logf("Created debt with id %s\n", createRespMarian1.Data.Id)
+func TestCreateListFilterEntryFlow(t *testing.T) {
 
-// 	createRespMarian2, err := casheerDebtClient.CreateDebt("Marian", "get tf out", 200, "EUR", -2)
-// 	if err != nil {
-// 		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
-// 	}
-// 	t.Logf("Created debt with id %s\n", createRespMarian2.Data.Id)
+	t.Cleanup(func() {
+		store.DeleteAllData(conn)
+	})
 
-// 	createRespDaniel, err := casheerDebtClient.CreateDebt("Daniels", "get tf out", 50, "EUR", -2)
-// 	if err != nil {
-// 		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
-// 	}
-// 	t.Logf("Created debt with id %s\n", createRespDaniel.Data.Id)
+	createRespEntry1, err := casheerClient.CreateEntry(10, 2022, "category1", "subcategory1", 5000, "EUR", true)
+	if err != nil {
+		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
+	}
+	t.Logf("Created entry with id %s\n", createRespEntry1.Data.Id)
+	createRespEntry2, err := casheerClient.CreateEntry(10, 2022, "category1", "subcategory2", 5000, "EUR", true)
+	if err != nil {
+		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
+	}
+	t.Logf("Created entry with id %s\n", createRespEntry2.Data.Id)
+	createRespEntry3, err := casheerClient.CreateEntry(10, 2022, "category2", "subcategory2", 5000, "EUR", true)
+	if err != nil {
+		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
+	}
+	t.Logf("Created entry with id %s\n", createRespEntry3.Data.Id)
 
-// 	allDebts, err := casheerDebtClient.ListDebts()
+	allEntries, err := casheerClient.ListEntries()
 
-// 	if err != nil {
-// 		t.Error("Expected no error when listing debts.")
-// 	}
+	if err != nil {
+		t.Error("Expected no error when listing entries.")
+	}
 
-// 	if total := len(allDebts.Data); total != 3 {
-// 		t.Errorf("Expected to have 3 debts, got %d\n", total)
-// 	}
-
-// 	MariansDebts, err := casheerDebtClient.ListDebtsForPerson("Marian")
-
-// 	if err != nil {
-// 		t.Error("Expected no error when listing debts.")
-// 	}
-
-// 	if total := len(MariansDebts.Data); total != 2 {
-// 		t.Errorf("Expected to have 2 debts for Marian, got %d\n", total)
-// 	}
-// }
+	if total := len(allEntries.Data); total != 3 {
+		t.Errorf("Expected to have 3 entries, got %d\n", total)
+	}
+}

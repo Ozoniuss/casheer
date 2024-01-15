@@ -4,16 +4,15 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/Ozoniuss/casheer/client/httpclient"
+	"github.com/Ozoniuss/casheer/internal/store"
 	"github.com/Ozoniuss/casheer/pkg/casheerapi"
 )
 
-var casheerDebtClient, _ = httpclient.NewCasheerHTTPClient(
-	httpclient.WithCustomAuthority("localhost:6597"),
-)
-
 func TestCreateRetrieveDeleteDebtFlow(t *testing.T) {
-	createResp, err := casheerDebtClient.CreateDebt("Marian", "get tf out", 100, "EUR", -2)
+	t.Cleanup(func() {
+		store.DeleteAllData(conn)
+	})
+	createResp, err := casheerClient.CreateDebt("Marian", "get tf out", 100, "EUR", -2)
 	if err != nil {
 		t.Fatalf("Did not expect error, but got error: %s\n", err.Error())
 	}
@@ -35,7 +34,7 @@ func TestCreateRetrieveDeleteDebtFlow(t *testing.T) {
 		t.Errorf("Received invalid debt attributes after creating the debt.")
 	}
 
-	getResp, err := casheerDebtClient.GetDebt(did)
+	getResp, err := casheerClient.GetDebt(did)
 	if err != nil {
 		t.Error("Expected the returned debt Id to point to a valid debt, got error instead.")
 	}
@@ -44,7 +43,7 @@ func TestCreateRetrieveDeleteDebtFlow(t *testing.T) {
 		t.Errorf("Debt returned in GET request should match debt returned from POST request. Got %+v, want %+v", createResp.Data, getResp.Data)
 	}
 
-	deleteResp, err := casheerDebtClient.DeleteDebt(did)
+	deleteResp, err := casheerClient.DeleteDebt(did)
 	if err != nil {
 		t.Error("Expected to be able to delete the newly created debt.")
 	}
@@ -57,7 +56,7 @@ func TestCreateRetrieveDeleteDebtFlow(t *testing.T) {
 	}
 	t.Logf("Deleted debt with id %d\n", did)
 
-	_, err = casheerDebtClient.GetDebt(did)
+	_, err = casheerClient.GetDebt(did)
 	if err == nil {
 		t.Fatal("Expected to get an error when retrieving deleted debt, got none.")
 	}
@@ -72,26 +71,31 @@ func TestCreateRetrieveDeleteDebtFlow(t *testing.T) {
 	}
 }
 
-func TestCreateListFilterFlow(t *testing.T) {
-	createRespMarian1, err := casheerDebtClient.CreateDebt("Marian", "get tf out", 100, "EUR", -2)
+func TestCreateListFilterDebtFlow(t *testing.T) {
+
+	t.Cleanup(func() {
+		store.DeleteAllData(conn)
+	})
+
+	createRespMarian1, err := casheerClient.CreateDebt("Marian", "get tf out", 100, "EUR", -2)
 	if err != nil {
 		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
 	}
 	t.Logf("Created debt with id %s\n", createRespMarian1.Data.Id)
 
-	createRespMarian2, err := casheerDebtClient.CreateDebt("Marian", "get tf out", 200, "EUR", -2)
+	createRespMarian2, err := casheerClient.CreateDebt("Marian", "get tf out", 200, "EUR", -2)
 	if err != nil {
 		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
 	}
 	t.Logf("Created debt with id %s\n", createRespMarian2.Data.Id)
 
-	createRespDaniel, err := casheerDebtClient.CreateDebt("Daniels", "get tf out", 50, "EUR", -2)
+	createRespDaniel, err := casheerClient.CreateDebt("Daniels", "get tf out", 50, "EUR", -2)
 	if err != nil {
 		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
 	}
 	t.Logf("Created debt with id %s\n", createRespDaniel.Data.Id)
 
-	allDebts, err := casheerDebtClient.ListDebts()
+	allDebts, err := casheerClient.ListDebts()
 
 	if err != nil {
 		t.Error("Expected no error when listing debts.")
@@ -101,7 +105,7 @@ func TestCreateListFilterFlow(t *testing.T) {
 		t.Errorf("Expected to have 3 debts, got %d\n", total)
 	}
 
-	MariansDebts, err := casheerDebtClient.ListDebtsForPerson("Marian")
+	MariansDebts, err := casheerClient.ListDebtsForPerson("Marian")
 
 	if err != nil {
 		t.Error("Expected no error when listing debts.")
