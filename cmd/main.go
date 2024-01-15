@@ -25,9 +25,14 @@ func run() error {
 	}
 	log.InfoContext(ctx, fmt.Sprintf("parsed config: %+v\n", config))
 
-	conn, err := store.ConnectSqlite(config.SQLiteDatabase.File, config.SQLiteDatabase.Migration)
+	conn, err := store.ConnectSqlite(config.SQLiteDatabase.File)
 	if err != nil {
 		return fmt.Errorf("could not connect to sqlite database: %w", err)
+	}
+
+	err = store.EnsureDatabaseFileIsInitialized(conn, config.SQLiteDatabase.File, config.SQLiteDatabase.Migration)
+	if err != nil {
+		return fmt.Errorf("failed database file check: %w", err)
 	}
 
 	log.InfoContext(ctx, "Connected to database.")
