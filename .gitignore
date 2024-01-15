@@ -27,3 +27,5 @@ default.json
 
 account-statement*
 configs/config.yml
+
+/*.db
