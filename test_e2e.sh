@@ -25,7 +25,7 @@ sqlite3 "$DBNAME" < scripts/sqlite/002_update_entry_value.up.sql &&
 
 sleep 1
 
-go test -v ./e2e/entries_test.go ;
+go test -v ./e2e/... ;
 
 docker compose -f docker-compose.e2e.yml down
 
