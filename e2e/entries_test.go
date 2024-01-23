@@ -132,3 +132,39 @@ func TestCreateListFilterEntryFlow(t *testing.T) {
 		t.Errorf("Expected to have 3 entries, got %d\n", total)
 	}
 }
+
+func Test_GetEntry_IncludesExpenses(t *testing.T) {
+
+	t.Cleanup(func() {
+		store.DeleteAllData(conn)
+	})
+
+	createEntryResponse, err := casheerClient.CreateEntry(10, 2022, "category1", "subcategory1", 5000, "EUR", true)
+	if err != nil {
+		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
+	}
+	t.Logf("Created entry with id %s\n", createEntryResponse.Data.Id)
+
+	entryId, _ := strconv.Atoi(createEntryResponse.Data.Id)
+	_, err = casheerClient.CreateBasicExpense(entryId, "expense1", "test", "card", 100, "EUR")
+	if err != nil {
+		t.Errorf("Did not expect error when creating expense, but got error: %s\n", err.Error())
+	}
+	_, err = casheerClient.CreateBasicExpense(entryId, "expense2", "test", "card", 100, "EUR")
+	if err != nil {
+		t.Errorf("Did not expect error when creating expense, but got error: %s\n", err.Error())
+	}
+
+	entryWithExpensesIncluded, err := casheerClient.GetEntry(entryId)
+	if err != nil {
+		t.Errorf("Did not expect error when retrieving entry, but got error: %s\n", err.Error())
+	}
+
+	if entryWithExpensesIncluded.Included == nil {
+		t.Fatalf("Expenses were not included.")
+	}
+
+	if len(*entryWithExpensesIncluded.Included) != 2 {
+		t.Errorf("Expected %d included expenses, got %d\n", 2, len(*entryWithExpensesIncluded.Included))
+	}
+}

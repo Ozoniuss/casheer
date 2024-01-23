@@ -21,9 +21,14 @@ func (h *handler) HandleGetEntry(ctx *gin.Context) {
 		return
 	}
 
+	includedExpenses := make([]casheerapi.IncludedExpenseData, 0, len(entry.Expenses))
 	resp := casheerapi.GetEntryResponse{
 		Data: EntryToPublic(entry, h.entriesURL, computeRunningTotal(entry.Expenses)),
 	}
+	for _, exp := range entry.Expenses {
+		includedExpenses = append(includedExpenses, IncludedExpensesToPublic(exp, h.entriesURL))
+	}
+	resp.Included = &includedExpenses
 
 	ctx.JSON(http.StatusOK, &resp)
 }

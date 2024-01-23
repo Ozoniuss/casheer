@@ -123,5 +123,12 @@ type GetEntryRequest struct {
 }
 
 type GetEntryResponse struct {
-	Data EntryData `json:"data"`
+	Data     EntryData              `json:"data"`
+	Included *[]IncludedExpenseData `json:"included,omitempty"`
+}
+
+type IncludedExpenseData struct {
+	ResourceID
+	Attributes ExpenseAttributes `json:"attributes"`
+	Links      ExpenseLinks      `json:"links"`
 }

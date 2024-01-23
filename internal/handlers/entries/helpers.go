@@ -56,6 +56,32 @@ func EntryToPublic(entry model.Entry, entriesURL *url.URL, runningTotal int) pub
 	}
 }
 
+func IncludedExpensesToPublic(expense model.Expense, entriesURL *url.URL) public.IncludedExpenseData {
+	return public.IncludedExpenseData{
+		ResourceID: public.ResourceID{
+			Id:   strconv.Itoa(expense.Id),
+			Type: public.ExpenseType,
+		},
+		Attributes: public.ExpenseAttributes{
+			Value: public.MonetaryValueAttributes{
+				Amount:   expense.Amount,
+				Currency: expense.Currency,
+				Exponent: expense.Exponent,
+			},
+			Name:          expense.Name,
+			Description:   expense.Description,
+			PaymentMethod: expense.PaymentMethod,
+			Timestamps: public.Timestamps{
+				CreatedAt: expense.CreatedAt,
+				UpdatedAt: expense.UpdatedAt,
+			},
+		},
+		Links: public.ExpenseLinks{
+			Self: entriesURL.JoinPath(strconv.Itoa(expense.EntryId), "expenses", strconv.Itoa(expense.Id)).String(),
+		},
+	}
+}
+
 func EntryToPublicList(entry model.Entry, entriesURL *url.URL, runningTotal int) public.EntryListItemData {
 	return public.EntryListItemData{
 		ResourceID: public.ResourceID{

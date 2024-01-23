@@ -15,5 +15,6 @@ type ResponseType interface {
 		casheerapi.ListExpenseResponse |
 		casheerapi.GetExpenseResponse |
 		casheerapi.UpdateExpenseResponse |
-		casheerapi.DeleteExpenseResponse
+		casheerapi.DeleteExpenseResponse |
+		casheerapi.GetEntryResponse
 }
