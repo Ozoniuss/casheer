@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"math"
 	"net/http"
+	"slices"
 	"strconv"
 	"text/template"
 
 	"github.com/Ozoniuss/casheer/client/httpclient"
+	"golang.org/x/exp/maps"
 )
 
 type TemplateData struct {
-	DebtsList   []DebtListItem
-	EntriesList []EntryListItem
+	DebtsList            []DebtListItem
+	CategorizedEntryList []CategoryWithEntries
 }
 
 func main() {
@@ -27,10 +29,10 @@ func main() {
 	h1 := func(w http.ResponseWriter, r *http.Request) {
 		tmpl := template.Must(template.ParseFiles("index.html"))
 		debts := loadDebtsList(cl)
-		entries := loadEntriesList(cl)
+		entries := loadCategorizedEntriesList(cl)
 		data := TemplateData{
-			DebtsList:   debts,
-			EntriesList: entries,
+			DebtsList:            debts,
+			CategorizedEntryList: entries,
 		}
 		tmpl.Execute(w, data)
 	}
@@ -121,7 +123,7 @@ func loadDebtsList(c *httpclient.CasheerHTTPClient) []DebtListItem {
 	return data
 }
 
-func loadEntriesList(c *httpclient.CasheerHTTPClient) []EntryListItem {
+func loadCategorizedEntriesList(c *httpclient.CasheerHTTPClient) []CategoryWithEntries {
 	entries, err := c.ListEntries()
 	if err != nil {
 		panic(err)
@@ -139,5 +141,42 @@ func loadEntriesList(c *httpclient.CasheerHTTPClient) []EntryListItem {
 		}
 		data = append(data, e2)
 	}
-	return data
+	return createCategoriesArray(data)
+}
+
+func createCategoriesArray(entries []EntryListItem) []CategoryWithEntries {
+	categories := make(map[string][]EntryListItem)
+	for _, e := range entries {
+		categories[e.Category] = append(categories[e.Category], e)
+		// if _, ok := categories[e.Category]; ok {
+		// 	categories[e.Category] = append(categories[e.Category], e)
+		// } else {
+		// 	categories[e.Category] = []EntryListItem{e}
+		// }
+	}
+
+	categoriesWithEntries := make([]CategoryWithEntries, 0)
+
+	// place income first
+	if _, ok := categories["income"]; ok {
+		categoriesWithEntries = append(categoriesWithEntries, CategoryWithEntries{
+			Category: "income",
+			Entries:  categories["income"],
+		})
+	}
+
+	// place all other after that, sorted
+	categoriesSorted := maps.Keys(categories)
+	slices.Sort(categoriesSorted)
+
+	for _, c := range categoriesSorted {
+		if c == "income" {
+			continue
+		}
+		categoriesWithEntries = append(categoriesWithEntries, CategoryWithEntries{
+			Category: c,
+			Entries:  categories[c],
+		})
+	}
+	return categoriesWithEntries
 }

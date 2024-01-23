@@ -8,6 +8,11 @@ type DebtListItem struct {
 	Details    string
 }
 
+type CategoryWithEntries struct {
+	Category string
+	Entries  []EntryListItem
+}
+
 type EntryListItem struct {
 	Id           int
 	TotalMoney   float32
