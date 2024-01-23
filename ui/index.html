@@ -11,9 +11,23 @@
 </head>
 
 <body>
+
+    <h3>Available entries</h3>
+    <ul hx-confirm="Are you sure?" hx-target="closest li" hx-swap="outerHTML" id="entries-list">
+        {{ range .EntriesList }}
+        {{ block "entry-list-element" . }}
+        <li>
+            <button hx-vals='{"entryid":"{{ .Id }}"}' hx-post="/deleteEntry">Delete Entry
+            </button> Id: {{ .Id }}, Money: {{.TotalMoney }}, Currency: {{ .Currency }} Category: {{ .Category }}
+            Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} RunningTotal: {{ .RunningTotal }}
+        </li>
+        {{ end }}
+        {{ end }}
+    </ul>
+
     <h3>Available debts</h3>
     <ul hx-confirm="Are you sure?" hx-target="closest li" hx-swap="outerHTML" id="debt-list">
-        {{ range . }}
+        {{ range .DebtsList }}
         {{ block "debt-list-element" . }}
         <li>
             <button hx-vals='{"debtid":"{{ .Id }}"}' hx-post="/deleteDebt">Resolve
@@ -24,6 +38,7 @@
         {{ end }}
         {{ end }}
     </ul>
+
     <h4>Insert new debt</h4>
     <form hx-confirm="Are you sure?" hx-post="/createDebt" hx-target="#debt-list" hx-swap="beforeend">
         <button type="submit">Create</button>

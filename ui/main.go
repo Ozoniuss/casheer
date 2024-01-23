@@ -10,6 +10,11 @@ import (
 	"github.com/Ozoniuss/casheer/client/httpclient"
 )
 
+type TemplateData struct {
+	DebtsList   []DebtListItem
+	EntriesList []EntryListItem
+}
+
 func main() {
 
 	cl, err := httpclient.NewCasheerHTTPClient()
@@ -21,7 +26,12 @@ func main() {
 
 	h1 := func(w http.ResponseWriter, r *http.Request) {
 		tmpl := template.Must(template.ParseFiles("index.html"))
-		data := loadDebtsList(cl)
+		debts := loadDebtsList(cl)
+		entries := loadEntriesList(cl)
+		data := TemplateData{
+			DebtsList:   debts,
+			EntriesList: entries,
+		}
 		tmpl.Execute(w, data)
 	}
 
@@ -107,6 +117,27 @@ func loadDebtsList(c *httpclient.CasheerHTTPClient) []DebtListItem {
 			Details:    d.Attributes.Details,
 		}
 		data = append(data, d2)
+	}
+	return data
+}
+
+func loadEntriesList(c *httpclient.CasheerHTTPClient) []EntryListItem {
+	entries, err := c.ListEntries()
+	if err != nil {
+		panic(err)
+	}
+	data := []EntryListItem{}
+	for _, e := range entries.Data {
+		eid, _ := strconv.Atoi(e.Id)
+		e2 := EntryListItem{
+			Id:          eid,
+			TotalMoney:  float32(math.Pow10(e.Attributes.ExpectedTotal.Exponent)) * float32(e.Attributes.ExpectedTotal.Amount),
+			Currency:    e.Attributes.ExpectedTotal.Currency,
+			Category:    e.Attributes.Category,
+			Subcategory: e.Attributes.Subcategory,
+			Recurring:   e.Attributes.Recurring,
+		}
+		data = append(data, e2)
 	}
 	return data
 }
