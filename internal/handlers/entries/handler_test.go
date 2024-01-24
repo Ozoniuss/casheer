@@ -259,6 +259,7 @@ func TestHandleGetEntry(t *testing.T) {
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
 
+		ctx.Set("queryparams", public.GetEntryParams{})
 		ctx.Set("entid", dummyEntry.Id)
 		testHandler.HandleGetEntry(ctx)
 
@@ -270,6 +271,7 @@ func TestHandleGetEntry(t *testing.T) {
 		w := httptest.NewRecorder()
 		ctx, _ := gin.CreateTestContext(w)
 
+		ctx.Set("queryparams", public.GetEntryParams{})
 		ctx.Set("entid", dummyEntry.Id+1)
 		testHandler.HandleGetEntry(ctx)
 
