@@ -10,7 +10,36 @@
     <title>Document</title>
 </head>
 
+<style>
+    .collapsible {
+        cursor: pointer;
+    }
+
+    .content {
+        /* padding: 0 18px; */
+        display: none;
+        overflow: hidden;
+    }
+</style>
+
 <body>
+
+    <p>A Collapsible:</p>
+    <div class="collapsible">Open Collapsible</div>
+    <div class="content">
+        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et
+            dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex
+            ea commodo consequat.</p>
+    </div>
+
+
+    <label for="dog-names">Choose a dog name:</label>
+    <select name="dog-names" id="dog-names">
+        <option value="rigatoni">Rigatoni</option>
+        <option value="dave">Dave</option>
+        <option value="pumpernickel">Pumpernickel</option>
+        <option value="reeses">Reeses</option>
+    </select>
 
     <h3>Available entries</h3>
 
@@ -22,9 +51,23 @@
         {{ range .Entries }}
         {{ block "entry-list-element" . }}
         <li>
-            Id: {{ .Id }}, Money: {{.TotalMoney }}, Currency: {{ .Currency }} Category: {{ .Category }}
-            Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} RunningTotal: {{ .RunningTotal }}
+            <div class="collapsible">
+                Id: {{ .Id }}, Expected: {{.TotalMoney }} {{ .Currency }} Category: {{ .Category }}
+                Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} RunningTotal: {{ .RunningTotal }}
+            </div>
+            <div class="content">
+                <ul>
+                    {{ range .Expenses }}
+                    <li>
+                        Id: {{ .Id }} Total Money: {{ .TotalMoney }}
+                    </li>
+                    {{ end }}
+                </ul>
+            </div>
         </li>
+        <div>
+
+        </div>
         {{ end }}
         {{ end }}
     </ul>
@@ -60,6 +103,24 @@
         <label for="debt-details">Details</label>
         <input type="text" name="details" id="debt-details">
     </form>
+
+    <script>
+        var coll = document.getElementsByClassName("collapsible");
+        var i;
+
+        for (i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", function () {
+                this.classList.toggle("active");
+                var content = this.nextElementSibling;
+                if (content.style.display === "block") {
+                    content.style.display = "none";
+                } else {
+                    content.style.display = "block";
+                }
+            });
+        }
+    </script>
+
 </body>
 
 </html>

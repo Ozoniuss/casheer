@@ -21,4 +21,14 @@ type EntryListItem struct {
 	Subcategory  string
 	Recurring    bool
 	RunningTotal float32
+	Expenses     []ExpenseListItem
+}
+
+type ExpenseListItem struct {
+	Id            int
+	TotalMoney    float32
+	Currency      string
+	Name          string
+	Description   string
+	PaymentMethod string
 }

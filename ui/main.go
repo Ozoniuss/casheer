@@ -138,7 +138,15 @@ func loadCategorizedEntriesList(c *httpclient.CasheerHTTPClient) []CategoryWithE
 			Category:    e.Attributes.Category,
 			Subcategory: e.Attributes.Subcategory,
 			Recurring:   e.Attributes.Recurring,
+			Expenses:    loadExpensesListForEntry(c, eid),
 		}
+
+		for _, exp := range e2.Expenses {
+			if exp.Currency == "RON" {
+				e2.RunningTotal += exp.TotalMoney
+			}
+		}
+
 		data = append(data, e2)
 	}
 	return createCategoriesArray(data)
@@ -179,4 +187,35 @@ func createCategoriesArray(entries []EntryListItem) []CategoryWithEntries {
 		})
 	}
 	return categoriesWithEntries
+}
+
+func loadExpensesListForEntry(c *httpclient.CasheerHTTPClient, entryId int) []ExpenseListItem {
+	entries, err := c.GetEntry(entryId)
+	if err != nil {
+		panic(err)
+	}
+	data := []ExpenseListItem{}
+
+	if entries.Included == nil {
+		panic("wtf")
+	}
+
+	for _, exp := range *entries.Included {
+		if exp.Type != "expense" {
+			fmt.Println("debug")
+			continue
+		}
+
+		eid, _ := strconv.Atoi(exp.Id)
+		d2 := ExpenseListItem{
+			Id:            eid,
+			Name:          exp.Attributes.Name,
+			TotalMoney:    float32(math.Pow10(exp.Attributes.Value.Exponent)) * float32(exp.Attributes.Value.Amount),
+			Currency:      exp.Attributes.Value.Currency,
+			PaymentMethod: exp.Attributes.PaymentMethod,
+			Description:   exp.Attributes.Description,
+		}
+		data = append(data, d2)
+	}
+	return data
 }
