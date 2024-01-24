@@ -40,10 +40,11 @@ func (c *CasheerHTTPClient) CreateEntry(month int, year int, category string, su
 
 func (c *CasheerHTTPClient) ListEntries() (public.ListEntryResponse, error) {
 	requestURL := c.entriesURL.String()
-	return calls.MakeGET[public.ListEntryResponse](c.httpClient, requestURL)
+	return calls.MakeGET[public.ListEntryResponse](c.httpClient, requestURL, nil)
 }
 
 func (c *CasheerHTTPClient) GetEntry(entryId int) (public.GetEntryResponse, error) {
 	requestURL := c.entriesURL.JoinPath(strconv.Itoa(entryId)).String()
-	return calls.MakeGET[public.GetEntryResponse](c.httpClient, requestURL)
+	return calls.MakeGET[public.GetEntryResponse](c.httpClient, requestURL, nil)
+
 }

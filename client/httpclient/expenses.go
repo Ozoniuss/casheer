@@ -51,7 +51,7 @@ func (c *CasheerHTTPClient) CreateBasicExpenseWithoutId(category string, subcate
 
 	getRequestUrl.RawQuery = query.Encode()
 
-	getResp, err := calls.MakeGET[public.ListEntryResponse](c.httpClient, getRequestUrl.String())
+	getResp, err := calls.MakeGET[public.ListEntryResponse](c.httpClient, getRequestUrl.String(), nil)
 	if err != nil {
 		return public.CreateExpenseResponse{}, fmt.Errorf("retrieving entry: %w", err)
 	}

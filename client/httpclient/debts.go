@@ -38,7 +38,7 @@ func (c *CasheerHTTPClient) CreateDebt(person string, details string, amount int
 
 func (c *CasheerHTTPClient) GetDebt(debtId int) (public.GetDebtResponse, error) {
 	requestURL := c.debtsURL.JoinPath(strconv.Itoa(debtId)).String()
-	return calls.MakeGET[public.GetDebtResponse](c.httpClient, requestURL)
+	return calls.MakeGET[public.GetDebtResponse](c.httpClient, requestURL, nil)
 }
 
 func (c *CasheerHTTPClient) DeleteDebt(debtId int) (public.DeleteDebtResponse, error) {
@@ -48,7 +48,7 @@ func (c *CasheerHTTPClient) DeleteDebt(debtId int) (public.DeleteDebtResponse, e
 
 func (c *CasheerHTTPClient) ListDebts() (public.ListDebtResponse, error) {
 	requestURL := c.debtsURL.String()
-	return calls.MakeGET[public.ListDebtResponse](c.httpClient, requestURL)
+	return calls.MakeGET[public.ListDebtResponse](c.httpClient, requestURL, nil)
 }
 
 func (c *CasheerHTTPClient) ListDebtsForPerson(person string) (public.ListDebtResponse, error) {
@@ -59,5 +59,5 @@ func (c *CasheerHTTPClient) ListDebtsForPerson(person string) (public.ListDebtRe
 	query.Add("person", person)
 
 	requestURL.RawQuery = query.Encode()
-	return calls.MakeGET[public.ListDebtResponse](c.httpClient, requestURL.String())
+	return calls.MakeGET[public.ListDebtResponse](c.httpClient, requestURL.String(), nil)
 }

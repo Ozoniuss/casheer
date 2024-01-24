@@ -6,6 +6,6 @@ import (
 
 // MakeGET makes a simple GET request to the target url, and returns either a
 // typed response or an error response.
-func MakeGET[T ResponseType](client *http.Client, url string) (T, error) {
-	return makeRequest[T]("GET", client, url, nil, nil)
+func MakeGET[T ResponseType](client *http.Client, url string, queryParams map[string]string) (T, error) {
+	return makeRequest[T]("GET", client, url, queryParams, nil)
 }
