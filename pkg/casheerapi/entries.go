@@ -122,6 +122,10 @@ type ListEntryResponse struct {
 type GetEntryRequest struct {
 }
 
+type GetEntryParams struct {
+	Include *string `form:"include,omitempty"`
+}
+
 type GetEntryResponse struct {
 	Data     EntryData              `json:"data"`
 	Included *[]IncludedExpenseData `json:"included,omitempty"`

@@ -36,7 +36,7 @@ func RegisterEntries(router *gin.Engine, h handlers.EntryHandler) {
 	subrouter.GET("", func(ctx *gin.Context) {
 		ctx.Redirect(http.StatusMovedPermanently, "entries/")
 	})
-	subrouter.GET("/:entid", middlewares.GetURLParam("entid"), h.HandleGetEntry)
+	subrouter.GET("/:entid", middlewares.BindQueryParams[casheerapi.GetEntryParams]("queryparams"), middlewares.GetURLParam("entid"), h.HandleGetEntry)
 
 	subrouter.PATCH("/:entid", middlewares.GetURLParam("entid"), middlewares.BindJSONRequest[casheerapi.UpdateEntryRequest](), h.HandleUpdateEntry)
 	subrouter.DELETE("/:entid", middlewares.GetURLParam("entid"), h.HandleDeleteEntry)

@@ -36,7 +36,8 @@ func BindJSONRequest[
 func BindQueryParams[
 	T casheerapi.ListDebtParams |
 		casheerapi.ListEntryParams |
-		casheerapi.ListExpenseParams](paramName string) gin.HandlerFunc {
+		casheerapi.ListExpenseParams |
+		casheerapi.GetEntryParams](paramName string) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var params T
 		err := ctx.ShouldBindQuery(&params)

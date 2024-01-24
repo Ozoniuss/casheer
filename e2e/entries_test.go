@@ -133,7 +133,7 @@ func TestCreateListFilterEntryFlow(t *testing.T) {
 	}
 }
 
-func Test_GetEntry_IncludesExpenses(t *testing.T) {
+func Test_GetEntry_IncludesExpensesBasedOnFlag(t *testing.T) {
 
 	t.Cleanup(func() {
 		store.DeleteAllData(conn)
@@ -155,16 +155,25 @@ func Test_GetEntry_IncludesExpenses(t *testing.T) {
 		t.Errorf("Did not expect error when creating expense, but got error: %s\n", err.Error())
 	}
 
-	entryWithExpensesIncluded, err := casheerClient.GetEntry(entryId)
+	entryWithExpensesIncluded, err := casheerClient.GetEntry(entryId, true)
 	if err != nil {
 		t.Errorf("Did not expect error when retrieving entry, but got error: %s\n", err.Error())
 	}
 
 	if entryWithExpensesIncluded.Included == nil {
-		t.Fatalf("Expenses were not included.")
+		t.Fatalf("Expenses were not included but include argument was true.")
 	}
 
 	if len(*entryWithExpensesIncluded.Included) != 2 {
 		t.Errorf("Expected %d included expenses, got %d\n", 2, len(*entryWithExpensesIncluded.Included))
+	}
+
+	// Now do not pass the include flag
+	entryWithExpensesIncluded, err = casheerClient.GetEntry(entryId, false)
+	if err != nil {
+		t.Errorf("Did not expect error when retrieving entry, but got error: %s\n", err.Error())
+	}
+	if entryWithExpensesIncluded.Included != nil {
+		t.Fatalf("Expenses were included but include argument was false.")
 	}
 }

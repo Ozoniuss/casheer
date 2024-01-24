@@ -43,8 +43,11 @@ func (c *CasheerHTTPClient) ListEntries() (public.ListEntryResponse, error) {
 	return calls.MakeGET[public.ListEntryResponse](c.httpClient, requestURL, nil)
 }
 
-func (c *CasheerHTTPClient) GetEntry(entryId int) (public.GetEntryResponse, error) {
+func (c *CasheerHTTPClient) GetEntry(entryId int, includeExpenses bool) (public.GetEntryResponse, error) {
 	requestURL := c.entriesURL.JoinPath(strconv.Itoa(entryId)).String()
-	return calls.MakeGET[public.GetEntryResponse](c.httpClient, requestURL, nil)
-
+	queryParams := map[string]string{"include": "expense"}
+	if !includeExpenses {
+		queryParams = nil
+	}
+	return calls.MakeGET[public.GetEntryResponse](c.httpClient, requestURL, queryParams)
 }

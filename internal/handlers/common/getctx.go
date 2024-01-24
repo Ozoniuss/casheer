@@ -16,7 +16,8 @@ func CtxGetTyped[
 		casheerapi.UpdateDebtRequest |
 		casheerapi.ListExpenseParams |
 		casheerapi.ListEntryParams |
-		casheerapi.ListDebtParams](ctx *gin.Context, param string) (T, error) {
+		casheerapi.ListDebtParams |
+		casheerapi.GetEntryParams](ctx *gin.Context, param string) (T, error) {
 	var req T
 	reqval, ok := ctx.Get(param)
 	if !ok {
