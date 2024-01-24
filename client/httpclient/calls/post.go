@@ -11,5 +11,5 @@ import (
 func MakePOST[T casheerapi.CreateDebtResponse |
 	casheerapi.CreateEntryResponse |
 	casheerapi.CreateExpenseResponse](client *http.Client, url string, payload []byte) (T, error) {
-	return makeRequest[T]("POST", client, url, payload)
+	return makeRequest[T]("POST", client, url, nil, payload)
 }

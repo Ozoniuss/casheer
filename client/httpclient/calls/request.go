@@ -12,7 +12,7 @@ import (
 
 // makeRequest makes a typed request to the API. It is a helper meant to
 // generate the possible requests allowed by the client.
-func makeRequest[T ResponseType](method string, client *http.Client, url string, payload []byte) (T, error) {
+func makeRequest[T ResponseType](method string, client *http.Client, url string, queryParams map[string]string, payload []byte) (T, error) {
 
 	var empty T
 
@@ -30,6 +30,14 @@ func makeRequest[T ResponseType](method string, client *http.Client, url string,
 		return empty, fmt.Errorf("creating request: %w", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
+
+	if queryParams != nil {
+		q := req.URL.Query()
+		for key, val := range queryParams {
+			q.Add(key, val)
+		}
+		req.URL.RawQuery = q.Encode()
+	}
 
 	resp, err := client.Do(req)
 	if err != nil {
