@@ -1,9 +1,14 @@
 export DBNAME='casheer.e2e.db'
+export BUILD_DOCKER=
 
 # I think a custom db file name is completely unnecessary. But, this code 
 # makes it easy for me to keep the file for debugging if something fails.
 if [[ -n $1 ]]; then
-    DBNAME="$1"
+    if [[ "$1" == "--build" ]]; then
+        BUILD_DOCKER=true
+    else
+        DBNAME="$1"
+    fi
 fi
 
 if [[ ! -f $DBNAME ]]; then
@@ -13,7 +18,12 @@ fi
 echo "Using database $DBNAME."
 
 # should use DBNAME
-docker compose -f docker-compose.e2e.yml up -d
+if [[ ! -z "$BUILD_DOCKER" ]]; then
+    echo "building docker image..."
+    docker compose -f docker-compose.e2e.yml up -d --build 
+else
+    docker compose -f docker-compose.e2e.yml up -d
+fi
 
 # Perform migrations. The image already comes with a db, but if it were to be
 # cached, we would have to re-write the db file every time. So instead, just 
