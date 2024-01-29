@@ -20,7 +20,7 @@ type EntryListItem struct {
 	Category     string
 	Subcategory  string
 	Recurring    bool
-	RunningTotal float32
+	RunningTotal map[string]float32
 	Expenses     []ExpenseListItem
 }
 

@@ -53,13 +53,14 @@
         <li>
             <div class="collapsible">
                 Id: {{ .Id }}, Expected: {{.TotalMoney }} {{ .Currency }} Category: {{ .Category }}
-                Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} RunningTotal: {{ .RunningTotal }}
+                Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} Total: {{ .RunningTotal.RON }} RON
+                {{ .RunningTotal.EUR }} EUR {{ .RunningTotal.USD }} USD
             </div>
             <div class="content">
                 <ul>
                     {{ range .Expenses }}
                     <li>
-                        Id: {{ .Id }} Total Money: {{ .TotalMoney }}
+                        Id: {{ .Id }} Total Money: {{ .TotalMoney }} {{ .Currency }}
                     </li>
                     {{ end }}
                 </ul>
