@@ -41,45 +41,58 @@
         <option value="reeses">Reeses</option>
     </select>
 
-    <h3>Available entries</h3>
+    <div id="all-entries-categorized">
+        <h3>Available entries</h3>
 
-    {{ range .CategorizedEntryList }}
-    <h4>
-        {{ .Category }}
-    </h4>
-    <ul id="entries-list">
-        {{ range .Entries }}
-        {{ block "entry-list-element" . }}
-        <li>
-            <div class="collapsible">
-                Id: {{ .Id }}, Expected: {{.TotalMoney }} {{ .Currency }} Category: {{ .Category }}
-                Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} Total: {{ .RunningTotal.RON }} RON
-                {{ .RunningTotal.EUR }} EUR {{ .RunningTotal.USD }} USD
-            </div>
-            <div class="content">
-                {{ if not .Expenses }} No expenses recorded here
-                {{ else }}
-                <ul>
-                    {{ range .Expenses }}
-                    <li>
-                        Id: {{ .Id }} Total Money: {{ .TotalMoney }} {{ .Currency }}
-                    </li>
+        {{ range .CategorizedEntryList }}
+        <h4>
+            {{ .Category }}
+        </h4>
+        Insert new expense to this category
+        <form id="element-creation-form" hx-confirm="Are you sure?" hx-post="/createExpense" hx-target="next ul"
+            hx-swap="inner-html">
+            <button type="submit">Create</button>
+            <label for="expense-subcategory">Subcategory</label>
+            <input type="text" name="subcategory" id="expense-subcategory">
+            <label for="expense-name">Name</label>
+            <input type="text" name="name" id="expense-name">
+            <label for="expected-value">Expected Value</label>
+            <input type="number" name="total-money" id="expected-value">
+            <label for="expected-currency">Currency</label>
+            <input type="text" name="currency" id="expected-currency">
+            <label for="expense-details">Details</label>
+            <input type="text" name="details" id="expense-details">
+            <label for="payment-method">Payment Method</label>
+            <input type="text" name="payment-method" id="payment-method">
+            <input type="hidden" name="category" value="{{ .Category }}">
+        </form>
+        <ul id="subcategories-list">
+            {{ block "all-entries-categorized" . }}
+            {{ range .Entries }}
+            <li>
+                <div class="collapsible">
+                    Id: {{ .Id }}, Expected: {{.TotalMoney }} {{ .Currency }} Category: {{ .Category }}
+                    Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} Total: {{ .RunningTotal.RON }} RON
+                    {{ .RunningTotal.EUR }} EUR {{ .RunningTotal.USD }} USD
+                </div>
+                <div class="content">
+                    {{ if not .Expenses }} No expenses recorded here
+                    {{ else }}
+                    <ul id="expenses-list">
+                        {{ range .Expenses }}
+                        <li>
+                            Id: {{ .Id }} Total Money: {{ .TotalMoney }} {{ .Currency }}
+                        </li>
+                        {{ end }}
+                    </ul>
                     {{ end }}
-                </ul>
-                {{ end }}
-            </div>
-        </li>
-        <div>
-
-        </div>
+                </div>
+            </li>
+            {{ end }}
+            {{ end }}
+        </ul>
         {{ end }}
-        {{ end }}
-    </ul>
-
-    {{ end }}
-
-
-
+    </div>
 
     <h3>Available debts</h3>
     <ul hx-confirm="Are you sure?" hx-target="closest li" hx-swap="outerHTML" id="debt-list">
@@ -109,6 +122,27 @@
     </form>
 
     <script>
+        // When HTML is returned after adding an expense the
+        // event handler is not registered anymore to collapse.
+        // This registers it back after that specific event.
+        document.addEventListener('htmx:afterRequest', function (evt) {
+            // console.log(evt.detail)
+            if (evt.srcElement.id === "element-creation-form") {
+                let collapsibles = evt.detail.target.getElementsByClassName("collapsible")
+                for (i = 0; i < collapsibles.length; i++) {
+                    collapsibles[i].addEventListener("click", function () {
+                        this.classList.toggle("active");
+                        var content = this.nextElementSibling;
+                        if (content.style.display === "block") {
+                            content.style.display = "none";
+                        } else {
+                            content.style.display = "block";
+                        }
+                    });
+                }
+            }
+        });
+
         var coll = document.getElementsByClassName("collapsible");
         var i;
 
