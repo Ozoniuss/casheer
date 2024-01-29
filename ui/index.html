@@ -57,6 +57,8 @@
                 {{ .RunningTotal.EUR }} EUR {{ .RunningTotal.USD }} USD
             </div>
             <div class="content">
+                {{ if not .Expenses }} No expenses recorded here
+                {{ else }}
                 <ul>
                     {{ range .Expenses }}
                     <li>
@@ -64,6 +66,7 @@
                     </li>
                     {{ end }}
                 </ul>
+                {{ end }}
             </div>
         </li>
         <div>
