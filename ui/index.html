@@ -130,32 +130,25 @@
             if (evt.srcElement.id === "element-creation-form") {
                 let collapsibles = evt.detail.target.getElementsByClassName("collapsible")
                 for (i = 0; i < collapsibles.length; i++) {
-                    collapsibles[i].addEventListener("click", function () {
-                        this.classList.toggle("active");
-                        var content = this.nextElementSibling;
-                        if (content.style.display === "block") {
-                            content.style.display = "none";
-                        } else {
-                            content.style.display = "block";
-                        }
-                    });
+                    collapsibles[i].addEventListener("click", onClickForCollapsible.bind(collapsibles[i]));
                 }
             }
         });
 
+        // First time loading, add all events for all collapsibles
         var coll = document.getElementsByClassName("collapsible");
-        var i;
+        for (let i = 0; i < coll.length; i++) {
+            coll[i].addEventListener("click", onClickForCollapsible.bind(coll[i]));
+        }
 
-        for (i = 0; i < coll.length; i++) {
-            coll[i].addEventListener("click", function () {
-                this.classList.toggle("active");
-                var content = this.nextElementSibling;
-                if (content.style.display === "block") {
-                    content.style.display = "none";
-                } else {
-                    content.style.display = "block";
-                }
-            });
+        function onClickForCollapsible() {
+            this.classList.toggle("active");
+            var content = this.nextElementSibling;
+            if (content.style.display === "block") {
+                content.style.display = "none";
+            } else {
+                content.style.display = "block";
+            }
         }
     </script>
 
