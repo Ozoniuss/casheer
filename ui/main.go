@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"io"
 	"math"
 	"net/http"
 	"slices"
@@ -21,14 +22,15 @@ type TemplateData struct {
 var templateData TemplateData
 var allEntries []EntryListItem
 
+var year = time.Now().Year()
+var month = int(time.Now().Month())
+
 func main() {
 
 	cl, err := httpclient.NewCasheerHTTPClient()
 	if err != nil {
 		panic(err)
 	}
-
-	// cl.CreateDebt("Marian", "Ce pula mea", 100, "RON", -2)
 
 	h1 := func(w http.ResponseWriter, r *http.Request) {
 		tmpl := template.Must(template.ParseFiles("index.html"))
@@ -203,6 +205,28 @@ func main() {
 	http.HandleFunc("/deleteDebt", handleDeleteDebt)
 	http.HandleFunc("/createDebt", handleCreateDebt)
 	http.HandleFunc("/createExpense", handleCreateExpense)
+	http.HandleFunc("/year", func(w http.ResponseWriter, r *http.Request) {
+		// year=2023
+		yearstr, err := io.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		year, _ := strconv.Atoi(string(yearstr)[5:])
+		w.WriteHeader(http.StatusOK)
+		fmt.Printf("changing year to %d\n", year)
+	})
+	http.HandleFunc("/month", func(w http.ResponseWriter, r *http.Request) {
+		// month=11
+		monthstr, err := io.ReadAll(r.Body)
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		month, _ := strconv.Atoi(string(monthstr)[6:])
+		w.WriteHeader(http.StatusOK)
+		fmt.Printf("changing month to %d\n", month)
+	})
 
 	http.ListenAndServe(":7145", nil)
 }
