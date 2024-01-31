@@ -1,6 +1,7 @@
 package e2e
 
 import (
+	"slices"
 	"strconv"
 	"testing"
 
@@ -175,5 +176,50 @@ func Test_GetEntry_IncludesExpensesBasedOnFlag(t *testing.T) {
 	}
 	if entryWithExpensesIncluded.Included != nil {
 		t.Fatalf("Expenses were included but include argument was false.")
+	}
+}
+
+func Test_ListEntriesForPeriod_IncludesOnlyExpensesOfPeriod(t *testing.T) {
+
+	t.Cleanup(func() {
+		store.DeleteAllData(conn)
+	})
+
+	createEntryResponse1, err := casheerClient.CreateEntry(10, 2022, "category1", "subcategory1", 5000, "EUR", true)
+	if err != nil {
+		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
+	}
+	t.Logf("Created entry with id %s\n", createEntryResponse1.Data.Id)
+	createEntryResponse2, err := casheerClient.CreateEntry(10, 2022, "category1", "subcategory2", 5000, "EUR", true)
+	if err != nil {
+		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
+	}
+	t.Logf("Created entry with id %s\n", createEntryResponse2.Data.Id)
+	createEntryResponse3, err := casheerClient.CreateEntry(11, 2022, "category1", "subcategory1", 5000, "EUR", true)
+	if err != nil {
+		t.Errorf("Did not expect error, but got error: %s\n", err.Error())
+	}
+	t.Logf("Created entry with id %s\n", createEntryResponse3.Data.Id)
+
+	// Now do not pass the include flag
+	filteredEntries, err := casheerClient.ListEntriesForPeriod(10, 2022)
+	if err != nil {
+		t.Errorf("Did not expect error when retrieving entry, but got error: %s\n", err.Error())
+	}
+
+	id1 := createEntryResponse1.Data.Id
+	id2 := createEntryResponse2.Data.Id
+
+	expected := []string{id1, id2}
+	slices.Sort(expected)
+
+	actual := []string{}
+	for _, ent := range filteredEntries.Data {
+		actual = append(actual, ent.Id)
+	}
+	slices.Sort(actual)
+
+	if !slices.Equal(expected, actual) {
+		t.Errorf("Expected entries %v, but got %v\n", expected, actual)
 	}
 }
