@@ -25,14 +25,14 @@
 <body>
 
     <label for="year-select">Year</label>
-    <select hx-post="/year" name="year" hx-swap="none" id="year-select">
+    <select hx-post="/year" name="year" hx-swap="inner-html" hx-target="#all-entries-categorized" id="year-select">
         <option value=2024>2024</option>
         <option value=2023>2023</option>
         <option value=2022>2022</option>
     </select>
 
     <label for="month-select">Month</label>
-    <select hx-post="/month" name="month" hx-swap="none" id="month-select">
+    <select hx-post="/month" name="month" hx-swap="inner-html" hx-target="#all-entries-categorized" id="month-select">
         <option value=12>December</option>
         <option value=11>November</option>
         <option value=10>October</option>
@@ -49,6 +49,7 @@
 
 
     <div id="all-entries-categorized">
+        {{ block "all-planning-data" . }}
         <h3>Available entries</h3>
 
         {{ range .CategorizedEntryList }}
@@ -98,6 +99,7 @@
             {{ end }}
             {{ end }}
         </ul>
+        {{ end }}
         {{ end }}
     </div>
 
@@ -152,6 +154,14 @@
             if (evt.srcElement.id === "element-creation-form") {
                 let collapsibles = evt.detail.target.getElementsByClassName("collapsible")
                 for (i = 0; i < collapsibles.length; i++) {
+                    collapsibles[i].addEventListener("click", onClickForCollapsible.bind(collapsibles[i]));
+                }
+            }
+            // Basically everything that is collapsible is re-written, repeat step below.
+            if (evt.srcElement.id === "year-select" || evt.srcElement.id === "month-select") {
+                console.log("switched period")
+                let collapsibles = document.getElementsByClassName("collapsible");
+                for (let i = 0; i < collapsibles.length; i++) {
                     collapsibles[i].addEventListener("click", onClickForCollapsible.bind(collapsibles[i]));
                 }
             }

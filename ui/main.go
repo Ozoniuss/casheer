@@ -217,8 +217,20 @@ func main() {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		year, _ := strconv.Atoi(string(yearstr)[5:])
-		w.WriteHeader(http.StatusOK)
+		year, _ = strconv.Atoi(string(yearstr)[5:])
+
+		// This is so ugly I almost want to switch to being a java developer.
+		// A bigass cleanup is coming up soon when I'll think about how to
+		// organize this mess.
+		debts := loadDebtsList(cl)
+		entries := loadCategorizedEntriesList(cl)
+		templateData = TemplateData{
+			DebtsList:            debts,
+			CategorizedEntryList: entries,
+		}
+		tmpl := template.Must(template.ParseFiles("index.html"))
+		tmpl.ExecuteTemplate(w, "all-planning-data", templateData)
+
 		fmt.Printf("changing year to %d\n", year)
 	})
 	http.HandleFunc("/month", func(w http.ResponseWriter, r *http.Request) {
@@ -228,8 +240,17 @@ func main() {
 			w.WriteHeader(http.StatusInternalServerError)
 			return
 		}
-		month, _ := strconv.Atoi(string(monthstr)[6:])
-		w.WriteHeader(http.StatusOK)
+		month, _ = strconv.Atoi(string(monthstr)[6:])
+
+		debts := loadDebtsList(cl)
+		entries := loadCategorizedEntriesList(cl)
+		templateData = TemplateData{
+			DebtsList:            debts,
+			CategorizedEntryList: entries,
+		}
+		tmpl := template.Must(template.ParseFiles("index.html"))
+		tmpl.ExecuteTemplate(w, "all-planning-data", templateData)
+
 		fmt.Printf("changing month to %d\n", month)
 	})
 	// TODO: use new http library for setting the GET method
@@ -269,7 +290,7 @@ func loadDebtsList(c *httpclient.CasheerHTTPClient) []DebtListItem {
 }
 
 func loadCategorizedEntriesList(c *httpclient.CasheerHTTPClient) []CategoryWithEntries {
-	entries, err := c.ListEntries()
+	entries, err := c.ListEntriesForPeriod(month, year)
 	if err != nil {
 		panic(err)
 	}
