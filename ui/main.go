@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
 	"math"
@@ -24,6 +25,10 @@ var allEntries []EntryListItem
 
 var year = time.Now().Year()
 var month = int(time.Now().Month())
+
+// debugging
+// var year = 2023
+// var month = 12
 
 func main() {
 
@@ -226,6 +231,18 @@ func main() {
 		month, _ := strconv.Atoi(string(monthstr)[6:])
 		w.WriteHeader(http.StatusOK)
 		fmt.Printf("changing month to %d\n", month)
+	})
+	// TODO: use new http library for setting the GET method
+	http.HandleFunc("/period", func(w http.ResponseWriter, r *http.Request) {
+		data, err := json.Marshal(map[string]int{
+			"year":  year,
+			"month": month,
+		})
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.Write(data)
 	})
 
 	http.ListenAndServe(":7145", nil)

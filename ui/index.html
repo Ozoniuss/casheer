@@ -129,6 +129,21 @@
     </form>
 
     <script>
+
+        fetch("/period").
+            then((response) => response.json()).
+            then((period) => {
+                console.log("using period", period);
+                return period
+            }).
+            then((period) => {
+                let yearselector = document.getElementById("year-select");
+                yearselector.value = period.year
+                let monthselector = document.getElementById("month-select");
+                monthselector.value = period.month
+            }).
+            catch((error) => console.log("could not fetch period", error))
+
         // When HTML is returned after adding an expense the
         // event handler is not registered anymore to collapse.
         // This registers it back after that specific event.
