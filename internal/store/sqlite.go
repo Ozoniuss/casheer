@@ -11,6 +11,8 @@ import (
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 
+	"github.com/Ozoniuss/casheer/currency"
+	"github.com/Ozoniuss/casheer/internal/model"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -47,6 +49,27 @@ func DeleteAllData(db *gorm.DB) {
 	db.Exec("DELETE FROM debts")
 	db.Exec("DELETE FROM expenses")
 	db.Exec("DELETE FROM entries")
+}
+
+// CreateEntry is a helper that creates a dummy entry in the database. It is
+// useful when testing expenses.
+func CreateDummyEntry(db *gorm.DB) (int, error) {
+	entry := model.Entry{
+		BaseModel: model.BaseModel{
+			Id: 69,
+		},
+		Month:       10,
+		Year:        2023,
+		Category:    "category",
+		Subcategory: "subcategory",
+		Recurring:   false,
+		Value:       model.FromCurrencyValue(currency.NewRONValue(1)),
+	}
+	err := db.Create(&entry).Error
+	if err != nil {
+		return 0, fmt.Errorf("inserting entry in db: %w", err)
+	}
+	return entry.Id, nil
 }
 
 // RunMigrations executes the content of the sql file into the database
