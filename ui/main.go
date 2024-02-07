@@ -65,6 +65,29 @@ func main() {
 		}
 		w.WriteHeader(http.StatusOK)
 	}
+	handleDeleteExpense := func(w http.ResponseWriter, r *http.Request) {
+		entidstr := r.PostFormValue("entid")
+		entid, err := strconv.Atoi(entidstr)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Invalid entry id: %s", err.Error())
+			return
+		}
+		expidstr := r.PostFormValue("expid")
+		expid, err := strconv.Atoi(expidstr)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			fmt.Fprintf(w, "Invalid expense id: %s", err.Error())
+			return
+		}
+
+		_, err = cl.DeleteExpenseForEntry(entid, expid)
+		if err != nil {
+			w.WriteHeader(r.Response.StatusCode)
+			fmt.Fprintf(w, "could not delete expense: %s", err.Error())
+		}
+		w.WriteHeader(http.StatusOK)
+	}
 
 	handleCreateDebt := func(w http.ResponseWriter, r *http.Request) {
 
@@ -208,6 +231,7 @@ func main() {
 
 	http.HandleFunc("/", h1)
 	http.HandleFunc("/deleteDebt", handleDeleteDebt)
+	http.HandleFunc("/deleteExpense", handleDeleteExpense)
 	http.HandleFunc("/createDebt", handleCreateDebt)
 	http.HandleFunc("/createExpense", handleCreateExpense)
 	http.HandleFunc("/year", func(w http.ResponseWriter, r *http.Request) {

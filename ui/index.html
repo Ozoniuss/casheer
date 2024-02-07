@@ -87,9 +87,9 @@
                     {{ if not .Expenses }} No expenses recorded here
                     {{ else }}
                     <ul id="expenses-list">
-                        {{ range .Expenses }}
+                        {{ $entid := .Id }}{{ range .Expenses }}
                         <li>
-                            Id: {{ .Id }} Total Money: {{ .TotalMoney }} {{ .Currency }}
+                            <button hx-vals='{"expid":"{{ .Id }}","entid":"{{ $entid }}"}' hx-swap="outerHTML" hx-target="closest li" hx-post="/deleteExpense">delete</button> Id: {{ .Id }} Total Money: {{ .TotalMoney }} {{ .Currency }}
                         </li>
                         {{ end }}
                     </ul>
