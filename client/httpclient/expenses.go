@@ -68,3 +68,8 @@ func (c *CasheerHTTPClient) CreateBasicExpenseWithoutId(category string, subcate
 	}
 	return c.CreateBasicExpense(entryId, name, description, paymentMethod, amount, currency)
 }
+
+func (c *CasheerHTTPClient) DeleteExpenseForEntry(entryId, expenseId int) (public.DeleteExpenseResponse, error) {
+	requestURL := c.entriesURL.JoinPath(strconv.Itoa(entryId), "expenses/", strconv.Itoa(expenseId)).String()
+	return calls.MakeDELETE[public.DeleteExpenseResponse](c.httpClient, requestURL)
+}

@@ -20,6 +20,65 @@ func setupEntry(t *testing.T) int {
 	return id
 }
 
+type basicExpenseInfo struct {
+	name          string
+	description   string
+	paymentMethod string
+	amount        int
+	currency      string
+}
+
+func getDummyExpenseInfo() basicExpenseInfo {
+	return basicExpenseInfo{
+		name:          "name",
+		description:   "description",
+		paymentMethod: "card",
+		amount:        1500,
+		currency:      "RON",
+	}
+}
+
+func compareExpenseWithResponse(t *testing.T, expenseInfo basicExpenseInfo, responseData casheerapi.ExpenseData) {
+	if responseData.Type != "expense" {
+		t.Errorf("Invalid return type, expected \"expense\" but got \"%s\"\n", responseData.Type)
+	}
+
+	// Check attributes
+	if responseData.Attributes.Name != expenseInfo.name {
+		t.Errorf("Expense name doesn't match; expected %s but got %s\n", expenseInfo.name, responseData.Attributes.Name)
+	}
+	if responseData.Attributes.Description != expenseInfo.description {
+		t.Errorf("Expense description doesn't match; expected %s but got %s\n", expenseInfo.description, responseData.Attributes.Description)
+	}
+	if responseData.Attributes.PaymentMethod != expenseInfo.paymentMethod {
+		t.Errorf("Expense payment method doesn't match; expected %s but got %s\n", expenseInfo.paymentMethod, responseData.Attributes.PaymentMethod)
+	}
+
+	val := currency.NewRONValue(expenseInfo.amount)
+	if responseData.Attributes.Value != (casheerapi.MonetaryValueAttributes{
+		Amount:   val.Amount,
+		Exponent: val.Exponent,
+		Currency: val.Currency,
+	}) {
+		t.Errorf("Expense value doesn't match; expected %v but got %v\n", responseData.Attributes.Value, casheerapi.MonetaryValueAttributes{
+			Amount:   val.Amount,
+			Exponent: val.Exponent,
+			Currency: val.Currency,
+		})
+	}
+}
+
+func checkExpenseLinks(t *testing.T, entid int, responseData casheerapi.ExpenseData) {
+	if !strings.Contains(responseData.Links.Self, fmt.Sprintf("%d/expenses/%s", entid, responseData.Id)) {
+		t.Errorf("Invalid related link format; got %s\n", responseData.Links.Self)
+	}
+
+	// Check related resources
+	if !strings.Contains(responseData.Relationships.Entries.Links.Related, strconv.Itoa(entid)) {
+		t.Errorf("Expected related link (%s) to include expense id (%d)\n", responseData.Relationships.Entries.Links.Related, entid)
+	}
+}
+
 func Test_CreateBasicExpense_ExpenseIsCreated_and_ReturnedValuesAreCorrect(t *testing.T) {
 
 	t.Cleanup(func() {
@@ -27,49 +86,35 @@ func Test_CreateBasicExpense_ExpenseIsCreated_and_ReturnedValuesAreCorrect(t *te
 	})
 	entid := setupEntry(t)
 
-	var name = "expense 1"
-	var description = "description"
-	var paymentMethod = "card"
-	var amount = 1500
-	var ccurrency = "RON"
-	expenseResponse, err := casheerClient.CreateBasicExpense(entid, name, description, paymentMethod, amount, ccurrency)
+	expenseInfo := getDummyExpenseInfo()
+	expenseResponse, err := casheerClient.CreateBasicExpense(entid, expenseInfo.name, expenseInfo.description, expenseInfo.paymentMethod, expenseInfo.amount, expenseInfo.currency)
 	if err != nil {
 		t.Fatalf("Did not expect error when creating expense, but got error: %s\n", err.Error())
 	}
 
-	if expenseResponse.Data.Type != "expense" {
-		t.Errorf("Invalid return type, expected \"expense\" but got \"%s\"\n", expenseResponse.Data.Type)
+	compareExpenseWithResponse(t, expenseInfo, expenseResponse.Data)
+	checkExpenseLinks(t, entid, expenseResponse.Data)
+}
+
+func Test_DeleteExpense_ExistingExpenseIsDeleted(t *testing.T) {
+
+	t.Cleanup(func() {
+		store.DeleteAllData(conn)
+	})
+	entid := setupEntry(t)
+
+	expenseInfo := getDummyExpenseInfo()
+	expenseResponseCreate, err := casheerClient.CreateBasicExpense(entid, expenseInfo.name, expenseInfo.description, expenseInfo.paymentMethod, expenseInfo.amount, expenseInfo.currency)
+	if err != nil {
+		t.Fatalf("Did not expect error when creating expense, but got error: %s\n", err.Error())
 	}
 
-	// Check attributes
-	if expenseResponse.Data.Attributes.Name != name {
-		t.Errorf("Expense name doesn't match; expected %s but got %s\n", name, expenseResponse.Data.Attributes.Name)
+	expid, _ := strconv.Atoi(expenseResponseCreate.Data.Id)
+	expenseResponseDelete, err := casheerClient.DeleteExpenseForEntry(entid, expid)
+	if err != nil {
+		t.Fatalf("Did not expect error when deleting existing expense, but got error: %s\n", err.Error())
 	}
-	if expenseResponse.Data.Attributes.Description != description {
-		t.Errorf("Expense description doesn't match; expected %s but got %s\n", description, expenseResponse.Data.Attributes.Description)
-	}
-	if expenseResponse.Data.Attributes.PaymentMethod != paymentMethod {
-		t.Errorf("Expense payment method doesn't match; expected %s but got %s\n", paymentMethod, expenseResponse.Data.Attributes.PaymentMethod)
-	}
-	val := currency.NewRONValue(1500)
-	if expenseResponse.Data.Attributes.Value != (casheerapi.MonetaryValueAttributes{
-		Amount:   val.Amount,
-		Exponent: val.Exponent,
-		Currency: val.Currency,
-	}) {
-		t.Errorf("Expense value doesn't match; expected %v but got %v\n", expenseResponse.Data.Attributes.Value, casheerapi.MonetaryValueAttributes{
-			Amount:   val.Amount,
-			Exponent: val.Exponent,
-			Currency: val.Currency,
-		})
-	}
+	// Do not check links because a deleted expense should not have links.
+	compareExpenseWithResponse(t, expenseInfo, expenseResponseDelete.Data)
 
-	if !strings.Contains(expenseResponse.Data.Links.Self, fmt.Sprintf("%d/expenses/%s", entid, expenseResponse.Data.Id)) {
-		t.Errorf("Invalid related link format; got %s\n", expenseResponse.Data.Links.Self)
-	}
-
-	// Check related resources
-	if !strings.Contains(expenseResponse.Data.Relationships.Entries.Links.Related, strconv.Itoa(entid)) {
-		t.Errorf("Expected related link (%s) to include expense id (%d)\n", expenseResponse.Data.Relationships.Entries.Links.Related, entid)
-	}
 }
