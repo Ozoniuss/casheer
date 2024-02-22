@@ -628,7 +628,7 @@ paths:
           schema:
             type: string
             example: EUR
-            enum: [EUR, RON, USD]
+            enum: [EUR, RON, USD, GBP]
         - in: query
           name: payment_method
           description: Filter by payment method.

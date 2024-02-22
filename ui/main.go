@@ -330,11 +330,11 @@ func loadCategorizedEntriesList(c *httpclient.CasheerHTTPClient) []CategoryWithE
 			Recurring:   e.Attributes.Recurring,
 			Expenses:    loadExpensesListForEntry(c, eid),
 			// hardcoding for now since I don't know htmx any better
-			RunningTotal: map[string]float32{"EUR": 0, "RON": 0, "USD": 0},
+			RunningTotal: map[string]float32{"EUR": 0, "RON": 0, "USD": 0, "GBP": 0},
 		}
 
 		for _, exp := range e2.Expenses {
-			if exp.Currency != "RON" && exp.Currency != "EUR" && exp.Currency != "USD" {
+			if exp.Currency != "RON" && exp.Currency != "EUR" && exp.Currency != "USD" && exp.Currency != "GBP" {
 				panic("unsupported currency " + exp.Currency)
 			}
 			e2.RunningTotal[exp.Currency] += exp.TotalMoney
