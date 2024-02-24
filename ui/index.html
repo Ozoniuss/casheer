@@ -21,17 +21,34 @@
         overflow: hidden;
     }
 
+    #subcategories-list li {
+        list-style: none;
+    }
+
     .entry-row {
         padding: 10px 0px;
-        width: fit-content;
-        min-width: 1500px;
+        width: 1500px;
+        display: flex;
+        justify-content: space-around;
     }
-    .entry-row:not(.active):not(:last-child) {
+
+    .entry-row div {
+        flex-grow: 1;
+        flex-basis: 0;
+        text-align: center;
+        text-wrap: wrap;
+    }
+
+    .entry-row:not(.active):not(:last-child), .entry-row.header {
         border-bottom: 1px solid rgb(179, 173, 173);
     }
 
-    .entry-row:hover {
+    .entry-row:not(.header):hover {
         background-color: rgb(211, 206, 206);
+    }
+
+    .entry-row.header {
+        font-weight: bold;
     }
 
     .expense-row {
@@ -103,13 +120,33 @@
             <input type="hidden" name="category" value="{{ .Category }}">
         </form>
         <ul id="subcategories-list">
+            <li>
+                <div class="entry-row header">
+                    <div><span>Id</span></div>
+                    <div><span>Expected</span></div>
+                    <div><span>Category</span></div>
+                    <div><span>Subcategory</span></div>
+                    <div><span>Recurring</span></div>
+                    <div><span>RON</span></div>
+                    <div><span>EUR</span></div>
+                    <div><span>USD</span></div>
+                </div>
+            </li>
             {{ block "all-entries-categorized" . }}
             {{ range .Entries }}
             <li>
                 <div class="collapsible entry-row">
-                    Id: {{ .Id }}, Expected: {{.TotalMoney }} {{ .Currency }} Category: {{ .Category }}
+                    <div><span>{{ .Id }}</span></div>
+                    <div><span>{{ .TotalMoney }} {{ .Currency }}</span></div>
+                    <div><span>{{ .Category }}</span></div>
+                    <div><span>{{ .Subcategory }}</span></div>
+                    <div><span>{{ .Recurring }}</span></div>
+                    <div><span>{{ .RunningTotal.RON }}</span></div>
+                    <div><span>{{ .RunningTotal.EUR }}</span></div>
+                    <div><span>{{ .RunningTotal.USD }}</span></div>
+                    <!-- Id: {{ .Id }}, Expected: {{.TotalMoney }} {{ .Currency }} Category: {{ .Category }}
                     Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} Total: {{ .RunningTotal.RON }} RON
-                    {{ .RunningTotal.EUR }} EUR {{ .RunningTotal.USD }} USD
+                    {{ .RunningTotal.EUR }} EUR {{ .RunningTotal.USD }} USD -->
                 </div>
                 <div class="content">
                     {{ if not .Expenses }} No expenses recorded here
