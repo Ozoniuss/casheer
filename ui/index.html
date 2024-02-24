@@ -26,14 +26,28 @@
         width: fit-content;
         min-width: 1500px;
     }
-
-    .entry-row:not(.active) {
+    .entry-row:not(.active):not(:last-child) {
         border-bottom: 1px solid rgb(179, 173, 173);
     }
 
     .entry-row:hover {
         background-color: rgb(211, 206, 206);
     }
+
+    .expense-row {
+        padding: 5px 0px;
+        width: fit-content;
+        min-width: 1460px;
+    }
+    
+    .expense-row:not(:last-child) {
+        border-bottom: 1px solid rgb(241, 239, 239);
+    }
+    .expense-row:hover {
+        background-color: rgb(243, 239, 239);
+    }
+
+    
 </style>
 
 <body>
@@ -102,7 +116,7 @@
                     {{ else }}
                     <ul id="expenses-list">
                         {{ $entid := .Id }}{{ range .Expenses }}
-                        <li>
+                        <li class="expense-row">
                             <button hx-vals='{"expid":"{{ .Id }}","entid":"{{ $entid }}"}' hx-swap="outerHTML" hx-target="closest li" hx-post="/deleteExpense">delete</button> Id: {{ .Id }} Total Money: {{ .TotalMoney }} {{ .Currency }}
                         </li>
                         {{ end }}
