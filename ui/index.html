@@ -20,6 +20,20 @@
         display: none;
         overflow: hidden;
     }
+
+    .entry-row {
+        padding: 10px 0px;
+        width: fit-content;
+        min-width: 1500px;
+    }
+
+    .entry-row:not(.active) {
+        border-bottom: 1px solid rgb(179, 173, 173);
+    }
+
+    .entry-row:hover {
+        background-color: rgb(211, 206, 206);
+    }
 </style>
 
 <body>
@@ -78,7 +92,7 @@
             {{ block "all-entries-categorized" . }}
             {{ range .Entries }}
             <li>
-                <div class="collapsible">
+                <div class="collapsible entry-row">
                     Id: {{ .Id }}, Expected: {{.TotalMoney }} {{ .Currency }} Category: {{ .Category }}
                     Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} Total: {{ .RunningTotal.RON }} RON
                     {{ .RunningTotal.EUR }} EUR {{ .RunningTotal.USD }} USD
