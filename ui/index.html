@@ -92,14 +92,19 @@
         <option value=1>January</option>
     </select>
 
-
     <div id="all-entries-categorized">
         {{ block "all-planning-data" . }}
         <h3>Available entries</h3>
-
+        
         {{ range .CategorizedEntryList }}
+
+        {{ $expectedForCategory := 0 }}
+        {{ range $_, $entry := .Entries }}
+        {{ $expectedForCategory = (Sum $expectedForCategory $entry.TotalMoney) }}
+        {{ end }}
+
         <h4>
-            {{ .Category }}
+            {{ .Category }} [Expected: {{ $expectedForCategory }}] [Actual]
         </h4>
         Insert new expense to this category
         <form id="element-creation-form" hx-confirm="Are you sure?" hx-post="/createExpense" hx-target="next ul"
@@ -120,6 +125,7 @@
             <input type="hidden" name="category" value="{{ .Category }}">
         </form>
         <ul id="subcategories-list">
+            {{ block "all-entries-categorized" . }}
             <li>
                 <div class="entry-row header">
                     <div><span>Id</span></div>
@@ -130,9 +136,9 @@
                     <div><span>RON</span></div>
                     <div><span>EUR</span></div>
                     <div><span>USD</span></div>
+                    <div><span>GBP</span></div>
                 </div>
             </li>
-            {{ block "all-entries-categorized" . }}
             {{ range .Entries }}
             <li>
                 <div class="collapsible entry-row">
@@ -144,6 +150,7 @@
                     <div><span>{{ .RunningTotal.RON }}</span></div>
                     <div><span>{{ .RunningTotal.EUR }}</span></div>
                     <div><span>{{ .RunningTotal.USD }}</span></div>
+                    <div><span>{{ .RunningTotal.GBP }}</span></div>
                     <!-- Id: {{ .Id }}, Expected: {{.TotalMoney }} {{ .Currency }} Category: {{ .Category }}
                     Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} Total: {{ .RunningTotal.RON }} RON
                     {{ .RunningTotal.EUR }} EUR {{ .RunningTotal.USD }} USD -->

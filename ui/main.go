@@ -20,6 +20,12 @@ type TemplateData struct {
 	CategorizedEntryList []CategoryWithEntries
 }
 
+var Funcs template.FuncMap = template.FuncMap{
+	"Sum": func(x int, y float32) int {
+		return int(math.Round(float64(x) + float64(y)))
+	},
+}
+
 var templateData TemplateData
 var allEntries []EntryListItem
 
@@ -38,14 +44,17 @@ func main() {
 	}
 
 	h1 := func(w http.ResponseWriter, r *http.Request) {
-		tmpl := template.Must(template.ParseFiles("index.html"))
+		tmpl := template.Must(template.New("index.html").Funcs(Funcs).ParseFiles("index.html"))
+		if err != nil {
+			panic(err)
+		}
 		debts := loadDebtsList(cl)
 		entries := loadCategorizedEntriesList(cl)
 		templateData = TemplateData{
 			DebtsList:            debts,
 			CategorizedEntryList: entries,
 		}
-		tmpl.Execute(w, templateData)
+		err = tmpl.Execute(w, templateData)
 	}
 
 	handleDeleteDebt := func(w http.ResponseWriter, r *http.Request) {
@@ -126,7 +135,7 @@ func main() {
 			Details:    resp.Data.Attributes.Details,
 		}
 
-		tmpl := template.Must(template.ParseFiles("index.html"))
+		tmpl := template.Must(template.New("index.html").Funcs(Funcs).ParseFiles("index.html"))
 		tmpl.ExecuteTemplate(w, "debt-list-element", dli)
 	}
 
@@ -225,7 +234,7 @@ func main() {
 
 		fmt.Println(templateData.CategorizedEntryList[idx])
 
-		tmpl := template.Must(template.ParseFiles("index.html"))
+		tmpl := template.Must(template.New("index.html").Funcs(Funcs).ParseFiles("index.html"))
 		tmpl.ExecuteTemplate(w, "all-entries-categorized", templateData.CategorizedEntryList[idx])
 	}
 
@@ -252,7 +261,7 @@ func main() {
 			DebtsList:            debts,
 			CategorizedEntryList: entries,
 		}
-		tmpl := template.Must(template.ParseFiles("index.html"))
+		tmpl := template.Must(template.New("index.html").Funcs(Funcs).ParseFiles("index.html"))
 		tmpl.ExecuteTemplate(w, "all-planning-data", templateData)
 
 		fmt.Printf("changing year to %d\n", year)
@@ -272,7 +281,7 @@ func main() {
 			DebtsList:            debts,
 			CategorizedEntryList: entries,
 		}
-		tmpl := template.Must(template.ParseFiles("index.html"))
+		tmpl := template.Must(template.New("index.html").Funcs(Funcs).ParseFiles("index.html"))
 		tmpl.ExecuteTemplate(w, "all-planning-data", templateData)
 
 		fmt.Printf("changing month to %d\n", month)
