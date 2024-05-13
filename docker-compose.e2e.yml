@@ -7,8 +7,11 @@ services:
             dockerfile: ./Dockerfile
         container_name: casheer-e2e
         # Make sure ports from command and ports match.
-        env_file:
-            - ./configs/e2e.env
+        environment:
+            - CASHEER_SERVER_SCHEME=http
+            - CASHEER_SERVER_ADDRESS=0.0.0.0
+            - CASHEER_SERVER_PORT=6597
+            - CASHEER_SQLITE_FILE=/externaldeps/casheer.db
         ports:
             - 6597:6597
         volumes:
