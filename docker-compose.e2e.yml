@@ -6,12 +6,10 @@ services:
             context: ./
             dockerfile: ./Dockerfile
         container_name: casheer-e2e
-
-        # Make sure ports from command and ports match. If desired, create a .env
-        # file for docker compose to not have to manage it manually.
-        command: --server-address 0.0.0.0 --server-port 6597 --sqlite-db /externaldeps/casheer.db
+        # Make sure ports from command and ports match.
+        env_file:
+            - ./configs/e2e.env
         ports:
             - 6597:6597
-
         volumes:
             - ./${DBNAME:-casheer.e2e.db}:/externaldeps/casheer.db

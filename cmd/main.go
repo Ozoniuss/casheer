@@ -19,11 +19,8 @@ func run() error {
 	))
 	ctx := context.Background()
 
-	config, err := cfg.ParseConfig()
-	if err != nil {
-		return fmt.Errorf("could not parse config: %w", err)
-	}
-	log.InfoContext(ctx, fmt.Sprintf("parsed config: %+v\n", config))
+	config := cfg.NewInitializedConfig()
+	log.InfoContext(ctx, "parsed config", slog.Any("config", config))
 
 	conn, err := store.ConnectSqlite(config.SQLiteDatabase.File)
 	if err != nil {
