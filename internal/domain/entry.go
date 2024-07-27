@@ -33,7 +33,7 @@ type Entry struct {
 	ExpensesChanged []ExpenseChangedEvent
 }
 
-func NewEntry(month int, year int, category, subcategory string, recurring bool) (Entry, error) {
+func NewEntry(month int, year int, category, subcategory string, recurring bool, value currency.Value) (Entry, error) {
 	var err error = nil
 
 	mo, merr := NewMonth(month)
@@ -58,6 +58,7 @@ func NewEntry(month int, year int, category, subcategory string, recurring bool)
 		Category:    category,
 		Subcategory: subcategory,
 		Recurring:   recurring,
+		Value:       value,
 		Expenses:    make([]Expense, 0),
 		BaseModel: BaseModel{
 			CreatedAt: time.Now(),

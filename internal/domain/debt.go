@@ -17,7 +17,7 @@ type Debt struct {
 	Details string
 }
 
-func NewDebt(person string, details string) (Debt, error) {
+func NewDebt(person string, details string, value currency.Value) (Debt, error) {
 
 	if person == "" {
 		return Debt{}, ErrEmptyPerson
@@ -29,6 +29,7 @@ func NewDebt(person string, details string) (Debt, error) {
 		BaseModel: BaseModel{
 			CreatedAt: time.Now(),
 		},
+		Value: value,
 	}, nil
 }
 
