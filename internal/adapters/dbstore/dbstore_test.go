@@ -8,7 +8,7 @@ import (
 	"testing"
 
 	"github.com/Ozoniuss/casheer/internal/ports/store"
-	migrations "github.com/Ozoniuss/casheer/scripts/sqlite"
+	migrations "github.com/Ozoniuss/casheer/scripts"
 
 	_ "github.com/mattn/go-sqlite3"
 )

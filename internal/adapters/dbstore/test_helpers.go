@@ -16,7 +16,7 @@ import (
 // runMigrations executes the content of the sql file into the database
 // instance.
 func runMigrations(db *sql.DB, migrations embed.FS) error {
-	werr := fs.WalkDir(migrations, ".", func(path string, d fs.DirEntry, err error) error {
+	werr := fs.WalkDir(migrations, "sqlite", func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
