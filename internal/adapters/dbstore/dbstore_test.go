@@ -14,6 +14,7 @@ import (
 
 	"github.com/Ozoniuss/casheer/internal/domain"
 	"github.com/Ozoniuss/casheer/internal/domain/currency"
+	"github.com/Ozoniuss/casheer/internal/ports/store"
 	migrations "github.com/Ozoniuss/casheer/scripts/sqlite"
 	"golang.org/x/exp/rand"
 
@@ -28,29 +29,81 @@ var exitCode int
 func Test_NewDbStore_HealthcheckSuccessful(t *testing.T) {
 	err := testDbStore.Healthcheck(context.Background())
 	if err != nil {
-		t.Errorf("healthcheck should not fail, failed with: %s", err.Error())
+		t.Errorf("healthcheck should not fail, failed with: %s\n", err.Error())
 	}
 }
 
-func Test_ListDebts_ReturnsAllDebts_WhenNoFiltersApplied(t *testing.T) {
-	createdDebt, err := newDebt(testDbStore.conn)
+func Test_ListDebts_ReturnsAllDebts_SortedByName_WhenNoFiltersApplied(t *testing.T) {
+	defer teardownTest(t, testDbStore)
+	createdDebtJohn, err := newDebt(testDbStore.conn, "John", 1)
 	if err != nil {
-		t.Errorf("entry was not added: %s", err.Error())
+		t.Fatalf("debt was not added: %s\n", err.Error())
+	}
+	createdDebtAlex, err := newDebt(testDbStore.conn, "Alex", 2)
+	if err != nil {
+		t.Fatalf("debt was not added: %s\n", err.Error())
 	}
 
 	debts, err := testDbStore.ListDebts(context.Background())
 	if err != nil {
-		t.Errorf("expected no error when listing debts: %s", err.Error())
+		t.Fatalf("expected no error when listing debts: %s\n", err.Error())
 	}
-	if len(debts) != 1 {
-		t.Errorf("expected 1 debt, got %d\n", len(debts))
-	}
-	if createdDebt.Value != debts[0].Value ||
-		createdDebt.Details != debts[0].Details ||
-		createdDebt.Person != debts[0].Person {
-		t.Errorf("debts are different: expected %+v, got %+v\n", createdDebt, debts[0])
+	if len(debts) != 2 {
+		t.Errorf("expected 2 debts, got %d\n", len(debts))
 	}
 
+	if createdDebtAlex.Value != debts[0].Value ||
+		createdDebtAlex.Details != debts[0].Details ||
+		createdDebtAlex.Person != debts[0].Person {
+		t.Errorf("debts are different: expected %+v, got %+v\n", createdDebtAlex, debts[0])
+	}
+
+	if createdDebtJohn.Value != debts[1].Value ||
+		createdDebtJohn.Details != debts[1].Details ||
+		createdDebtJohn.Person != debts[1].Person {
+		t.Errorf("debts are different: expected %+v, got %+v\n", createdDebtJohn, debts[1])
+	}
+}
+
+func Test_GetDebt_ReturnsASingleDebt_WhenItExists(t *testing.T) {
+	defer teardownTest(t, testDbStore)
+	createdDebtJohn, err := newDebt(testDbStore.conn, "John", 1)
+	if err != nil {
+		t.Fatalf("debt was not added: %s\n", err.Error())
+	}
+	_, err = newDebt(testDbStore.conn, "Alex", 2)
+	if err != nil {
+		t.Fatalf("debt was not added: %s\n", err.Error())
+	}
+
+	debt, err := testDbStore.LoadDebt(context.Background(), 1)
+	if err != nil {
+		t.Fatalf("expected no error when loading debt: %s\n", err.Error())
+	}
+
+	if createdDebtJohn.Value != debt.Value ||
+		createdDebtJohn.Details != debt.Details ||
+		createdDebtJohn.Person != debt.Person {
+		t.Errorf("debts are different: expected %+v, got %+v\n", createdDebtJohn, debt)
+	}
+}
+
+func Test_GetDebt_ReturnsADomainError_WhenTheDebtDoesNotExist(t *testing.T) {
+	defer teardownTest(t, testDbStore)
+	_, err := newDebt(testDbStore.conn, "John", 1)
+	if err != nil {
+		t.Fatalf("debt was not added: %s\n", err.Error())
+	}
+
+	_, err = testDbStore.LoadDebt(context.Background(), 2)
+	if err == nil {
+		t.Fatal("expected a non-nil error when loading debt")
+	}
+
+	var domainErr store.ErrNotFound
+	if !errors.As(err, &domainErr) {
+		t.Errorf("expected error to be a domain error, got: %s\n", err.Error())
+	}
 }
 
 func TestMain(m *testing.M) {
@@ -60,7 +113,7 @@ func TestMain(m *testing.M) {
 	defer teardown()
 	err = setup()
 	if err != nil {
-		fmt.Printf("error setting up tests database: %s", err.Error())
+		fmt.Printf("error setting up tests database: %s\n", err.Error())
 		exitCode = 1
 		return
 	}
@@ -81,7 +134,6 @@ func setup() error {
 		return fmt.Errorf("could not create database connection: %w", err)
 	}
 
-	fmt.Println(migrations.Migrations)
 	err = runMigrations(testDbStore.conn, migrations.Migrations)
 	if err != nil {
 		return fmt.Errorf("running migrations: %s", err.Error())
@@ -100,23 +152,22 @@ func teardown() {
 	os.Exit(exitCode)
 }
 
-func teardownTest(dbStore *DbStore) error {
+func teardownTest(t *testing.T, dbStore *DbStore) {
 	_, errDebts := dbStore.conn.Exec("DELETE FROM debts WHERE 1=1;")
 	_, errExpenses := dbStore.conn.Exec("DELETE FROM expenses WHERE 1=1;")
 	_, errEntries := dbStore.conn.Exec("DELETE FROM entries WHERE 1=1;")
 
-	return errors.Join(errDebts, errExpenses, errEntries)
+	err := errors.Join(errDebts, errExpenses, errEntries)
+	if err != nil {
+		t.Fatalf("could not clean up tables: %s\n", err.Error())
+	}
 }
 
 // runMigrations executes the content of the sql file into the database
 // instance.
 func runMigrations(db *sql.DB, migrations embed.FS) error {
-	fmt.Println(migrations)
-
 	werr := fs.WalkDir(migrations, ".", func(path string, d fs.DirEntry, err error) error {
-		fmt.Println("aaa", d.Name())
 		if err != nil {
-			fmt.Println("ce pula calului", err)
 			return err
 		}
 		if d.IsDir() {
@@ -149,7 +200,6 @@ func runSqlQuery(db *sql.DB, query string) error {
 	return nil
 }
 
-// newEntry creates a random unique entry for this test.
 func newEntry(conn *sql.DB) (domain.Entry, error) {
 
 	month := rand.Intn(12) + 1
@@ -176,10 +226,9 @@ func newEntry(conn *sql.DB) (domain.Entry, error) {
 	return entry, nil
 }
 
-// newEntry creates a random unique entry for this test.
-func newDebt(conn *sql.DB) (domain.Debt, error) {
+func newDebt(conn *sql.DB, name string, id int) (domain.Debt, error) {
 
-	person := "John"
+	person := name
 	value := currency.Value{
 		Amount:   5000,
 		Exponent: -2,
@@ -191,7 +240,7 @@ func newDebt(conn *sql.DB) (domain.Debt, error) {
 		return domain.Debt{}, fmt.Errorf("could not create debt: %s", err.Error())
 	}
 
-	_, err = conn.Exec("INSERT INTO debts(person, amount, currency, exponent, details) VALUES (?,?,?,?,?);", debt.Person, debt.Amount, debt.Currency, debt.Exponent, debt.Details)
+	_, err = conn.Exec("INSERT INTO debts(id, person, amount, currency, exponent, details) VALUES (?,?,?,?,?,?);", id, debt.Person, debt.Amount, debt.Currency, debt.Exponent, debt.Details)
 	if err != nil {
 		return domain.Debt{}, fmt.Errorf("could not run sql: %s", err.Error())
 	}

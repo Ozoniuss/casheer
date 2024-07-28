@@ -8,6 +8,7 @@ import (
 
 	"github.com/Ozoniuss/casheer/internal/domain"
 	"github.com/Ozoniuss/casheer/internal/domain/currency"
+	"github.com/Ozoniuss/casheer/internal/ports/store"
 )
 
 type DbStore struct {
@@ -28,14 +29,16 @@ func NewDbStore(path string) (*DbStore, error) {
 func (s *DbStore) ListDebts(ctx context.Context) ([]domain.Debt, error) {
 
 	query := `
-	SELECT 
-		id, person, amount, currency, exponent, details, created_at, updated_at 
-	FROM 
-		debts 
-	WHERE 
+	SELECT
+		id, person, amount, currency, exponent, details, created_at, updated_at
+	FROM
+		debts
+	WHERE
 		deleted_at IS NULL
+	ORDER BY
+		person ASC, amount DESC, id ASC;
 	`
-	rows, err := s.conn.Query(query)
+	rows, err := s.conn.QueryContext(ctx, query)
 	if err != nil {
 		return nil, fmt.Errorf("error running query: %w", err)
 	}
@@ -43,16 +46,16 @@ func (s *DbStore) ListDebts(ctx context.Context) ([]domain.Debt, error) {
 	debts := make([]domain.Debt, 0)
 
 	for rows.Next() {
-		var debt DbDebt
+		var dbdebt DbDebt
 		var details sql.NullString
 
-		err := rows.Scan(&debt.ID, &debt.Person, &debt.Amount, &debt.Currency, &debt.Exponent, &details, &debt.CreatedAt, &debt.UpdatedAt)
+		err := rows.Scan(&dbdebt.ID, &dbdebt.Person, &dbdebt.Amount, &dbdebt.Currency, &dbdebt.Exponent, &details, &dbdebt.CreatedAt, &dbdebt.UpdatedAt)
 		if err != nil {
 			return nil, fmt.Errorf("scanning debt row: %w", err)
 		}
 
-		debt.Details = details
-		debts = append(debts, debt.toDomain())
+		dbdebt.Details = details
+		debts = append(debts, dbdebt.toDomain())
 	}
 
 	if err = rows.Err(); err != nil {
@@ -60,6 +63,38 @@ func (s *DbStore) ListDebts(ctx context.Context) ([]domain.Debt, error) {
 	}
 
 	return debts, nil
+}
+func (s *DbStore) LoadDebt(ctx context.Context, id int) (domain.Debt, error) {
+
+	query := `
+	SELECT
+		id, person, amount, currency, exponent, details, created_at, updated_at
+	FROM
+		debts
+	WHERE
+		id = :id
+	AND
+		deleted_at IS NULL;
+	`
+	var dbdebt DbDebt
+	var details sql.NullString
+
+	row := s.conn.QueryRowContext(ctx, query, sql.Named("id", id))
+	err := row.Scan(&dbdebt.ID, &dbdebt.Person, &dbdebt.Amount, &dbdebt.Currency, &dbdebt.Exponent, &details, &dbdebt.CreatedAt, &dbdebt.UpdatedAt)
+
+	switch {
+	case err == sql.ErrNoRows:
+		domainErr := store.ErrNotFound{
+			Details: fmt.Sprintf("debt with id %d not found", id),
+			Orig:    err,
+		}
+		return domain.Debt{}, fmt.Errorf("scanning debt row: %w", domainErr)
+	case err != nil:
+		return domain.Debt{}, fmt.Errorf("scanning debt row: %w", err)
+	}
+
+	dbdebt.Details = details
+	return dbdebt.toDomain(), nil
 }
 
 func (s *DbStore) Healthcheck(ctx context.Context) error {
