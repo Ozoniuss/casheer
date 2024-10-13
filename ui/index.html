@@ -95,6 +95,24 @@
     <div id="all-entries-categorized">
         {{ block "all-planning-data" . }}
         <h3>Available entries</h3>
+
+        Insert new entry here 
+        <form id="element-creation-form" hx-confirm="Are you sure?" hx-post="/createEntry" hx-target="next ul"
+            hx-swap="inner-html">
+            <button type="submit">Create</button>
+            <label for="entry-category">Category</label>
+            <input type="text" name="category" id="entry-category">
+            <label for="entry-subcategory">Subcategory</label>
+            <input type="text" name="subcategory" id="entry-subcategory">
+            <label for="entry-expected-value">Expected Value</label>
+            <input type="number" name="expected-value" id="entry-expected-value">
+            <label for="entry-currency">Currency</label>
+            <input type="text" name="currency" id="entry-currency">
+            <label for="entry-recurring">Recurring</label>
+            <input type="checkbox" name="recurring" id="entry-recurring">
+            <input type="hidden" name="month" id="entry-month">
+            <input type="hidden" name="year" id="entry-year">
+        </form>
         
         {{ range .CategorizedEntryList }}
 
@@ -213,6 +231,8 @@
                 yearselector.value = period.year
                 let monthselector = document.getElementById("month-select");
                 monthselector.value = period.month
+                // make sure create fields have the current period
+                updateCreateEntryInputs()
             }).
             catch((error) => console.log("could not fetch period", error))
 
@@ -230,6 +250,8 @@
             // Basically everything that is collapsible is re-written, repeat step below.
             if (evt.srcElement.id === "year-select" || evt.srcElement.id === "month-select") {
                 console.log("switched period")
+                // make sure entry matches "current" date set by the selectors
+                updateCreateEntryInputs()
                 let collapsibles = document.getElementsByClassName("collapsible");
                 for (let i = 0; i < collapsibles.length; i++) {
                     collapsibles[i].addEventListener("click", onClickForCollapsible.bind(collapsibles[i]));
@@ -241,6 +263,17 @@
         var coll = document.getElementsByClassName("collapsible");
         for (let i = 0; i < coll.length; i++) {
             coll[i].addEventListener("click", onClickForCollapsible.bind(coll[i]));
+        }
+
+        function updateCreateEntryInputs() {
+            const yearSelect = document.getElementById('year-select');
+            const monthSelect = document.getElementById('month-select');
+            const hiddenYearInput = document.getElementById('entry-year');
+            const hiddenMonthInput = document.getElementById('entry-month');
+            console.log(`changing entry creation year and month to ${yearSelect.value} and ${monthSelect.value}`)
+
+            hiddenYearInput.value = yearSelect.value;
+            hiddenMonthInput.value = monthSelect.value;
         }
 
         function onClickForCollapsible() {
