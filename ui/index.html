@@ -128,10 +128,9 @@
             {{ block "all-entries-categorized" . }}
             <li>
                 <div class="entry-row header">
+                    <div><span>Subcategory</span></div>
                     <div><span>Id</span></div>
                     <div><span>Expected</span></div>
-                    <div><span>Category</span></div>
-                    <div><span>Subcategory</span></div>
                     <div><span>Recurring</span></div>
                     <div><span>RON</span></div>
                     <div><span>EUR</span></div>
@@ -142,10 +141,9 @@
             {{ range .Entries }}
             <li>
                 <div class="collapsible entry-row">
+                    <div><span>{{ .Subcategory }}</span></div>
                     <div><span>{{ .Id }}</span></div>
                     <div><span>{{ .TotalMoney }} {{ .Currency }}</span></div>
-                    <div><span>{{ .Category }}</span></div>
-                    <div><span>{{ .Subcategory }}</span></div>
                     <div><span>{{ .Recurring }}</span></div>
                     <div><span>{{ .RunningTotal.RON }}</span></div>
                     <div><span>{{ .RunningTotal.EUR }}</span></div>
