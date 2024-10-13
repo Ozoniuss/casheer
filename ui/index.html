@@ -97,15 +97,15 @@
         <h3>Available entries</h3>
 
         Insert new entry here 
-        <form id="element-creation-form" hx-confirm="Are you sure?" hx-post="/createEntry" hx-target="next ul"
+        <form id="element-creation-form" hx-confirm="Are you sure?" hx-post="/createEntry" hx-target="#all-entries-categorized-inner"
             hx-swap="inner-html">
             <button type="submit">Create</button>
             <label for="entry-category">Category</label>
             <input type="text" name="category" id="entry-category">
             <label for="entry-subcategory">Subcategory</label>
             <input type="text" name="subcategory" id="entry-subcategory">
-            <label for="entry-expected-value">Expected Value</label>
-            <input type="number" name="expected-value" id="entry-expected-value">
+            <label for="entry-expected-total">Expected Total</label>
+            <input type="number" name="expected-total" id="entry-expected-total">
             <label for="entry-currency">Currency</label>
             <input type="text" name="currency" id="entry-currency">
             <label for="entry-recurring">Recurring</label>
@@ -113,81 +113,89 @@
             <input type="hidden" name="month" id="entry-month">
             <input type="hidden" name="year" id="entry-year">
         </form>
+
+        <!-- refresh only this block when creating a new entry -->
+        <div id="all-entries-categorized-inner"></div>
+        {{ block "all-entries-categorized-inner" . }}
         
         {{ range .CategorizedEntryList }}
 
-        {{ $expectedForCategory := 0 }}
-        {{ range $_, $entry := .Entries }}
-        {{ $expectedForCategory = (Sum $expectedForCategory $entry.TotalMoney) }}
-        {{ end }}
+            {{ $expectedForCategory := 0 }}
+            {{ range $_, $entry := .Entries }}
+            {{ $expectedForCategory = (Sum $expectedForCategory $entry.TotalMoney) }}
+            {{ end }}
 
-        <h4>
-            {{ .Category }} [Expected: {{ $expectedForCategory }}] [Actual]
-        </h4>
-        Insert new expense to this category
-        <form id="element-creation-form" hx-confirm="Are you sure?" hx-post="/createExpense" hx-target="next ul"
-            hx-swap="inner-html">
-            <button type="submit">Create</button>
-            <label for="expense-subcategory">Subcategory</label>
-            <input type="text" name="subcategory" id="expense-subcategory">
-            <label for="expense-name">Name</label>
-            <input type="text" name="name" id="expense-name">
-            <label for="expected-value">Expected Value</label>
-            <input type="number" name="total-money" id="expected-value">
-            <label for="expected-currency">Currency</label>
-            <input type="text" name="currency" id="expected-currency">
-            <label for="expense-details">Details</label>
-            <input type="text" name="details" id="expense-details">
-            <label for="payment-method">Payment Method</label>
-            <input type="text" name="payment-method" id="payment-method">
-            <input type="hidden" name="category" value="{{ .Category }}">
-        </form>
-        <ul id="subcategories-list">
-            {{ block "all-entries-categorized" . }}
-            <li>
-                <div class="entry-row header">
-                    <div><span>Subcategory</span></div>
-                    <div><span>Id</span></div>
-                    <div><span>Expected</span></div>
-                    <div><span>Recurring</span></div>
-                    <div><span>RON</span></div>
-                    <div><span>EUR</span></div>
-                    <div><span>USD</span></div>
-                    <div><span>GBP</span></div>
-                </div>
-            </li>
-            {{ range .Entries }}
-            <li>
-                <div class="collapsible entry-row">
-                    <div><span>{{ .Subcategory }}</span></div>
-                    <div><span>{{ .Id }}</span></div>
-                    <div><span>{{ .TotalMoney }} {{ .Currency }}</span></div>
-                    <div><span>{{ .Recurring }}</span></div>
-                    <div><span>{{ .RunningTotal.RON }}</span></div>
-                    <div><span>{{ .RunningTotal.EUR }}</span></div>
-                    <div><span>{{ .RunningTotal.USD }}</span></div>
-                    <div><span>{{ .RunningTotal.GBP }}</span></div>
-                    <!-- Id: {{ .Id }}, Expected: {{.TotalMoney }} {{ .Currency }} Category: {{ .Category }}
-                    Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} Total: {{ .RunningTotal.RON }} RON
-                    {{ .RunningTotal.EUR }} EUR {{ .RunningTotal.USD }} USD -->
-                </div>
-                <div class="content">
-                    {{ if not .Expenses }} No expenses recorded here
-                    {{ else }}
-                    <ul id="expenses-list">
-                        {{ $entid := .Id }}{{ range .Expenses }}
-                        <li class="expense-row">
-                            <button hx-vals='{"expid":"{{ .Id }}","entid":"{{ $entid }}"}' hx-swap="outerHTML" hx-target="closest li" hx-post="/deleteExpense">delete</button> Id: {{ .Id }} Total Money: {{ .TotalMoney }} {{ .Currency }}
-                        </li>
+            <h4>
+                {{ .Category }} [Expected: {{ $expectedForCategory }}] [Actual]
+            </h4>
+            Insert new expense to this category
+            <form id="element-creation-form" hx-confirm="Are you sure?" hx-post="/createExpense" hx-target="next ul"
+                hx-swap="inner-html">
+                <button type="submit">Create</button>
+                <label for="expense-subcategory">Subcategory</label>
+                <input type="text" name="subcategory" id="expense-subcategory">
+                <label for="expense-name">Name</label>
+                <input type="text" name="name" id="expense-name">
+                <label for="expected-value">Expected Value</label>
+                <input type="number" name="total-money" id="expected-value">
+                <label for="expected-currency">Currency</label>
+                <input type="text" name="currency" id="expected-currency">
+                <label for="expense-details">Details</label>
+                <input type="text" name="details" id="expense-details">
+                <label for="payment-method">Payment Method</label>
+                <input type="text" name="payment-method" id="payment-method">
+                <input type="hidden" name="category" value="{{ .Category }}">
+            </form>
+            <ul id="subcategories-list">
+                {{ block "all-entries-categorized" . }}
+                <li>
+                    <div class="entry-row header">
+                        <div><span>Subcategory</span></div>
+                        <div><span>Id</span></div>
+                        <div><span>Expected</span></div>
+                        <div><span>Recurring</span></div>
+                        <div><span>RON</span></div>
+                        <div><span>EUR</span></div>
+                        <div><span>USD</span></div>
+                        <div><span>GBP</span></div>
+                    </div>
+                </li>
+                {{ range .Entries }}
+                <li>
+                    <div class="collapsible entry-row">
+                        <div><span>{{ .Subcategory }}</span></div>
+                        <div><span>{{ .Id }}</span></div>
+                        <div><span>{{ .TotalMoney }} {{ .Currency }}</span></div>
+                        <div><span>{{ .Recurring }}</span></div>
+                        <div><span>{{ .RunningTotal.RON }}</span></div>
+                        <div><span>{{ .RunningTotal.EUR }}</span></div>
+                        <div><span>{{ .RunningTotal.USD }}</span></div>
+                        <div><span>{{ .RunningTotal.GBP }}</span></div>
+                        <!-- Id: {{ .Id }}, Expected: {{.TotalMoney }} {{ .Currency }} Category: {{ .Category }}
+                        Subcategory: {{ .Subcategory }} Recurring: {{ .Recurring }} Total: {{ .RunningTotal.RON }} RON
+                        {{ .RunningTotal.EUR }} EUR {{ .RunningTotal.USD }} USD -->
+                    </div>
+                    <div class="content">
+                        {{ if not .Expenses }} No expenses recorded here
+                        {{ else }}
+                        <ul id="expenses-list">
+                            {{ $entid := .Id }}{{ range .Expenses }}
+                            <li class="expense-row">
+                                <button hx-vals='{"expid":"{{ .Id }}","entid":"{{ $entid }}"}' hx-swap="outerHTML" hx-target="closest li" hx-post="/deleteExpense">delete</button> Id: {{ .Id }} Total Money: {{ .TotalMoney }} {{ .Currency }}
+                            </li>
+                            {{ end }}
+                        </ul>
                         {{ end }}
-                    </ul>
-                    {{ end }}
-                </div>
-            </li>
+                    </div>
+                </li>
+                {{ end }}
+                {{ end }}
+            </ul>
             {{ end }}
-            {{ end }}
-        </ul>
+        
         {{ end }}
+        </div>
+
         {{ end }}
     </div>
 
