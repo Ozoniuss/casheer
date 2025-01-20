@@ -18,9 +18,14 @@ type Debt struct {
 }
 
 func NewDebt(person string, details string, value currency.Value) (Debt, error) {
+	errs := make([]error, 0)
 
 	if person == "" {
-		return Debt{}, ErrEmptyPerson
+		errs = append(errs, ErrMissingDebtPerson)
+	}
+
+	if len(errs) != 0 {
+		return Debt{}, ErrInvalidDebt{underlying: errs}
 	}
 
 	return Debt{
@@ -33,4 +38,6 @@ func NewDebt(person string, details string, value currency.Value) (Debt, error) 
 	}, nil
 }
 
-var ErrEmptyPerson = errors.New("person must not be empty")
+var ErrMissingDebtPerson = errors.New("person must not be empty")
+
+type ErrInvalidDebt = errorWithUnderlyingError

@@ -1,6 +1,8 @@
 package domain
 
 import (
+	"errors"
+	"slices"
 	"time"
 
 	"github.com/Ozoniuss/casheer/internal/domain/currency"
@@ -20,6 +22,13 @@ type Expense struct {
 }
 
 func NewScratchExpense(name string, description string, paymentMethod string, value currency.Value) (Expense, error) {
+	errs := make([]error, 0)
+	if name == "" {
+		errs = append(errs, ErrEmptyExpenseName)
+	}
+	if len(errs) != 0 {
+		return Expense{}, ErrorInvalidExpense{underlying: slices.Clone(errs)}
+	}
 	return Expense{
 		Name:          name,
 		Description:   description,
@@ -30,3 +39,7 @@ func NewScratchExpense(name string, description string, paymentMethod string, va
 		},
 	}, nil
 }
+
+var ErrEmptyExpenseName = errors.New("expense must have a name")
+
+type ErrorInvalidExpense = errorWithUnderlyingError

@@ -2,6 +2,7 @@ package domain
 
 import (
 	"errors"
+	"strings"
 	"time"
 )
 
@@ -22,3 +23,19 @@ func NewMonth(month int) (Month, error) {
 }
 
 var ErrInvalidMonthNumber = errors.New("month must be between 1 and 12")
+
+type errorWithUnderlyingError struct {
+	underlying []error
+}
+
+func (e errorWithUnderlyingError) Error() string {
+	errstrs := make([]string, 0, len(e.underlying))
+	for _, err := range e.underlying {
+		errstrs = append(errstrs, err.Error())
+	}
+	return strings.Join(errstrs, ";")
+}
+
+func (e errorWithUnderlyingError) Unwrap() []error {
+	return e.underlying
+}

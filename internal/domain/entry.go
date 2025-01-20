@@ -34,22 +34,22 @@ type Entry struct {
 }
 
 func NewEntry(month int, year int, category, subcategory string, recurring bool, value currency.Value) (Entry, error) {
-	var err error = nil
+	errs := make([]error, 0)
 
 	mo, merr := NewMonth(month)
 	if merr != nil {
-		errors.Join(err, merr)
+		errs = append(errs, merr)
 	}
 
 	if category == "" {
-		err = errors.Join(err, ErrEmptyCategory)
+		errs = append(errs, ErrEmptyEntryCategory)
 	}
 	if subcategory == "" {
-		err = errors.Join(err, ErrEmptySubcategory)
+		errs = append(errs, ErrEmptyEntrySubcategory)
 	}
 
-	if err != nil {
-		return Entry{}, err
+	if len(errs) != 0 {
+		return Entry{}, ErrorInvalidEntry{underlying: slices.Clone(errs)}
 	}
 
 	return Entry{
@@ -112,7 +112,9 @@ const (
 	ExpenseDeleted  ExpenseStatus = "deleted"
 )
 
-var ErrEmptyCategory = errors.New("category must not be empty")
-var ErrEmptySubcategory = errors.New("subcategory must not be empty")
+var ErrEmptyEntryCategory = errors.New("category must not be empty")
+var ErrEmptyEntrySubcategory = errors.New("subcategory must not be empty")
 
 var ErrMissingExpense = errors.New("the expense is not part of the aggregate")
+
+type ErrorInvalidEntry = errorWithUnderlyingError
