@@ -1,1 +1,0 @@
-docker compose -f docker-compose.yml -f docker-compose.persistent.yml up -d

@@ -1,3 +1,5 @@
+#!/bin/bash
+
 export DBNAME='casheer.e2e.db'
 export BUILD_DOCKER=
 
