@@ -106,6 +106,36 @@ func RunMigrations(db *gorm.DB, migrationDir string) error {
 	return nil
 }
 
+func EnsureDatabaseFileExists(dbfile string) error {
+	_, err := os.Stat(dbfile)
+	if err != nil && !os.IsNotExist(err) {
+		return fmt.Errorf("retrieving stats for %s: %s", dbfile, err)
+	} else if os.IsNotExist(err) {
+		err := createDbFile(dbfile)
+		if err != nil {
+			return fmt.Errorf("database file %s doesn't exist and could not create a new one: %s", dbfile, err.Error())
+		}
+	}
+	return nil
+}
+
+func EnsureMigrationsAreRun(db *gorm.DB, dbfile, sqlpath string) error {
+	fstat, err := os.Stat(dbfile)
+	if err != nil {
+		return fmt.Errorf("retrieving stats for %s: %s", dbfile, err)
+	}
+	if fstat.Size() != 0 {
+		return nil
+	}
+	fmt.Println("Database was not found and is empty, initializing database tables...")
+	err = RunMigrations(db, sqlpath)
+	if err != nil {
+		defer os.Remove(dbfile)
+		return fmt.Errorf("running sql migrations: %s", err.Error())
+	}
+	return nil
+}
+
 // EnsureDatabaseFileIsInitialized verifies if the provided file contains an
 // initialized database, based on the following:
 // - the database file exists;
@@ -142,7 +172,7 @@ func EnsureDatabaseFileIsInitialized(db *gorm.DB, dbfile, sqlpath string) error 
 func ConnectSqlite(dbfile string) (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open(dbfile), &gorm.Config{})
 	if err != nil {
-		return nil, fmt.Errorf("could not open database file: %w", err)
+		return nil, fmt.Errorf("could not open database file %s: %w", dbfile, err)
 	}
 	return db, nil
 }

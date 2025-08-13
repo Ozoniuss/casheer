@@ -19,17 +19,25 @@ func run() error {
 	))
 	ctx := context.Background()
 
-	config := cfg.NewInitializedConfig()
-	log.InfoContext(ctx, "parsed config", slog.Any("config", config))
+	config, err := cfg.LoadConfig()
+	if err != nil {
+		return fmt.Errorf("failed to load config: %w", err)
+	}
+	log.InfoContext(ctx, "config loaded", slog.Any("config", config))
+
+	err = store.EnsureDatabaseFileExists(config.SQLiteDatabase.File)
+	if err != nil {
+		return fmt.Errorf("could not ensure database file exists: %w", err)
+	}
 
 	conn, err := store.ConnectSqlite(config.SQLiteDatabase.File)
 	if err != nil {
 		return fmt.Errorf("could not connect to sqlite database: %w", err)
 	}
 
-	err = store.EnsureDatabaseFileIsInitialized(conn, config.SQLiteDatabase.File, config.SQLiteDatabase.Migration)
+	err = store.EnsureMigrationsAreRun(conn, config.SQLiteDatabase.File, config.SQLiteDatabase.Migration)
 	if err != nil {
-		return fmt.Errorf("failed database file check: %w", err)
+		return fmt.Errorf("could not ensure migrations are run: %w", err)
 	}
 
 	log.InfoContext(ctx, "Connected to database.")

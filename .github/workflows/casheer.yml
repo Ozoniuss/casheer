@@ -39,4 +39,4 @@ jobs:
 
       - name: Run end to end tests
         working-directory: .
-        run: bash test_e2e.sh
+        run: make trigger-e2e-tests-build

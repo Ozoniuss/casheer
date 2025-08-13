@@ -5,6 +5,7 @@ import (
 	"strconv"
 )
 
+//go:generate go tool genconfig -struct=Config -project=Casheer
 type Config struct {
 	Server         Server
 	SQLiteDatabase SQLiteDatabase `mapstructure:"sqlite_database"`
