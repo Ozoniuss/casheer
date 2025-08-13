@@ -1,19 +1,15 @@
-.PHONY: run-local stop-local run-local-persistent stop-local-persistent run-ui-only trigger-e2e-tests
+.PHONY: run-dev run-dev-backend stop-dev-backend run-ui-only trigger-e2e-tests
 
-run-local:
-	docker compose -f docker-compose.yml up -d --build`
+run-dev: run-dev-backend run-ui-only
 
-stop-local:
-	docker compose -f docker-compose.yml down
-
-run-local-persistent:
+run-dev-backend:
 	docker compose -f docker-compose.yml -f docker-compose.persistent.yml up -d --build
 
-stop-local-persistent:
+stop-dev-backend:
 	docker compose -f docker-compose.yml -f docker-compose.persistent.yml down
 
 run-ui-only:
-	go build -o ui/main ui/*.go && ./ui/main
+	cd ./ui && go build -o main *.go && ./main
 
 trigger-e2e-tests:
 	chmod +x ./scripts/test_e2e.sh
