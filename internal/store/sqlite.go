@@ -103,6 +103,7 @@ func RunMigrations(db *gorm.DB, migrationDir string) error {
 	if werr != nil {
 		return fmt.Errorf("going through the sql migration files: %s", werr.Error())
 	}
+	fmt.Println("finished running migrations")
 	return nil
 }
 
@@ -111,11 +112,13 @@ func EnsureDatabaseFileExists(dbfile string) error {
 	if err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("retrieving stats for %s: %s", dbfile, err)
 	} else if os.IsNotExist(err) {
+		fmt.Printf("database file %s not found, creating...\n", dbfile)
 		err := createDbFile(dbfile)
 		if err != nil {
 			return fmt.Errorf("database file %s doesn't exist and could not create a new one: %s", dbfile, err.Error())
 		}
 	}
+	fmt.Printf("found database file %s\n", dbfile)
 	return nil
 }
 
@@ -132,39 +135,6 @@ func EnsureMigrationsAreRun(db *gorm.DB, dbfile, sqlpath string) error {
 	if err != nil {
 		defer os.Remove(dbfile)
 		return fmt.Errorf("running sql migrations: %s", err.Error())
-	}
-	return nil
-}
-
-// EnsureDatabaseFileIsInitialized verifies if the provided file contains an
-// initialized database, based on the following:
-// - the database file exists;
-// - the size of the file is different from 0.
-// If both are met, it doesn't do anything. If either is not true, it recreates
-// the file and runs the initial migrations to create the tables.
-func EnsureDatabaseFileIsInitialized(db *gorm.DB, dbfile, sqlpath string) error {
-	shouldRunMigrations := false
-	fstat, err := os.Stat(dbfile)
-	if err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("retrieving stats for %s: %s", dbfile, err)
-	} else if os.IsNotExist(err) {
-		err := createDbFile(dbfile)
-		if err != nil {
-			return fmt.Errorf("database file %s doesn't exist and could not create a new one: %s", dbfile, err.Error())
-		}
-		shouldRunMigrations = true
-	} else if err == nil && fstat.Size() == 0 {
-		// file exists, but has size 0. Should still run the migrations.
-		shouldRunMigrations = true
-	}
-
-	if shouldRunMigrations {
-		fmt.Println("Database was not found, initializing database tables...")
-		err := RunMigrations(db, sqlpath)
-		if err != nil {
-			defer os.Remove(dbfile)
-			return fmt.Errorf("running sql migrations: %s", err.Error())
-		}
 	}
 	return nil
 }
