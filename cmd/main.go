@@ -9,6 +9,7 @@ import (
 	cfg "github.com/Ozoniuss/casheer/internal/config"
 	"github.com/Ozoniuss/casheer/internal/router"
 	"github.com/Ozoniuss/casheer/internal/store"
+	"gorm.io/gorm"
 )
 
 func run() error {
@@ -25,19 +26,29 @@ func run() error {
 	}
 	log.InfoContext(ctx, "config loaded", slog.Any("config", config))
 
-	err = store.EnsureDatabaseFileExists(config.SQLiteDatabase.File)
-	if err != nil {
-		return fmt.Errorf("could not ensure database file exists: %w", err)
-	}
+	var conn *gorm.DB
+	if config.SQLiteDatabase.CreateIfEmpty {
+		// If the database file exists, connect to it, otherwise prepare it to
+		// be used with casheer.
+		err = store.EnsureDatabaseFileExists(config.SQLiteDatabase.File)
+		if err != nil {
+			return fmt.Errorf("could not ensure database file exists: %w", err)
+		}
 
-	conn, err := store.ConnectSqlite(config.SQLiteDatabase.File)
-	if err != nil {
-		return fmt.Errorf("could not connect to sqlite database: %w", err)
-	}
+		conn, err = store.ConnectSqlite(config.SQLiteDatabase.File)
+		if err != nil {
+			return fmt.Errorf("could not connect to sqlite database: %w", err)
+		}
 
-	err = store.EnsureMigrationsAreRun(conn, config.SQLiteDatabase.File, config.SQLiteDatabase.Migration)
-	if err != nil {
-		return fmt.Errorf("could not ensure migrations are run: %w", err)
+		err = store.EnsureMigrationsAreRun(conn, config.SQLiteDatabase.File, config.SQLiteDatabase.Migration)
+		if err != nil {
+			return fmt.Errorf("could not ensure migrations are run: %w", err)
+		}
+	} else {
+		conn, err = store.ConnectSqlite(config.SQLiteDatabase.File)
+		if err != nil {
+			return fmt.Errorf("could not connect to sqlite database: %w", err)
+		}
 	}
 
 	log.InfoContext(ctx, "Connected to database.")

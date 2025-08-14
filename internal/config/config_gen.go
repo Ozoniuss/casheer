@@ -15,6 +15,7 @@ const (
     CASHEER_SERVER_PORT_ENV = "CASHEER_SERVER_PORT"
     CASHEER_SQLITEDATABASE_FILE_ENV = "CASHEER_SQLITEDATABASE_FILE"
     CASHEER_SQLITEDATABASE_MIGRATION_ENV = "CASHEER_SQLITEDATABASE_MIGRATION"
+    CASHEER_SQLITEDATABASE_CREATEIFEMPTY_ENV = "CASHEER_SQLITEDATABASE_CREATEIFEMPTY"
     CASHEER_APIPATHS_ENTRIES_ENV = "CASHEER_APIPATHS_ENTRIES"
     CASHEER_APIPATHS_EXPENSES_ENV = "CASHEER_APIPATHS_EXPENSES"
     CASHEER_APIPATHS_DEBTS_ENV = "CASHEER_APIPATHS_DEBTS"
@@ -28,6 +29,8 @@ var (
     ErrCasheerServerPortEnvInvalid = errors.New(CASHEER_SERVER_PORT_ENV)
     ErrCasheerSqlitedatabaseFileEnvMissing = errors.New(CASHEER_SQLITEDATABASE_FILE_ENV)
     ErrCasheerSqlitedatabaseMigrationEnvMissing = errors.New(CASHEER_SQLITEDATABASE_MIGRATION_ENV)
+    ErrCasheerSqlitedatabaseCreateifemptyEnvMissing = errors.New(CASHEER_SQLITEDATABASE_CREATEIFEMPTY_ENV)
+    ErrCasheerSqlitedatabaseCreateifemptyEnvInvalid = errors.New(CASHEER_SQLITEDATABASE_CREATEIFEMPTY_ENV)
     ErrCasheerApipathsEntriesEnvMissing = errors.New(CASHEER_APIPATHS_ENTRIES_ENV)
     ErrCasheerApipathsExpensesEnvMissing = errors.New(CASHEER_APIPATHS_EXPENSES_ENV)
     ErrCasheerApipathsDebtsEnvMissing = errors.New(CASHEER_APIPATHS_DEBTS_ENV)
@@ -72,6 +75,17 @@ func LoadConfig() (Config, error) {
         missingVars = append(missingVars, ErrCasheerSqlitedatabaseMigrationEnvMissing)
     } else {
         config.SQLiteDatabase.Migration = val_SQLiteDatabase_Migration
+    }
+    val_SQLiteDatabase_CreateIfEmpty, ok := os.LookupEnv(CASHEER_SQLITEDATABASE_CREATEIFEMPTY_ENV)
+    if !ok {
+        missingVars = append(missingVars, ErrCasheerSqlitedatabaseCreateifemptyEnvMissing)
+    } else {
+        parsed, err := strconv.ParseBool(val_SQLiteDatabase_CreateIfEmpty)
+        if err != nil {
+            formatVars = append(formatVars, ErrCasheerSqlitedatabaseCreateifemptyEnvInvalid)
+        } else {
+            config.SQLiteDatabase.CreateIfEmpty = parsed
+        }
     }
     val_ApiPaths_Entries, ok := os.LookupEnv(CASHEER_APIPATHS_ENTRIES_ENV)
     if !ok {

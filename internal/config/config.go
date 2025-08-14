@@ -15,6 +15,14 @@ const (
 type SQLiteDatabase struct {
 	File      string
 	Migration string
+	// CreateIfEmpty is helpful in controlling what the application should do
+	// in case an initialized database is not found. In an actual application,
+	// this will force using an existing database. However, for testing, this
+	// can be enabled in order for the application to create the database and
+	// run all migrations.
+	//
+	// Note that running the migrations requires access to the migration scripts.
+	CreateIfEmpty bool
 }
 
 type Server struct {

@@ -18,7 +18,7 @@ var casheerClient, _ = httpclient.NewCasheerHTTPClient(
 var conn *gorm.DB
 
 func TestMain(m *testing.M) {
-	dbname := os.Getenv("DBNAME")
+	dbname := "casheer.e2e.db"
 
 	wd, err := os.Getwd()
 	if err != nil {

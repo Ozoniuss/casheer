@@ -1,9 +1,7 @@
 #!/bin/bash
 
-echo "ce ma? $(pwd)"
+# Note that e2e tests assume a DB with name casheer.e2e.db
 
-# Note that DBNAME is used in other places as well. This exact name is needed.
-export DBNAME='casheer.e2e.db'
 export BUILD_DOCKER=
 
 function cleanup {
@@ -13,23 +11,29 @@ function cleanup {
 
 trap cleanup EXIT
 
-# I think a custom db file name is completely unnecessary. But, this code 
-# makes it easy for me to keep the file for debugging if something fails.
-if [[ -n $1 ]]; then
-    if [[ "$1" == "--build" ]]; then
-        BUILD_DOCKER=true
-    else
-        DBNAME="$1"
-    fi
+if [[ "$1" == "--build" ]]; then
+    BUILD_DOCKER=true
 fi
 
-# create a database
-if [[ ! -f $DBNAME ]]; then
-    touch "$DBNAME"
-fi
+
+
+DBNAME=casheer.e2e.db
+
+touch "$DBNAME"
+chmod 666 "$DBNAME"
+
+# Run migrations before using the end to end test DB in the container.
+sqlite3 "$DBNAME" < scripts/sqlite/002_update_entry_value.down.sql && 
+sqlite3 "$DBNAME" < scripts/sqlite/001_tables.down.sql && 
+sqlite3 "$DBNAME" < scripts/sqlite/001_tables.up.sql &&
+sqlite3 "$DBNAME" < scripts/sqlite/002_update_entry_value.up.sql &&
+
+ls -l "$DBNAME"
 
 
 echo "Using database $DBNAME."
+
+
 
 if [[ ! -z "$BUILD_DOCKER" ]]; then
     echo "building docker image..."
@@ -37,12 +41,6 @@ if [[ ! -z "$BUILD_DOCKER" ]]; then
 else
     docker compose -f docker-compose.e2e.yml up -d
 fi
-
-# Run migrations before using the end to end test DB in the container.
-sqlite3 "$DBNAME" < scripts/sqlite/002_update_entry_value.down.sql && 
-sqlite3 "$DBNAME" < scripts/sqlite/001_tables.down.sql && 
-sqlite3 "$DBNAME" < scripts/sqlite/001_tables.up.sql &&
-sqlite3 "$DBNAME" < scripts/sqlite/002_update_entry_value.up.sql &&
 
 sleep 1
 

@@ -117,6 +117,7 @@ func EnsureDatabaseFileExists(dbfile string) error {
 		if err != nil {
 			return fmt.Errorf("database file %s doesn't exist and could not create a new one: %s", dbfile, err.Error())
 		}
+		return nil
 	}
 	fmt.Printf("found database file %s\n", dbfile)
 	return nil
@@ -130,7 +131,7 @@ func EnsureMigrationsAreRun(db *gorm.DB, dbfile, sqlpath string) error {
 	if fstat.Size() != 0 {
 		return nil
 	}
-	fmt.Println("Database was not found and is empty, initializing database tables...")
+	fmt.Println("Database is empty, initializing database tables...")
 	err = RunMigrations(db, sqlpath)
 	if err != nil {
 		defer os.Remove(dbfile)

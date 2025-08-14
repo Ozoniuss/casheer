@@ -11,13 +11,16 @@ services:
             - CASHEER_SERVER_SCHEME=http
             - CASHEER_SERVER_ADDRESS=0.0.0.0
             - CASHEER_SERVER_PORT=6597
-            - CASHEER_SQLITEDATABASE_FILE=/home/nonroot/casheer.db
-            - CASHEER_SQLITEDATABASE_MIGRATION='./scripts/sqlite'
-            - CASHEER_APIPATHS_ENTRIES='entries/'
-            - CASHEER_APIPATHS_EXPENSES='expenses/'
-            - CASHEER_APIPATHS_DEBTS='debts/'
-            - CASHEER_APIPATHS_TOTALS='totals/'
+            - CASHEER_SQLITEDATABASE_CREATEIFEMPTY=true
+            - CASHEER_SQLITEDATABASE_FILE=/home/nonroot/casheer.e2e.db
+            - CASHEER_SQLITEDATABASE_MIGRATION=/home/nonroot/scripts/sqlite
+            - CASHEER_APIPATHS_ENTRIES=entries/
+            - CASHEER_APIPATHS_EXPENSES=expenses/
+            - CASHEER_APIPATHS_DEBTS=debts/
+            - CASHEER_APIPATHS_TOTALS=totals/
         ports:
             - 6597:6597
+        # these are required for migrations
         volumes:
-            - ./${DBNAME:-casheer.e2e.db}:/home/nonroot/casheer.db
+            - ./casheer.e2e.db:/home/nonroot/casheer.e2e.db
+            - ./scripts/sqlite/:/home/nonroot/scripts/sqlite/
