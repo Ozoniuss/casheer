@@ -25,7 +25,9 @@ jobs:
         run: go build -o casheer ./cmd/
 
       - name: Test
-        run: go test -v ./internal/...
+        run: |
+          go test -v ./internal/...
+          go test -v ./currency/...
 
   run-end-to-end-tests:
     runs-on: ubuntu-latest
