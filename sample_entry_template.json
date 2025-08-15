@@ -1,22 +1,22 @@
 {
     "income": {
         "salary": {
-            "expected_total": 0,
-            "recurring": true
+            "expected_total": 0
         },
         "scolarship": {
-            "expected_total": 0,
-            "recurring": true
+            "expected_total": 0
+        },
+        "rent": {
+            "expected_total": 0
         }
     },
     "economy": {
         "etfs": {
             "expected_total": 0,
-            "recurring": true
+            "currency": "EUR"
         },
         "bitcoins": {
-            "expected_total": 0,
-            "recurring": true
+            "expected_total": 0
         },
         "donations": {
             "expected_total": 0
@@ -24,59 +24,36 @@
         "emergency_fund": {
             "expected_total": 0
         },
-        "extra_savings": {
-            "expected_total": 0
-        }
-    },
-    "shopping": {
-        "mixed_groceries": {
-            "expected_total": 0
-        },
-        "clothing": {
+        "extra_saving": {
             "expected_total": 0
         }
     },
     "food": {
-        "home": {
+        "groceries": {
             "expected_total": 0
         },
-        "snacks_juice": {
+        "snacks": {
             "expected_total": 0
         },
         "takeaway": {
             "expected_total": 0
-        },
-        "restaurants": {
-            "expected_total": 0
-        },
-        "coffee": {
-            "expected_total": 0
         }
     },
-    "house": {
-        "internet": {
-            "expected_total": 0,
-            "recurring": true
+    "bills": {
+        "digi": {
+            "expected_total": 0
         },
         "electricity": {
-            "expected_total": 0,
-            "recurring": true
+            "expected_total": 0
         },
         "gas": {
-            "expected_total": 0,
-            "recurring": true
+            "expected_total": 0
         },
         "heat": {
-            "expected_total": 0,
-            "recurring": true
+            "expected_total": 0
         },
         "water": {
-            "expected_total": 0,
-            "recurring": true
-        },
-        "mixed_bills": {
-            "expected_total": 0,
-            "recurring": false
+            "expected_total": 0
         }
     },
     "transport": {
@@ -84,67 +61,47 @@
             "expected_total": 0
         },
         "parking": {
-            "expected_total": 0,
-            "recurring": true
+            "expected_total": 0
         },
         "rides": {
             "expected_total": 0
         }
     },
-    "memberships": {
+    "subscriptions": {
         "youtube": {
-            "expected_total": 0,
-            "recurring": true
-        },
-        "glovo": {
-            "expected_total": 0,
-            "recurring": true
+            "expected_total": 0
         },
         "backblaze": {
-            "expected_total": 0,
-            "recurring": true
+            "expected_total": 0
         },
         "google_drive": {
-            "expected_total": 0,
-            "recurring": true
+            "expected_total": 0
         },
         "medium": {
             "expected_total": 0
-        }
-    },
-    "learning": {
-        "courses": {
-            "expected_total": 0
         },
-        "books": {
-            "expected_total": 0
-        }
-    },
-    "online": {
-        "general": {
+        "gergely": {
             "expected_total": 0
         }
     },
     "fun": {
         "going_out": {
             "expected_total": 0
-        }
-    },
-    "medical": {
-        "meds": {
+        },
+        "coffee": {
             "expected_total": 0
         }
     },
-    "music": {
-        "guitar_lessons": {
+    "health": {
+        "adhd": {
+            "expected_total": 0
+        },
+        "general": {
             "expected_total": 0
         }
     },
     "misc": {
         "idk": {
-            "expected_total": 0
-        },
-        "teapa": {
             "expected_total": 0
         }
     }
