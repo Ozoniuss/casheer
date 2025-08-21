@@ -246,7 +246,7 @@ func (s *appState) buildEntriesAccordion() *widget.Accordion {
 /* ------------------------------- UI: Debts -------------------------------- */
 
 func formatDebt(d DebtListItem) string {
-	return fmt.Sprintf("#%d  %s — %.2f %s  (%s)", d.Id, d.Person, d.TotalMoney, d.Currency, d.Details)
+	return fmt.Sprintf("%s\n%.2f %s", d.Person, d.TotalMoney, d.Currency)
 }
 
 func (s *appState) buildDebtsList() *widget.List {
@@ -263,28 +263,29 @@ func (s *appState) buildDebtsList() *widget.List {
 			debt := s.debts[i]
 			row := co.(*fyne.Container)
 			row.Objects[0].(*widget.Label).SetText(formatDebt(debt))
-			btn := row.Objects[2].(*widget.Button)
-			btn.SetText("Resolve")
-			btn.OnTapped = func() {
-				_, err := s.cl.DeleteDebt(debt.Id)
-				if err != nil {
-					dialog.ShowError(err, s.mainWin)
-					return
-				}
-				if err := s.loadDebts(); err != nil {
-					dialog.ShowError(err, s.mainWin)
-					return
-				}
-				s.debtsList.Refresh()
-			}
+			// btn := row.Objects[2].(*widget.Button)
+			// btn.SetText("Resolve")
+			// btn.OnTapped = func() {
+			// 	_, err := s.cl.DeleteDebt(debt.Id)
+			// 	if err != nil {
+			// 		dialog.ShowError(err, s.mainWin)
+			// 		return
+			// 	}
+			// 	if err := s.loadDebts(); err != nil {
+			// 		dialog.ShowError(err, s.mainWin)
+			// 		return
+			// 	}
+			// 	s.debtsList.Refresh()
+			// }
 		},
 	)
+	// list.BaseWidget.Resize(fyne.NewSize(1000, 1000))
 	return list
 }
 
 func (s *appState) debtsView() *fyne.Container {
 	s.debtsList = s.buildDebtsList()
-	add := widget.NewButtonWithIcon("Add debt", theme.ContentAddIcon(), func() {
+	addButton := widget.NewButtonWithIcon("Add debt", theme.ContentAddIcon(), func() {
 		s.showAddDebtDialog(func() {
 			if err := s.loadDebts(); err != nil {
 				dialog.ShowError(err, s.mainWin)
@@ -293,11 +294,12 @@ func (s *appState) debtsView() *fyne.Container {
 			s.debtsList.Refresh()
 		})
 	})
-	add.Importance = widget.HighImportance
+	addButton.Importance = widget.HighImportance
 
-	card := widget.NewCard("Debts", "Outstanding items", container.NewBorder(nil, add, nil, nil, s.debtsList))
+	card := widget.NewCard("Debts", "Outstanding items", container.NewBorder(nil, addButton, nil, nil, s.debtsList))
 	card.Resize(fyne.NewSize(400, 400))
-	return container.NewMax(card)
+	c := container.NewStack(card)
+	return c
 }
 
 /* --------------------------------- Dialogs -------------------------------- */
