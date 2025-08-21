@@ -416,40 +416,85 @@ func (s *appState) showAddExpenseDialog(category string, onDone func()) {
 func (s *appState) showAddDebtDialog(onDone func()) {
 	person := widget.NewEntry()
 	amt := widget.NewEntry()
-	curr := widget.NewEntry()
-	dets := widget.NewEntry()
-	curr.SetPlaceHolder("RON / EUR / USD / GBP")
+	var currVal string
+	currencyEntry := widget.NewSelect([]string{"RON", "EUR", "USD", "GBP"}, func(s string) {
+		fmt.Println("selected", s)
+		currVal = s
+	})
+	detailsEntry := widget.NewEntry()
+	detailsEntry.MultiLine = true
+	detailsEntry.SetMinRowsVisible(2)
+	detailsEntry.Wrapping = fyne.TextWrapBreak
 
-	form := &widget.Form{
-		Items: []*widget.FormItem{
-			{Text: "Person", Widget: person},
-			{Text: "Amount", Widget: amt},
-			{Text: "Currency", Widget: curr},
-			{Text: "Details", Widget: dets},
-		},
-		OnSubmit: func() {
-			if person.Text == "" || amt.Text == "" || curr.Text == "" {
-				dialog.ShowInformation("Missing fields", "Person, Amount, Currency are required.", s.mainWin)
-				return
-			}
-			value, err := strconv.Atoi(amt.Text)
-			if err != nil {
-				dialog.ShowError(fmt.Errorf("invalid amount"), s.mainWin)
-				return
-			}
-			if _, err := s.cl.CreateDebt(person.Text, dets.Text, value, curr.Text, -2); err != nil {
-				dialog.ShowError(err, s.mainWin)
-				return
-			}
-			if err := s.loadDebts(); err != nil {
-				dialog.ShowError(err, s.mainWin)
-				return
-			}
-			onDone()
-		},
-		SubmitText: "Create debt",
-	}
-	d := dialog.NewCustom("New debt", "Close", form, s.mainWin)
+	row1 := container.NewGridWithColumns(2,
+		widget.NewLabel("Person"), person,
+	)
+	row2 := container.NewGridWithColumns(2,
+		widget.NewLabel("Amount"), amt,
+	)
+	row3 := container.NewGridWithColumns(2,
+		widget.NewLabel("Currency"), currencyEntry,
+	)
+
+	row4 := container.NewGridWithColumns(2,
+		widget.NewLabel("Details"), detailsEntry,
+	)
+
+	content := container.NewVBox(row1, row2, row3, row4)
+
+	// form := &widget.Form{
+	// 	Items: []*widget.FormItem{
+	// 		{Text: "Person", Widget: person},
+	// 		{Text: "Amount", Widget: amt},
+	// 		{Text: "Currency", Widget: curr},
+	// 		{Text: "Details", Widget: dets},
+	// 	},
+	// 	OnSubmit: func() {
+	// 		if person.Text == "" || amt.Text == "" || curr.Text == "" {
+	// 			dialog.ShowInformation("Missing fields", "Person, Amount, Currency are required.", s.mainWin)
+	// 			return
+	// 		}
+	// 		value, err := strconv.Atoi(amt.Text)
+	// 		if err != nil {
+	// 			dialog.ShowError(fmt.Errorf("invalid amount"), s.mainWin)
+	// 			return
+	// 		}
+	// 		if _, err := s.cl.CreateDebt(person.Text, dets.Text, value, curr.Text, -2); err != nil {
+	// 			dialog.ShowError(err, s.mainWin)
+	// 			return
+	// 		}
+	// 		if err := s.loadDebts(); err != nil {
+	// 			dialog.ShowError(err, s.mainWin)
+	// 			return
+	// 		}
+	// 		onDone()
+	// 	},
+	// 	SubmitText: "Create debt",
+	// }
+	d := dialog.NewCustomConfirm("New debt", "Create", "Close", content, func(ok bool) {
+		if !ok {
+			return
+		}
+		if person.Text == "" || amt.Text == "" || currVal == "" {
+			dialog.ShowInformation("Missing fields", "Person, Amount, Currency are required.", s.mainWin)
+			return
+		}
+		value, err := strconv.Atoi(amt.Text)
+		if err != nil {
+			dialog.ShowError(fmt.Errorf("invalid amount"), s.mainWin)
+			return
+		}
+		if _, err := s.cl.CreateDebt(person.Text, detailsEntry.Text, value, currVal, -2); err != nil {
+			dialog.ShowError(err, s.mainWin)
+			return
+		}
+		if err := s.loadDebts(); err != nil {
+			dialog.ShowError(err, s.mainWin)
+			return
+		}
+		onDone()
+	}, s.mainWin)
+	d.Resize(fyne.NewSize(500, 200))
 	d.Show()
 }
 
