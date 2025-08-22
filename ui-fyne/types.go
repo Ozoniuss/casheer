@@ -1,9 +1,11 @@
 package main
 
+import "github.com/Ozoniuss/casheer/currency"
+
 type DebtListItem struct {
 	Id         int
 	Person     string
-	TotalMoney float32
+	TotalMoney currency.Value
 	Currency   string
 	Details    string
 }

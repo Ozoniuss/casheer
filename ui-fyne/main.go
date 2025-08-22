@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/Ozoniuss/casheer/client/httpclient"
+	"github.com/Ozoniuss/casheer/currency"
 
 	"fyne.io/fyne/v2"
 	"fyne.io/fyne/v2/app"
@@ -30,7 +31,7 @@ type appState struct {
 
 	mainWin           fyne.Window
 	entriesAccordion  *widget.Accordion
-	debtsList         *widget.List
+	debtsList         fyne.CanvasObject
 	headerPeriodLabel *widget.Label
 }
 
@@ -63,11 +64,15 @@ func (s *appState) loadDebts() error {
 	for _, d := range resp.Data {
 		id, _ := strconv.Atoi(d.Id)
 		items = append(items, DebtListItem{
-			Id:         id,
-			Person:     d.Attributes.Person,
-			TotalMoney: moneyPow(d.Attributes.Value.Amount, d.Attributes.Value.Exponent),
-			Currency:   d.Attributes.Value.Currency,
-			Details:    d.Attributes.Details,
+			Id:     id,
+			Person: d.Attributes.Person,
+			TotalMoney: currency.Value{
+				Currency: d.Attributes.Value.Currency,
+				Amount:   d.Attributes.Value.Amount,
+				Exponent: d.Attributes.Value.Exponent,
+			},
+			Currency: d.Attributes.Value.Currency,
+			Details:  d.Attributes.Details,
 		})
 	}
 	s.debts = items
@@ -246,44 +251,20 @@ func (s *appState) buildEntriesAccordion() *widget.Accordion {
 /* ------------------------------- UI: Debts -------------------------------- */
 
 func formatDebt(d DebtListItem) string {
-	return fmt.Sprintf("%s\n%.2f %s", d.Person, d.TotalMoney, d.Currency)
+	return fmt.Sprintf("%s\n%.2f %s\n%s", d.Person, moneyPow(d.TotalMoney.Amount, d.TotalMoney.Exponent), d.TotalMoney.Currency, d.Details)
 }
 
-func (s *appState) buildDebtsList() *widget.List {
-	list := widget.NewList(
-		func() int { return len(s.debts) },
-		func() fyne.CanvasObject {
-			lbl := widget.NewLabel("debt")
-			btn := widget.NewButtonWithIcon("", theme.ConfirmIcon(), nil)
-			btn.Importance = widget.WarningImportance
-			row := container.NewBorder(nil, divider(), nil, btn, lbl)
-			return row
-		},
-		func(i widget.ListItemID, co fyne.CanvasObject) {
-			debt := s.debts[i]
-			row := co.(*fyne.Container)
-			row.Objects[0].(*widget.Label).SetText(formatDebt(debt))
-			// btn := row.Objects[2].(*widget.Button)
-			// btn.SetText("Resolve")
-			// btn.OnTapped = func() {
-			// 	_, err := s.cl.DeleteDebt(debt.Id)
-			// 	if err != nil {
-			// 		dialog.ShowError(err, s.mainWin)
-			// 		return
-			// 	}
-			// 	if err := s.loadDebts(); err != nil {
-			// 		dialog.ShowError(err, s.mainWin)
-			// 		return
-			// 	}
-			// 	s.debtsList.Refresh()
-			// }
-		},
-	)
-	// list.BaseWidget.Resize(fyne.NewSize(1000, 1000))
-	return list
+func (s *appState) buildDebtsList() fyne.CanvasObject {
+	var items []fyne.CanvasObject
+	for _, debt := range s.debts {
+		text := formatDebt(debt)
+		items = append(items, widget.NewLabel(text))
+	}
+	return container.NewVScroll(container.NewVBox(items...))
 }
 
 func (s *appState) debtsView() *fyne.Container {
+	s.loadDebts()
 	s.debtsList = s.buildDebtsList()
 	addButton := widget.NewButtonWithIcon("Add debt", theme.ContentAddIcon(), func() {
 		s.showAddDebtDialog(func() {
@@ -299,6 +280,7 @@ func (s *appState) debtsView() *fyne.Container {
 	card := widget.NewCard("Debts", "Outstanding items", container.NewBorder(nil, addButton, nil, nil, s.debtsList))
 	card.Resize(fyne.NewSize(400, 400))
 	c := container.NewStack(card)
+
 	return c
 }
 
@@ -443,36 +425,6 @@ func (s *appState) showAddDebtDialog(onDone func()) {
 	)
 
 	content := container.NewVBox(row1, row2, row3, row4)
-
-	// form := &widget.Form{
-	// 	Items: []*widget.FormItem{
-	// 		{Text: "Person", Widget: person},
-	// 		{Text: "Amount", Widget: amt},
-	// 		{Text: "Currency", Widget: curr},
-	// 		{Text: "Details", Widget: dets},
-	// 	},
-	// 	OnSubmit: func() {
-	// 		if person.Text == "" || amt.Text == "" || curr.Text == "" {
-	// 			dialog.ShowInformation("Missing fields", "Person, Amount, Currency are required.", s.mainWin)
-	// 			return
-	// 		}
-	// 		value, err := strconv.Atoi(amt.Text)
-	// 		if err != nil {
-	// 			dialog.ShowError(fmt.Errorf("invalid amount"), s.mainWin)
-	// 			return
-	// 		}
-	// 		if _, err := s.cl.CreateDebt(person.Text, dets.Text, value, curr.Text, -2); err != nil {
-	// 			dialog.ShowError(err, s.mainWin)
-	// 			return
-	// 		}
-	// 		if err := s.loadDebts(); err != nil {
-	// 			dialog.ShowError(err, s.mainWin)
-	// 			return
-	// 		}
-	// 		onDone()
-	// 	},
-	// 	SubmitText: "Create debt",
-	// }
 	d := dialog.NewCustomConfirm("New debt", "Create", "Close", content, func(ok bool) {
 		if !ok {
 			return
